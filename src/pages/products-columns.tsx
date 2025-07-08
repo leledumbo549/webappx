@@ -9,47 +9,64 @@ export type ProductTableHandlers = {
   onDelete: (product: Product) => void
 }
 
-export function getColumns(handlers: ProductTableHandlers): ColumnDef<Product>[] {
+export function getColumns(
+  handlers: ProductTableHandlers
+): ColumnDef<Product>[] {
   return [
     {
       accessorKey: 'name',
       header: 'Name',
-      meta: { widthClass: 'w-40' },
+      meta: { widthClass: 'w-40', cellClass: 'truncate' },
     },
     {
       accessorKey: 'description',
       header: 'Description',
-      meta: { widthClass: 'w-48' },
+      meta: { widthClass: 'w-48', cellClass: 'whitespace-normal line-clamp-3' },
     },
     {
       accessorKey: 'category',
       header: 'Category',
-      meta: { widthClass: 'w-32' },
+      meta: { widthClass: 'w-32', cellClass: 'truncate' },
     },
     {
       accessorKey: 'price',
       header: 'Price (IDR)',
       cell: ({ getValue }) => {
         const value = getValue<number>()
-        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value)
+        return new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+        }).format(value)
       },
-      meta: { widthClass: 'w-36' },
+      meta: { widthClass: 'w-36', cellClass: 'truncate' },
     },
     {
       id: 'actions',
       header: 'Actions',
-      meta: { widthClass: 'w-28' },
+      meta: { widthClass: 'w-28', cellClass: '' },
       cell: ({ row }) => {
         const product = row.original
         return (
           <div className="flex justify-end gap-1">
-            <Button variant="ghost" size="icon" onClick={() => handlers.onDetail(product)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handlers.onDetail(product)}
+            >
               <Info className="size-4" />
             </Button>
-            <Button variant="secondary" size="icon" onClick={() => handlers.onEdit(product)}>
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={() => handlers.onEdit(product)}
+            >
               <Pencil className="size-4" />
             </Button>
-            <Button variant="destructive" size="icon" onClick={() => handlers.onDelete(product)}>
+            <Button
+              variant="destructive"
+              size="icon"
+              onClick={() => handlers.onDelete(product)}
+            >
               <Trash className="size-4" />
             </Button>
           </div>

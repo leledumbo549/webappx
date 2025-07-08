@@ -114,8 +114,13 @@ function Products() {
     }
     try {
       if (editing) {
-        const res = await axios.put<Product>(`/api/products/${editing.id}`, payload)
-        setProducts((prev) => prev.map((p) => (p.id === editing.id ? res.data : p)))
+        const res = await axios.put<Product>(
+          `/api/products/${editing.id}`,
+          payload
+        )
+        setProducts((prev) =>
+          prev.map((p) => (p.id === editing.id ? res.data : p))
+        )
       } else {
         const res = await axios.post<Product>('/api/products', payload)
         setProducts((prev) => [...prev, res.data])
@@ -146,125 +151,151 @@ function Products() {
     }
   }
 
-  const columns = getColumns({ onDetail: openDetail, onEdit: openEdit, onDelete: confirmDelete })
+  const columns = getColumns({
+    onDetail: openDetail,
+    onEdit: openEdit,
+    onDelete: confirmDelete,
+  })
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Products</h2>
-        <Button onClick={openAdd}>Add Product</Button>
-      </div>
-      {error && <div className="text-red-600">{error}</div>}
-      <DataTable
-        columns={columns}
-        data={products}
-        isLoading={loading}
-        filterColumnId="category"
-        filterOptions={categories}
-      />
-      <Footer />
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent side="right" className="flex flex-col">
-          <SheetHeader>
-            <SheetTitle>{editing ? 'Edit Product' : 'Add Product'}</SheetTitle>
-          </SheetHeader>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4 flex-1 overflow-auto">
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Input id="description" value={description} onChange={(e) => setDescription(e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="category">Category</Label>
-              <select
-                id="category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="border rounded px-2 py-1 w-full"
-                required
-              >
-                <option value="" disabled>
-                  Select category
-                </option>
-                {categories.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
+    <div className="flex min-h-screen items-start justify-center p-4">
+      <div className="w-full max-w-3xl space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">Products</h2>
+          <Button onClick={openAdd}>Add Product</Button>
+        </div>
+        {error && <div className="text-red-600">{error}</div>}
+        <DataTable
+          columns={columns}
+          data={products}
+          isLoading={loading}
+          filterColumnId="category"
+          filterOptions={categories}
+        />
+        <Footer />
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <SheetContent side="right" className="flex flex-col">
+            <SheetHeader>
+              <SheetTitle>
+                {editing ? 'Edit Product' : 'Add Product'}
+              </SheetTitle>
+            </SheetHeader>
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col gap-4 p-4 flex-1 overflow-auto"
+            >
+              <div>
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Input
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <select
+                  id="category"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="border rounded px-2 py-1 w-full"
+                  required
+                >
+                  <option value="" disabled>
+                    Select category
                   </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="price">Price (IDR)</Label>
-              <Input
-                id="price"
-                type="number"
-                step="1"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="e.g., 15000"
-                required
-              />
-            </div>
-            {error && <div className="text-red-600">{error}</div>}
-            <SheetFooter className="mt-auto">
-              <SheetClose asChild>
-                <Button type="button" variant="secondary">
-                  Cancel
-                </Button>
-              </SheetClose>
-              <Button type="submit">{editing ? 'Update' : 'Create'}</Button>
-            </SheetFooter>
-          </form>
-        </SheetContent>
-      </Sheet>
-      <Sheet open={detailOpen} onOpenChange={setDetailOpen}>
-        <SheetContent side="right" className="flex flex-col">
-          <SheetHeader>
-            <SheetTitle>Product Detail</SheetTitle>
-          </SheetHeader>
-          {detail && (
-            <div className="p-4 space-y-2 text-sm">
-              <div>
-                <span className="font-semibold">Name: </span>
-                {detail.name}
+                  {categories.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
-                <span className="font-semibold">Description: </span>
-                {detail.description}
+                <Label htmlFor="price">Price (IDR)</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  step="1"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="e.g., 15000"
+                  required
+                />
               </div>
-              <div>
-                <span className="font-semibold">Category: </span>
-                {detail.category}
+              {error && <div className="text-red-600">{error}</div>}
+              <SheetFooter className="mt-auto">
+                <SheetClose asChild>
+                  <Button type="button" variant="secondary">
+                    Cancel
+                  </Button>
+                </SheetClose>
+                <Button type="submit">{editing ? 'Update' : 'Create'}</Button>
+              </SheetFooter>
+            </form>
+          </SheetContent>
+        </Sheet>
+        <Sheet open={detailOpen} onOpenChange={setDetailOpen}>
+          <SheetContent side="right" className="flex flex-col">
+            <SheetHeader>
+              <SheetTitle>Product Detail</SheetTitle>
+            </SheetHeader>
+            {detail && (
+              <div className="p-4 space-y-2 text-sm">
+                <div>
+                  <span className="font-semibold">Name: </span>
+                  {detail.name}
+                </div>
+                <div>
+                  <span className="font-semibold">Description: </span>
+                  {detail.description}
+                </div>
+                <div>
+                  <span className="font-semibold">Category: </span>
+                  {detail.category}
+                </div>
+                <div>
+                  <span className="font-semibold">Price: </span>
+                  {new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                  }).format(detail.price)}
+                </div>
+                <div className="text-xs text-gray-500">
+                  Created: {new Date(detail.createdAt).toLocaleString('id-ID')}
+                </div>
               </div>
-              <div>
-                <span className="font-semibold">Price: </span>
-                {new Intl.NumberFormat('id-ID', {
-                  style: 'currency',
-                  currency: 'IDR',
-                }).format(detail.price)}
-              </div>
-              <div className="text-xs text-gray-500">
-                Created: {new Date(detail.createdAt).toLocaleString('id-ID')}
-              </div>
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogTrigger asChild></AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this product?</AlertDialogTitle>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            )}
+          </SheetContent>
+        </Sheet>
+        <AlertDialog
+          open={!!deleteTarget}
+          onOpenChange={(open) => !open && setDeleteTarget(null)}
+        >
+          <AlertDialogTrigger asChild></AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete this product?</AlertDialogTitle>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   )
 }

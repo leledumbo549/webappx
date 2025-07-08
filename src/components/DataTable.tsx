@@ -60,7 +60,9 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = React.useState('')
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  )
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -91,7 +93,10 @@ export function DataTable<TData, TValue>({
         />
         {filterColumnId && filterOptions.length > 0 && (
           <Select
-            value={(table.getColumn(filterColumnId)?.getFilterValue() as string) ?? '__all__'}
+            value={
+              (table.getColumn(filterColumnId)?.getFilterValue() as string) ??
+              '__all__'
+            }
             onValueChange={(value) => {
               if (value === '__all__') {
                 table.getColumn(filterColumnId)?.setFilterValue(undefined)
@@ -115,31 +120,42 @@ export function DataTable<TData, TValue>({
         )}
       </div>
       <div className="rounded-md border overflow-x-auto">
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   const canSort = header.column.getCanSort()
                   const sorted = header.column.getIsSorted()
-                  const meta = header.column.columnDef.meta as { widthClass?: string } | undefined
+                  const meta = header.column.columnDef.meta as
+                    | { widthClass?: string }
+                    | undefined
                   return (
                     <TableHead
                       key={header.id}
-                      onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
-                      className={cn(canSort ? 'cursor-pointer select-none' : '', meta?.widthClass)}
+                      onClick={
+                        canSort
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
+                      }
+                      className={cn(
+                        canSort ? 'cursor-pointer select-none' : '',
+                        meta?.widthClass
+                      )}
                     >
                       <div className="flex items-center gap-1">
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {canSort && (
-                          sorted === 'asc' ? (
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {canSort &&
+                          (sorted === 'asc' ? (
                             <ArrowUp className="size-3.5" />
                           ) : sorted === 'desc' ? (
                             <ArrowDown className="size-3.5" />
                           ) : (
                             <ArrowUpDown className="size-3.5 text-muted-foreground" />
-                          )
-                        )}
+                          ))}
                       </div>
                     </TableHead>
                   )
@@ -164,13 +180,23 @@ export function DataTable<TData, TValue>({
                   className={onRowClick ? 'cursor-pointer' : ''}
                 >
                   {row.getVisibleCells().map((cell) => {
-                    const meta = cell.column.columnDef.meta as { widthClass?: string } | undefined
+                    const meta = cell.column.columnDef.meta as
+                      | { widthClass?: string; cellClass?: string }
+                      | undefined
                     return (
                       <TableCell
                         key={cell.id}
-                        className={cn(cell.column.id === 'actions' ? 'text-right' : '', meta?.widthClass)}
+                        className={cn(
+                          cell.column.id === 'actions' ? 'text-right' : '',
+                          meta?.widthClass,
+                          meta?.cellClass
+                        )}
+                        style={meta?.widthClass ? undefined : {}}
                       >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </TableCell>
                     )
                   })}
@@ -178,7 +204,10 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No results
                 </TableCell>
               </TableRow>
@@ -188,7 +217,8 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="flex items-center justify-between gap-2">
         <div className="text-sm text-muted-foreground">
-          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+          Page {table.getState().pagination.pageIndex + 1} of{' '}
+          {table.getPageCount()}
         </div>
         <div className="flex items-center gap-2">
           <Select
