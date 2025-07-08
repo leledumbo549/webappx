@@ -12,6 +12,7 @@ import About from './pages/About'
 import Blogs from './pages/Blogs'
 import Login from './pages/Login'
 import Sidebar from './components/Sidebar'
+import Title from './components/Title'
 
 function AppRoutes() {
   const handleLogout = () => {
@@ -25,6 +26,8 @@ function AppRoutes() {
     <div className="flex flex-col h-screen">
       {!hideNavbar && (
         <nav className="fixed top-0 left-0 right-0 z-10 bg-white border-b shadow flex items-center px-4 h-16">
+          {/* Navbar title */}
+          <Title />
           <div className="flex-1" />
           <Sidebar onLogout={handleLogout} />
           {/* Navbar menu: visible only in landscape */}

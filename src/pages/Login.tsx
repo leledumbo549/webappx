@@ -4,6 +4,8 @@ import axios from 'axios'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../components/ui/card'
+import Title from '../components/Title'
 
 function Login() {
   const [username, setUsername] = useState('')
@@ -33,30 +35,47 @@ function Login() {
   }
 
   return (
-    <div className="max-w-md mx-auto p-4 space-y-4">
-      <h2 className="text-2xl font-bold">Login</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="username">Username</Label>
-          <Input
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <Button type="submit">Login</Button>
-      </form>
-      {token && <p className="text-green-700">Logged in. Token saved.</p>}
-      {error && <p className="text-red-600">{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-2 portrait:px-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="flex flex-col items-center gap-2 border-b mb-2 pb-4">
+          <Title />
+          <CardTitle className="text-2xl font-bold">Sign in to your account</CardTitle>
+        </CardHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="username"
+                placeholder="Enter your username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                placeholder="Enter your password"
+              />
+            </div>
+            {error && (
+              <div className="text-red-600 text-sm text-center">{error}</div>
+            )}
+            {token && (
+              <div className="text-green-700 text-sm text-center">Logged in. Token saved.</div>
+            )}
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" className="w-full">Login</Button>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   )
 }
