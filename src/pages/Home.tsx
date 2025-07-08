@@ -1,5 +1,6 @@
 import { Button } from '../components/ui/button'
 import { Alert, AlertTitle, AlertDescription } from '../components/ui/alert'
+import Footer from '../components/Footer'
 import {
   Accordion,
   AccordionItem,
@@ -57,6 +58,7 @@ function Home() {
           </AccordionItem>
         </Accordion>
       </section>
+      <Footer />
     </div>
   )
 }
