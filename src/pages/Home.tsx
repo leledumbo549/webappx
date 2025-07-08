@@ -9,7 +9,7 @@ import {
 } from '../components/ui/accordion'
 
 import { useState } from 'react'
-import axios from 'axios'
+import axios from '../lib/axios'
 
 function Home() {
   const [version, setVersion] = useState<number | null>(null)

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../lib/axios'
 import type { Product } from '../types/Product'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -118,8 +118,8 @@ function Products() {
             <tr>
               <th className="px-3 py-2 border-b text-left">Name</th>
               <th className="px-3 py-2 border-b text-left">Description</th>
-              <th className="px-3 py-2 border-b text-left">Price</th>
-              <th className="px-3 py-2 border-b text-left">Actions</th>
+              <th className="px-3 py-2 border-b text-left">Price (IDR)</th>
+              <th className="px-3 py-2 border-b text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -127,8 +127,13 @@ function Products() {
               <tr key={product.id} className="border-b">
                 <td className="px-3 py-2">{product.name}</td>
                 <td className="px-3 py-2">{product.description}</td>
-                <td className="px-3 py-2">${product.price.toFixed(2)}</td>
-                <td className="px-3 py-2 space-x-2">
+                <td className="px-3 py-2">
+                  {new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                  }).format(product.price)}
+                </td>
+                <td className="px-3 py-2 space-x-2 text-right">
                   <Button
                     variant="secondary"
                     size="sm"
@@ -175,13 +180,14 @@ function Products() {
               />
             </div>
             <div>
-              <Label htmlFor="price">Price</Label>
+              <Label htmlFor="price">Price (IDR)</Label>
               <Input
                 id="price"
                 type="number"
-                step="0.01"
+                step="1"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
+                placeholder="e.g., 15000"
                 required
               />
             </div>
