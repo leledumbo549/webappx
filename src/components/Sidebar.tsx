@@ -1,18 +1,22 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { MenuIcon } from 'lucide-react'
 import { Button } from './ui/button'
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-} from './ui/sheet'
+import { Sheet, SheetTrigger, SheetContent } from './ui/sheet'
 
-function Sidebar() {
+type SidebarProps = {
+  onLogout?: () => void
+}
+
+function Sidebar({ onLogout }: SidebarProps) {
   const navigate = useNavigate()
 
   const handleLogout = () => {
-    localStorage.clear()
-    navigate('/', { replace: true })
+    if (onLogout) {
+      onLogout()
+    } else {
+      localStorage.clear()
+      navigate('/', { replace: true })
+    }
   }
 
   return (

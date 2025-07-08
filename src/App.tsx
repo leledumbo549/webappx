@@ -14,6 +14,10 @@ import Login from './pages/Login'
 import Sidebar from './components/Sidebar'
 
 function AppRoutes() {
+  const handleLogout = () => {
+    localStorage.clear()
+    window.location.hash = '/'
+  }
   const location = useLocation()
   const hideNavbar = location.pathname === '/login' || location.pathname === '/'
 
@@ -21,7 +25,10 @@ function AppRoutes() {
     <div className="flex flex-col h-screen">
       {!hideNavbar && (
         <nav className="fixed top-0 left-0 right-0 z-10 bg-white border-b shadow flex items-center px-4 h-16">
-          <div className="flex-1 items-center gap-4 hidden md:flex portrait:hidden">
+          <div className="flex-1" />
+          <Sidebar onLogout={handleLogout} />
+          {/* Navbar menu: visible only in landscape */}
+          <div className="flex items-center gap-4 hidden md:flex portrait:hidden">
             <Link
               to="/home"
               replace
@@ -43,8 +50,14 @@ function AppRoutes() {
             >
               Blogs
             </Link>
+            <button
+              type="button"
+              className="font-semibold text-lg hover:text-red-600 transition-colors"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
           </div>
-          <Sidebar />
         </nav>
       )}
       <main
