@@ -62,6 +62,14 @@ function Sidebar({ onLogout }: SidebarProps) {
                 Blogs
               </Link>
             </SheetClose>
+            <SheetClose asChild>
+              <Link
+                to="/products"
+                className="rounded-md px-3 py-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+              >
+                Products
+              </Link>
+            </SheetClose>
           </nav>
           <SheetClose asChild>
             <Button
