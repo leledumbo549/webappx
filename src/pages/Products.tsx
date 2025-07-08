@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from '../lib/axios'
+import axios from '@/lib/axios'
 import * as Axios from 'axios'
-import type { Product } from '../types/Product'
-import { Button } from '../components/ui/button'
-import { Input } from '../components/ui/input'
-import { Label } from '../components/ui/label'
+import type { Product } from '@/types/Product'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Sheet,
   SheetContent,
@@ -13,8 +13,20 @@ import {
   SheetTitle,
   SheetFooter,
   SheetClose,
-} from '../components/ui/sheet'
-import Footer from '../components/Footer'
+} from '@/components/ui/sheet'
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog'
+import { DataTable } from '@/components/DataTable'
+import { getColumns } from './products-columns'
+import Footer from '@/components/Footer'
 
 function Products() {
   const navigate = useNavigate()
@@ -29,14 +41,8 @@ function Products() {
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
   const [category, setCategory] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null)
 
-  const [search, setSearch] = useState('')
-  const [filterCategory, setFilterCategory] = useState('')
-  const [minPrice, setMinPrice] = useState('')
-  const [maxPrice, setMaxPrice] = useState('')
-  const [sort, setSort] = useState('name')
-  const [page, setPage] = useState(1)
-  const pageSize = 10
   const categories = [
     'Makanan',
     'Minuman',
@@ -108,13 +114,8 @@ function Products() {
     }
     try {
       if (editing) {
-        const res = await axios.put<Product>(
-          `/api/products/${editing.id}`,
-          payload
-        )
-        setProducts((prev) =>
-          prev.map((p) => (p.id === editing.id ? res.data : p))
-        )
+        const res = await axios.put<Product>(`/api/products/${editing.id}`, payload)
+        setProducts((prev) => prev.map((p) => (p.id === editing.id ? res.data : p)))
       } else {
         const res = await axios.post<Product>('/api/products', payload)
         setProducts((prev) => [...prev, res.data])
@@ -127,55 +128,25 @@ function Products() {
     }
   }
 
-  const handleDelete = async (p: Product) => {
-    if (!window.confirm('Delete this product?')) return
+  const confirmDelete = (p: Product) => {
+    setDeleteTarget(p)
+  }
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return
     try {
-      await axios.delete(`/api/products/${p.id}`)
-      setProducts((prev) => prev.filter((item) => item.id !== p.id))
+      await axios.delete(`/api/products/${deleteTarget.id}`)
+      setProducts((prev) => prev.filter((item) => item.id !== deleteTarget.id))
     } catch (err) {
       if (Axios.isAxiosError(err)) setError(err.message)
       else if (err instanceof Error) setError(err.message)
       else setError('Failed to delete product')
+    } finally {
+      setDeleteTarget(null)
     }
   }
 
-  const filteredProducts = useMemo(() => {
-    let data = products.filter((p) =>
-      p.name.toLowerCase().includes(search.toLowerCase())
-    )
-    if (filterCategory) {
-      data = data.filter((p) => p.category === filterCategory)
-    }
-    if (minPrice) {
-      data = data.filter((p) => p.price >= Number(minPrice))
-    }
-    if (maxPrice) {
-      data = data.filter((p) => p.price <= Number(maxPrice))
-    }
-    switch (sort) {
-      case 'priceAsc':
-        data.sort((a, b) => a.price - b.price)
-        break
-      case 'priceDesc':
-        data.sort((a, b) => b.price - a.price)
-        break
-      case 'newest':
-        data.sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )
-        break
-      default:
-        data.sort((a, b) => a.name.localeCompare(b.name))
-    }
-    return data
-  }, [products, search, filterCategory, minPrice, maxPrice, sort])
-
-  const totalPages = Math.ceil(filteredProducts.length / pageSize)
-  const paginated = filteredProducts.slice(
-    (page - 1) * pageSize,
-    page * pageSize
-  )
+  const columns = getColumns({ onEdit: openEdit, onDelete: confirmDelete })
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
@@ -183,162 +154,29 @@ function Products() {
         <h2 className="text-2xl font-bold">Products</h2>
         <Button onClick={openAdd}>Add Product</Button>
       </div>
-      <div className="flex flex-wrap gap-2">
-        <Input
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value)
-            setPage(1)
-          }}
-          className="max-w-xs"
-        />
-        <select
-          value={filterCategory}
-          onChange={(e) => {
-            setFilterCategory(e.target.value)
-            setPage(1)
-          }}
-          className="border rounded px-2 py-1"
-        >
-          <option value="">All Categories</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-        <Input
-          type="number"
-          placeholder="Min Price"
-          value={minPrice}
-          onChange={(e) => {
-            setMinPrice(e.target.value)
-            setPage(1)
-          }}
-          className="w-24"
-        />
-        <Input
-          type="number"
-          placeholder="Max Price"
-          value={maxPrice}
-          onChange={(e) => {
-            setMaxPrice(e.target.value)
-            setPage(1)
-          }}
-          className="w-24"
-        />
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
-          className="border rounded px-2 py-1"
-        >
-          <option value="name">Name A-Z</option>
-          <option value="priceAsc">Price Low-High</option>
-          <option value="priceDesc">Price High-Low</option>
-          <option value="newest">Newest</option>
-        </select>
-      </div>
       {error && <div className="text-red-600">{error}</div>}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border text-sm">
-          <thead>
-            <tr>
-              <th className="px-3 py-2 border-b text-left">Name</th>
-              <th className="px-3 py-2 border-b text-left">Description</th>
-              <th className="px-3 py-2 border-b text-left">Category</th>
-              <th className="px-3 py-2 border-b text-left">Price (IDR)</th>
-              <th className="px-3 py-2 border-b text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && (
-              <tr>
-                <td colSpan={5} className="p-4 text-center">
-                  Loading...
-                </td>
-              </tr>
-            )}
-            {!loading &&
-              paginated.map((product) => (
-                <tr
-                  key={product.id}
-                  className="border-b cursor-pointer hover:bg-gray-50"
-                  onClick={() => openDetail(product)}
-                >
-                  <td className="px-3 py-2">{product.name}</td>
-                  <td className="px-3 py-2">{product.description}</td>
-                  <td className="px-3 py-2">{product.category}</td>
-                  <td className="px-3 py-2">
-                    {new Intl.NumberFormat('id-ID', {
-                      style: 'currency',
-                      currency: 'IDR',
-                    }).format(product.price)}
-                  </td>
-                  <td
-                    className="px-3 py-2 space-x-2 text-right"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => openEdit(product)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDelete(product)}
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="flex justify-center gap-2">
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-          <button
-            key={n}
-            className={`px-2 py-1 border rounded ${
-              n === page ? 'bg-gray-200' : ''
-            }`}
-            onClick={() => setPage(n)}
-          >
-            {n}
-          </button>
-        ))}
-      </div>
+      <DataTable
+        columns={columns}
+        data={products}
+        isLoading={loading}
+        filterColumnId="category"
+        filterOptions={categories}
+        onRowClick={(row) => openDetail(row.original)}
+      />
       <Footer />
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent side="right" className="flex flex-col">
           <SheetHeader>
             <SheetTitle>{editing ? 'Edit Product' : 'Add Product'}</SheetTitle>
           </SheetHeader>
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-4 p-4 flex-1 overflow-auto"
-          >
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4 flex-1 overflow-auto">
             <div>
               <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
             </div>
             <div>
               <Label htmlFor="description">Description</Label>
-              <Input
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-              />
+              <Input id="description" value={description} onChange={(e) => setDescription(e.target.value)} required />
             </div>
             <div>
               <Label htmlFor="category">Category</Label>
@@ -416,6 +254,18 @@ function Products() {
           )}
         </SheetContent>
       </Sheet>
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogTrigger asChild></AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this product?</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
