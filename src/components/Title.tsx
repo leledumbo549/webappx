@@ -1,4 +1,3 @@
-import { PanelTop } from 'lucide-react'
 
 interface TitleProps {
   onClick?: () => void
@@ -8,12 +7,13 @@ interface TitleProps {
 const Title = ({ onClick, className = '' }: TitleProps) => (
   <button
     type="button"
-    className={`flex items-center gap-2 text-xl font-bold focus:outline-none ${className}`}
+    className={`flex items-center gap-2 text-4xl font-bold focus:outline-none ${className}`}
     onClick={onClick || (() => window.location.replace('#/'))}
     aria-label="WEBX"
   >
-    <PanelTop className="size-6 text-blue-600" />
-    WEBX
+    <span>
+      WEB<span className="text-blue-900">X</span>
+    </span>
   </button>
 )
 
