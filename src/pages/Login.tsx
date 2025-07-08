@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from '../lib/axios'
+import * as Axios from 'axios'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'
@@ -30,7 +31,7 @@ function Login() {
       setToken(token)
       navigate('/home', { replace: true })
     } catch (err) {
-      if (axios.isAxiosError(err)) {
+      if (Axios.isAxiosError(err)) {
         setError(err.response?.data?.message || err.message)
       } else if (err instanceof Error) {
         setError(err.message)

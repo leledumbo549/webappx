@@ -10,6 +10,7 @@ import {
 
 import { useState } from 'react'
 import axios from '../lib/axios'
+import * as Axios from 'axios'
 
 function Home() {
   const [version, setVersion] = useState<number | null>(null)
@@ -23,7 +24,7 @@ function Home() {
       const res = await axios.get('/api/version')
       setVersion(res.data.value)
     } catch (err) {
-      if (axios.isAxiosError(err)) {
+      if (Axios.isAxiosError(err)) {
         setError(err.message)
       } else {
         setError('Failed to fetch version')

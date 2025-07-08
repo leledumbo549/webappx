@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from '../lib/axios'
+import * as Axios from 'axios'
 import type { Product } from '../types/Product'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -39,7 +40,7 @@ function Products() {
       const res = await axios.get<Product[]>('/api/products')
       setProducts(res.data)
     } catch (err) {
-      if (axios.isAxiosError(err)) setError(err.message)
+      if (Axios.isAxiosError(err)) setError(err.message)
       else setError('Failed to load products')
     }
   }
@@ -87,7 +88,7 @@ function Products() {
       }
       setSheetOpen(false)
     } catch (err) {
-      if (axios.isAxiosError(err)) setError(err.message)
+      if (Axios.isAxiosError(err)) setError(err.message)
       else if (err instanceof Error) setError(err.message)
       else setError('Failed to save product')
     }
@@ -99,7 +100,7 @@ function Products() {
       await axios.delete(`/api/products/${p.id}`)
       setProducts((prev) => prev.filter((item) => item.id !== p.id))
     } catch (err) {
-      if (axios.isAxiosError(err)) setError(err.message)
+      if (Axios.isAxiosError(err)) setError(err.message)
       else if (err instanceof Error) setError(err.message)
       else setError('Failed to delete product')
     }
@@ -160,7 +161,10 @@ function Products() {
           <SheetHeader>
             <SheetTitle>{editing ? 'Edit Product' : 'Add Product'}</SheetTitle>
           </SheetHeader>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4 flex-1 overflow-auto">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-4 p-4 flex-1 overflow-auto"
+          >
             <div>
               <Label htmlFor="name">Name</Label>
               <Input
