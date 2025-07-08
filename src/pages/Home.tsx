@@ -8,7 +8,31 @@ import {
   AccordionContent,
 } from '../components/ui/accordion'
 
+import { useState } from 'react'
+import axios from 'axios'
+
 function Home() {
+  const [version, setVersion] = useState<number | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchVersion = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await axios.get('/api/version')
+      setVersion(res.data.value)
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setError(err.message)
+      } else {
+        setError('Failed to fetch version')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-8">
       <h1 className="text-3xl font-bold mb-6">shadcn/ui Components Showcase</h1>
@@ -17,6 +41,20 @@ function Home() {
       <section>
         <h2 className="text-xl font-semibold mb-2">Button</h2>
         <Button>Default Button</Button>
+      </section>
+
+      {/* Version Fetch Example */}
+      <section>
+        <h2 className="text-xl font-semibold mb-2">API Version Example</h2>
+        <Button onClick={fetchVersion} disabled={loading} className="mr-2">
+          {loading ? 'Loading...' : 'Get API Version'}
+        </Button>
+        {version !== null && (
+          <span className="ml-2 text-green-700 font-semibold">
+            Version: {version}
+          </span>
+        )}
+        {error && <span className="ml-2 text-red-600">{error}</span>}
       </section>
 
       {/* Alert Showcase */}
