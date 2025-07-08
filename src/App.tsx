@@ -11,6 +11,7 @@ import Loading from './pages/Loading'
 import About from './pages/About'
 import Blogs from './pages/Blogs'
 import Login from './pages/Login'
+import Sidebar from './components/Sidebar'
 
 function AppRoutes() {
   const location = useLocation()
@@ -43,6 +44,7 @@ function AppRoutes() {
               Blogs
             </Link>
           </div>
+          <Sidebar />
         </nav>
       )}
       <main
