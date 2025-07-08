@@ -1,3 +1,5 @@
+import Footer from '../components/Footer'
+
 function Blogs() {
   const blogs = [
     {
@@ -63,6 +65,7 @@ function Blogs() {
           <p className="text-gray-700 whitespace-pre-line">{blog.content}</p>
         </div>
       ))}
+      <Footer />
     </div>
   )
 }
