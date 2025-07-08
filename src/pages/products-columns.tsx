@@ -1,5 +1,5 @@
-import { ColumnDef } from '@tanstack/react-table'
-import { Product } from '@/types/Product'
+import type { ColumnDef } from '@tanstack/react-table'
+import type { Product } from '@/types/Product'
 import { Button } from '@/components/ui/button'
 
 export type ProductTableHandlers = {
