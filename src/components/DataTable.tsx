@@ -90,14 +90,20 @@ export function DataTable<TData, TValue>({
         />
         {filterColumnId && filterOptions.length > 0 && (
           <Select
-            value={(table.getColumn(filterColumnId)?.getFilterValue() as string) ?? ''}
-            onValueChange={(value) => table.getColumn(filterColumnId)?.setFilterValue(value)}
+            value={(table.getColumn(filterColumnId)?.getFilterValue() as string) ?? '__all__'}
+            onValueChange={(value) => {
+              if (value === '__all__') {
+                table.getColumn(filterColumnId)?.setFilterValue(undefined)
+              } else {
+                table.getColumn(filterColumnId)?.setFilterValue(value)
+              }
+            }}
           >
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All</SelectItem>
+              <SelectItem value="__all__">All</SelectItem>
               {filterOptions.map((opt) => (
                 <SelectItem key={opt} value={opt}>
                   {opt}
