@@ -12,7 +12,8 @@ const Title = ({ onClick, className = '' }: TitleProps) => (
     onClick={onClick || (() => window.location.replace('#/'))}
     aria-label="WEBX"
   >
-    <PanelTop className="size-6 text-blue-600" />WEBX
+    <PanelTop className="size-6 text-blue-600" />
+    WEBX
   </button>
 )
 

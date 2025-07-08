@@ -4,7 +4,13 @@ import axios from 'axios'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../components/ui/card'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from '../components/ui/card'
 import Title from '../components/Title'
 
 function Login() {
@@ -39,7 +45,9 @@ function Login() {
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="flex flex-col items-center gap-2 border-b mb-2 pb-4">
           <Title />
-          <CardTitle className="text-2xl font-bold">Sign in to your account</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            Sign in to your account
+          </CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <CardContent className="space-y-4">
@@ -68,11 +76,15 @@ function Login() {
               <div className="text-red-600 text-sm text-center">{error}</div>
             )}
             {token && (
-              <div className="text-green-700 text-sm text-center">Logged in. Token saved.</div>
+              <div className="text-green-700 text-sm text-center">
+                Logged in. Token saved.
+              </div>
             )}
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">Login</Button>
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
           </CardFooter>
         </form>
       </Card>
