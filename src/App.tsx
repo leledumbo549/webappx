@@ -21,7 +21,7 @@ function AppRoutes() {
     <div className="flex flex-col h-screen">
       {!hideNavbar && (
         <nav className="fixed top-0 left-0 right-0 z-10 bg-white border-b shadow flex items-center px-4 h-16">
-          <div className="flex-1 flex items-center gap-4">
+          <div className="flex-1 items-center gap-4 hidden md:flex portrait:hidden">
             <Link
               to="/home"
               replace
