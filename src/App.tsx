@@ -3,6 +3,7 @@ import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Home from './pages/Home'
 import About from './pages/About'
 import Blogs from './pages/Blogs'
+import Login from './pages/Login'
 
 function App() {
   return (
@@ -29,6 +30,12 @@ function App() {
             >
               Blogs
             </Link>
+            <Link
+              to="/login"
+              className="font-semibold text-lg hover:text-blue-600 transition-colors"
+            >
+              Login
+            </Link>
           </div>
         </nav>
         {/* Content Area */}
@@ -37,6 +44,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/blogs" element={<Blogs />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </main>
       </div>
