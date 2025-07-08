@@ -4,9 +4,37 @@ import type { Product } from '../types/Product'
 let products: Product[] = [
   {
     id: 1,
-    name: 'Sample Product',
-    description: 'This is a sample product',
-    price: 9.99,
+    name: 'Nasi Goreng',
+    description: 'Nasi goreng spesial dengan ayam dan telur',
+    price: 25000,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 2,
+    name: 'Kopi Luwak',
+    description: 'Kopi premium asli Indonesia',
+    price: 75000,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 3,
+    name: 'Sate Ayam',
+    description: 'Sate ayam bumbu kacang lezat',
+    price: 20000,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 4,
+    name: 'Teh Botol',
+    description: 'Minuman teh manis dalam botol',
+    price: 5000,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 5,
+    name: 'Keripik Pisang',
+    description: 'Camilan keripik pisang renyah',
+    price: 10000,
     createdAt: new Date().toISOString(),
   },
 ]
