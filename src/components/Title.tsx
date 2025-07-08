@@ -1,4 +1,3 @@
-
 interface TitleProps {
   onClick?: () => void
   className?: string

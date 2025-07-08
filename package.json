@@ -6,6 +6,7 @@
   "homepage": "https://leledumbo549.github.io/webappx",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node flatten.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
