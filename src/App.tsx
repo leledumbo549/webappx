@@ -10,6 +10,7 @@ import Home from './pages/Home'
 import Loading from './pages/Loading'
 import About from './pages/About'
 import Blogs from './pages/Blogs'
+import Products from './pages/Products'
 import Login from './pages/Login'
 import Sidebar from './components/Sidebar'
 import Title from './components/Title'
@@ -53,6 +54,13 @@ function AppRoutes() {
             >
               Blogs
             </Link>
+            <Link
+              to="/products"
+              replace
+              className="font-semibold text-lg hover:text-blue-600 transition-colors"
+            >
+              Products
+            </Link>
             <button
               type="button"
               className="font-semibold text-lg hover:text-red-600 transition-colors"
@@ -75,6 +83,7 @@ function AppRoutes() {
           <Route path="/home" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/blogs" element={<Blogs />} />
+          <Route path="/products" element={<Products />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </main>
