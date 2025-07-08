@@ -20,7 +20,7 @@ function Login() {
       const { token } = res.data as { token: string }
       localStorage.setItem('token', token)
       setToken(token)
-      navigate('/')
+      navigate('/home')
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || err.message)
