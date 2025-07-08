@@ -1,11 +1,31 @@
 # React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a small demo web app built with **Vite** and **React** using **TypeScript**. Tailwind CSS is used for styling and a few [shadcn/ui](https://ui.shadcn.com/) components are included.
 
-Currently, two official plugins are available:
+The application contains three simple routes implemented with React Router:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Home** – showcases shadcn/ui components such as Button, Alert and Accordion.
+- **Blogs** – displays a list of sample blog posts.
+- **About** – a short description of the project.
+
+The code is located in the `src/` folder. UI primitives live in `src/components/ui` and each route is in `src/pages`.
+
+## Scripts
+
+Run the following commands with npm:
+
+| Command           | Description                                      |
+| ----------------- | ------------------------------------------------ |
+| `npm run dev`     | Start a development server with hot reload.      |
+| `npm run build`   | Create a production build in the `dist/` folder. |
+| `npm run preview` | Preview the production build locally.            |
+| `npm run deploy`  | Publish the contents of `dist/` to GitHub Pages. |
+| `npm run lint`    | Lint the project with ESLint.                    |
+| `npm run format`  | Format source files with Prettier.               |
+
+## Deployment
+
+A workflow located at `.github/workflows/deploy.yml` builds the project and pushes it to the `gh-pages` branch. The site will be available at [`https://leledumbo549.github.io/webappx`](https://leledumbo549.github.io/webappx).
 
 ## Expanding the ESLint configuration
 
