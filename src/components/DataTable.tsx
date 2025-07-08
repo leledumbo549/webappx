@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from './ui/select'
 import { Skeleton } from './ui/skeleton'
+import { cn } from '@/lib/utils'
 import {
   ArrowDown,
   ArrowUp,
@@ -121,11 +122,12 @@ export function DataTable<TData, TValue>({
                 {headerGroup.headers.map((header) => {
                   const canSort = header.column.getCanSort()
                   const sorted = header.column.getIsSorted()
+                  const meta = header.column.columnDef.meta as { widthClass?: string } | undefined
                   return (
                     <TableHead
                       key={header.id}
                       onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
-                      className={canSort ? 'cursor-pointer select-none' : ''}
+                      className={cn(canSort ? 'cursor-pointer select-none' : '', meta?.widthClass)}
                     >
                       <div className="flex items-center gap-1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
@@ -161,11 +163,17 @@ export function DataTable<TData, TValue>({
                   onClick={() => onRowClick?.(row)}
                   className={onRowClick ? 'cursor-pointer' : ''}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className={cell.column.id === 'actions' ? 'text-right' : ''}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const meta = cell.column.columnDef.meta as { widthClass?: string } | undefined
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={cn(cell.column.id === 'actions' ? 'text-right' : '', meta?.widthClass)}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    )
+                  })}
                 </TableRow>
               ))
             ) : (
@@ -191,7 +199,7 @@ export function DataTable<TData, TValue>({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {[5, 10, 20, 30].map((size) => (
+              {[5, 10, 50, 100].map((size) => (
                 <SelectItem key={size} value={String(size)}>
                   {size}
                 </SelectItem>
