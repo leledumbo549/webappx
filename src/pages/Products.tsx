@@ -146,7 +146,7 @@ function Products() {
     }
   }
 
-  const columns = getColumns({ onEdit: openEdit, onDelete: confirmDelete })
+  const columns = getColumns({ onDetail: openDetail, onEdit: openEdit, onDelete: confirmDelete })
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
@@ -161,7 +161,6 @@ function Products() {
         isLoading={loading}
         filterColumnId="category"
         filterOptions={categories}
-        onRowClick={(row) => openDetail(row.original)}
       />
       <Footer />
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
