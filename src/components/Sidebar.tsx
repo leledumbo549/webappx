@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { MenuIcon } from 'lucide-react'
 import { Button } from './ui/button'
 import {
@@ -8,25 +8,32 @@ import {
 } from './ui/sheet'
 
 function Sidebar() {
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    localStorage.clear()
+    navigate('/', { replace: true })
+  }
+
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
-          className="ml-auto"
+          className="ml-auto md:hidden portrait:inline-flex"
           aria-label="Open menu"
         >
           <MenuIcon className="size-5" />
         </Button>
       </SheetTrigger>
       <SheetContent
-        side="left"
+        side="right"
         className="w-64 bg-sidebar text-sidebar-foreground"
       >
-        <div className="p-6">
+        <div className="p-6 flex flex-col h-full">
           <h2 className="text-xl font-bold mb-6">Menu</h2>
-          <nav className="flex flex-col gap-3">
+          <nav className="flex flex-col gap-3 flex-1">
             <Link
               to="/home"
               className="rounded-md px-3 py-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
@@ -46,6 +53,13 @@ function Sidebar() {
               Blogs
             </Link>
           </nav>
+          <Button
+            variant="destructive"
+            onClick={handleLogout}
+            className="mt-auto"
+          >
+            Logout
+          </Button>
         </div>
       </SheetContent>
     </Sheet>

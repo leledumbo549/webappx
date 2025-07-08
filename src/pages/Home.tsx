@@ -9,19 +9,12 @@ import {
 } from '../components/ui/accordion'
 
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 function Home() {
   const [version, setVersion] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const navigate = useNavigate()
-
-  const handleLogout = () => {
-    localStorage.clear()
-    navigate('/', { replace: true })
-  }
 
   const fetchVersion = async () => {
     setLoading(true)
@@ -43,10 +36,6 @@ function Home() {
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-8">
       <h1 className="text-3xl font-bold mb-6">shadcn/ui Components Showcase</h1>
-      <Button variant="destructive" onClick={handleLogout}>
-        Logout
-      </Button>
-
       {/* Button Showcase */}
       <section>
         <h2 className="text-xl font-semibold mb-2">Button</h2>
