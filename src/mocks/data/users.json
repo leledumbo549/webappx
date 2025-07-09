@@ -1,5 +1,5 @@
 [
-  { "id": 1, "name": "Alice Buyer", "username": "buyer", "password": "buyer", "role": "buyer" },
-  { "id": 2, "name": "Sam Seller", "username": "seller", "password": "seller", "role": "seller" },
-  { "id": 3, "name": "Admin", "username": "admin", "password": "admin", "role": "admin" }
+  { "id": 1, "name": "Alice Buyer", "username": "buyer", "password": "buyer", "role": "buyer", "status":"active" },
+  { "id": 2, "name": "Sam Seller", "username": "seller", "password": "seller", "role": "seller", "status":"active" },
+  { "id": 3, "name": "Admin", "username": "admin", "password": "admin", "role": "admin", "status":"active" }
 ]
