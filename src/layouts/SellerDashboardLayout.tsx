@@ -6,10 +6,10 @@ function SellerDashboardLayout() {
     { to: '/seller', label: 'Dashboard' },
   ]
   return (
-    <div className="flex min-h-screen">
-      <aside className="border-r p-4">
+    <div className="flex flex-col min-h-screen">
+      <nav className="flex items-center justify-between border-b p-4">
         <Sidebar links={links} />
-      </aside>
+      </nav>
       <main className="flex-1 p-4">
         <Outlet />
       </main>

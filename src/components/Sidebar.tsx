@@ -28,7 +28,7 @@ function Sidebar({ links, onLogout }: SidebarProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="ml-auto md:hidden portrait:inline-flex"
+          className="ml-auto portrait:inline-flex"
           aria-label="Open menu"
         >
           <MenuIcon className="size-5" />

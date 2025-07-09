@@ -11,14 +11,20 @@ export interface User {
 
 interface AuthContextType {
   user: User | null
-  login: (username: string, password: string) => Promise<void>
+  login: (username: string, password: string) => Promise<User>
   logout: () => void
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  login: async (_u: string, _p: string) => {},
+  login: async (_u: string, _p: string) => {
+    return {
+      id: 0,
+      name: '',
+      role: 'buyer',
+    }
+  },
   logout: () => {},
 })
 
@@ -39,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('token', token)
     localStorage.setItem('user', JSON.stringify(user))
     setUser(user)
+    return user
   }
 
   const logout = () => {

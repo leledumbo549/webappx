@@ -6,7 +6,7 @@ function AdminDashboardLayout() {
     { to: '/admin', label: 'Dashboard' },
   ]
   return (
-    <div className="flex min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <aside className="border-r p-4">
         <Sidebar links={links} />
       </aside>

@@ -26,9 +26,11 @@ function Login() {
     e.preventDefault()
     setError(null)
     try {
-      await login(username, password)
+      const user = await login(username, password)
       setToken(localStorage.getItem('token'))
-      navigate('/buyer', { replace: true })
+      if (user && user.role === 'buyer') navigate('/buyer', { replace: true })
+      if (user && user.role === 'seller') navigate('/seller', { replace: true })
+      if (user && user.role === 'admin') navigate('/admin', { replace: true })
     } catch (err) {
       if (Axios.isAxiosError(err)) {
         setError(err.response?.data?.message || err.message)
