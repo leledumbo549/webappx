@@ -15,7 +15,10 @@ function Checkout() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     await axios.post('/api/orders', {
-      items: items.map((i) => ({ productId: i.product.id, quantity: i.quantity })),
+      items: items.map((i) => ({
+        productId: i.product.id,
+        quantity: i.quantity,
+      })),
       total,
       status: 'processing',
       createdAt: new Date().toISOString(),
@@ -30,15 +33,28 @@ function Checkout() {
     <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
       <div>
         <Label htmlFor="name">Name</Label>
-        <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+        <Input
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
       </div>
       <div>
         <Label htmlFor="address">Address</Label>
-        <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
+        <Input
+          id="address"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          required
+        />
       </div>
       <div className="font-semibold">
         Total:{' '}
-        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(total)}
+        {new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+        }).format(total)}
       </div>
       <Button type="submit">Place Order</Button>
     </form>

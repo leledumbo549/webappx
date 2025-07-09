@@ -2,7 +2,10 @@ import { rest } from 'msw'
 import cartData from '../data/cart.json'
 import ordersData from '../data/orders.json'
 
-interface CartItem { productId: number; quantity: number }
+interface CartItem {
+  productId: number
+  quantity: number
+}
 interface Order {
   id: number
   items: CartItem[]
@@ -12,7 +15,7 @@ interface Order {
 }
 
 let cart: CartItem[] = [...cartData]
-let orders: Order[] = [...ordersData]
+const orders: Order[] = [...ordersData]
 
 export const handlers = [
   rest.get('/api/cart', (_req, res, ctx) => {

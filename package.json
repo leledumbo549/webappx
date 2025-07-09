@@ -8,7 +8,7 @@
     "dev": "vite",
     "prebuild": "node flatten.js",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --fix",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",

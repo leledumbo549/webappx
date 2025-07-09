@@ -25,7 +25,7 @@ function BuyerLayout() {
     '/buyer/orders': 'Orders',
     '/buyer/profile': 'Profile',
   }
-  let title = titleMap[location.pathname] || 'Product'
+  const title = titleMap[location.pathname] || 'Product'
   const isDeep = location.pathname.split('/').length > 3
   return (
     <CartProvider>

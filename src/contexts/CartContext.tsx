@@ -17,11 +17,11 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType>({
   items: [],
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   add: () => {},
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   remove: () => {},
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   update: () => {},
   clear: () => {},
   total: 0,
@@ -42,9 +42,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const existing = prev.find((i) => i.product.id === product.id)
       if (existing) {
         return prev.map((i) =>
-          i.product.id === product.id
-            ? { ...i, quantity: i.quantity + qty }
-            : i
+          i.product.id === product.id ? { ...i, quantity: i.quantity + qty } : i
         )
       }
       return [...prev, { product, quantity: qty }]
