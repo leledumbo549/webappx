@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import ProductForm, { ProductFormValues } from '@/components/ProductForm'
+import ProductForm, { type ProductFormValues } from '@/components/ProductForm'
 import axios from '@/lib/axios'
 
 function AddProduct() {

@@ -5,8 +5,8 @@ import payoutsData from '../data/seller-payouts.json'
 import profileData from '../data/seller-profile.json'
 
 let products = [...productsData]
-let orders = [...ordersData]
-let payouts = [...payoutsData]
+const orders = [...ordersData]
+const payouts = [...payoutsData]
 let profile = { ...profileData }
 
 export const handlers = [

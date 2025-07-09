@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import ProductForm, { ProductFormValues } from '@/components/ProductForm'
+import ProductForm, { type ProductFormValues } from '@/components/ProductForm'
 import axios from '@/lib/axios'
 import type { SellerProduct } from '@/types/Seller'
 
