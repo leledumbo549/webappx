@@ -14,7 +14,6 @@ function SellerDashboardLayout() {
   ]
   const location = useLocation()
   const navigate = useNavigate()
-
   const titleMap: Record<string, string> = {
     '/seller/dashboard': 'Dashboard',
     '/seller/products': 'Products',
@@ -22,9 +21,8 @@ function SellerDashboardLayout() {
     '/seller/payouts': 'Payouts',
     '/seller/profile': 'Profile',
   }
-  const title = titleMap[location.pathname] || 'Product'
+  const title = titleMap[location.pathname] || 'Seller'
   const isDeep = location.pathname.split('/').length > 3
-
   return (
     <div className="flex flex-col min-h-screen">
       <nav className="border-b py-4">
