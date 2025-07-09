@@ -26,8 +26,16 @@ function ManageSellers() {
   }
 
   const columns: ColumnDef<AdminSeller>[] = [
-    { accessorKey: 'name', header: 'Name' },
-    { accessorKey: 'status', header: 'Status' },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      meta: { widthClass: 'w-40', cellClass: 'truncate' },
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      meta: { widthClass: 'hidden md:table-cell w-28', cellClass: 'truncate' },
+    },
     {
       id: 'actions',
       header: 'Actions',

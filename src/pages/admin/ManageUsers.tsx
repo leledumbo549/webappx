@@ -36,9 +36,21 @@ function ManageUsers() {
   }
 
   const columns: ColumnDef<AdminUser>[] = [
-    { accessorKey: 'name', header: 'Name' },
-    { accessorKey: 'role', header: 'Role' },
-    { accessorKey: 'status', header: 'Status' },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      meta: { widthClass: 'w-40', cellClass: 'truncate' },
+    },
+    {
+      accessorKey: 'role',
+      header: 'Role',
+      meta: { widthClass: 'hidden md:table-cell w-24', cellClass: 'truncate' },
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      meta: { widthClass: 'w-24', cellClass: 'truncate' },
+    },
     {
       id: 'actions',
       header: 'Actions',

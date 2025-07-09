@@ -26,8 +26,19 @@ function Reports() {
   }
 
   const columns: ColumnDef<AdminReport>[] = [
-    { accessorKey: 'message', header: 'Message', meta: { widthClass: 'w-64' } },
-    { accessorKey: 'status', header: 'Status' },
+    {
+      accessorKey: 'message',
+      header: 'Message',
+      meta: {
+        widthClass: 'w-64',
+        cellClass: 'whitespace-normal break-words',
+      },
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      meta: { widthClass: 'hidden md:table-cell w-24', cellClass: 'truncate' },
+    },
     {
       id: 'actions',
       header: 'Actions',

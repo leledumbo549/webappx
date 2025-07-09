@@ -28,8 +28,16 @@ function MyProducts() {
   }
 
   const columns: ColumnDef<SellerProduct>[] = [
-    { accessorKey: 'name', header: 'Name' },
-    { accessorKey: 'price', header: 'Price' },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      meta: { widthClass: 'w-40', cellClass: 'truncate' },
+    },
+    {
+      accessorKey: 'price',
+      header: 'Price',
+      meta: { widthClass: 'hidden md:table-cell w-32', cellClass: 'truncate' },
+    },
     {
       id: 'actions',
       header: 'Actions',

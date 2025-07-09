@@ -20,8 +20,16 @@ function Payouts() {
   }, [])
 
   const columns: ColumnDef<SellerPayout>[] = [
-    { accessorKey: 'date', header: 'Date' },
-    { accessorKey: 'amount', header: 'Amount' },
+    {
+      accessorKey: 'date',
+      header: 'Date',
+      meta: { widthClass: 'w-32', cellClass: 'truncate' },
+    },
+    {
+      accessorKey: 'amount',
+      header: 'Amount',
+      meta: { widthClass: 'w-32', cellClass: 'truncate' },
+    },
   ]
 
   return <DataTable columns={columns} data={data} isLoading={loading} />

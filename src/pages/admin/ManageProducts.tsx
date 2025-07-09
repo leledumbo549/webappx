@@ -26,9 +26,21 @@ function ManageProducts() {
   }
 
   const columns: ColumnDef<AdminProduct>[] = [
-    { accessorKey: 'name', header: 'Name' },
-    { accessorKey: 'price', header: 'Price' },
-    { accessorKey: 'status', header: 'Status' },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      meta: { widthClass: 'w-40', cellClass: 'truncate' },
+    },
+    {
+      accessorKey: 'price',
+      header: 'Price',
+      meta: { widthClass: 'hidden md:table-cell w-24', cellClass: 'truncate' },
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      meta: { widthClass: 'w-24', cellClass: 'truncate' },
+    },
     {
       id: 'actions',
       header: 'Actions',
