@@ -1,4 +1,5 @@
 import Sidebar from '@/components/Sidebar'
+import Container from '@/components/Container'
 import { Outlet } from 'react-router-dom'
 
 function AdminDashboardLayout() {
@@ -12,11 +13,15 @@ function AdminDashboardLayout() {
   ]
   return (
     <div className="flex flex-col min-h-screen">
-      <aside className="border-r p-4">
-        <Sidebar links={links} />
+      <aside className="border-r py-4">
+        <Container className="flex justify-between">
+          <Sidebar links={links} />
+        </Container>
       </aside>
-      <main className="flex-1 p-4">
-        <Outlet />
+      <main className="flex-1 py-4">
+        <Container>
+          <Outlet />
+        </Container>
       </main>
     </div>
   )

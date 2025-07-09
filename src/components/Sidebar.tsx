@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { MenuIcon } from 'lucide-react'
 import { Button } from './ui/button'
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from './ui/sheet'
@@ -12,6 +12,7 @@ type SidebarProps = {
 
 function Sidebar({ links, onLogout }: SidebarProps) {
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleLogout = () => {
     if (onLogout) {
@@ -28,7 +29,7 @@ function Sidebar({ links, onLogout }: SidebarProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="ml-auto portrait:inline-flex"
+          className="ml-auto portrait:inline-flex focus-visible:ring"
           aria-label="Open menu"
         >
           <MenuIcon className="size-5" />
@@ -41,22 +42,25 @@ function Sidebar({ links, onLogout }: SidebarProps) {
         <div className="p-6 flex flex-col h-full">
           <h2 className="text-xl font-bold mb-6">Menu</h2>
           <nav className="flex flex-col gap-3 flex-1">
-            {links.map((l) => (
-              <SheetClose asChild key={l.to}>
-                <Link
-                  to={l.to}
-                  className="rounded-md px-3 py-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-                >
-                  {l.label}
-                </Link>
-              </SheetClose>
-            ))}
+            {links.map((l) => {
+              const active = location.pathname.startsWith(l.to)
+              return (
+                <SheetClose asChild key={l.to}>
+                  <Link
+                    to={l.to}
+                    className={`rounded px-4 py-2 hover:bg-gray-100 focus-visible:ring transition-colors ${active ? 'bg-gray-200 font-semibold' : ''}`}
+                  >
+                    {l.label}
+                  </Link>
+                </SheetClose>
+              )
+            })}
           </nav>
           <SheetClose asChild>
             <Button
               variant="destructive"
               onClick={handleLogout}
-              className="mt-auto"
+              className="mt-auto focus-visible:ring"
             >
               Logout
             </Button>

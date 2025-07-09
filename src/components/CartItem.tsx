@@ -1,4 +1,5 @@
 import { Button } from './ui/button'
+import { Input } from './ui/input'
 import type { Product } from '@/types/Product'
 
 interface Props {
@@ -20,19 +21,19 @@ function CartItem({ product, quantity, onRemove, onChange }: Props) {
           }).format(product.price)}
         </div>
       </div>
-      <input
+      <Input
         type="number"
         min={1}
         value={quantity}
         onChange={(e) => onChange?.(Number(e.target.value))}
-        className="w-16 border rounded px-1 py-0.5"
+        className="w-16 px-1 py-0.5 shadow-sm rounded"
       />
       {onRemove && (
         <Button
           variant="destructive"
           size="sm"
           onClick={onRemove}
-          className="ml-2"
+          className="ml-2 focus-visible:ring"
         >
           Remove
         </Button>
