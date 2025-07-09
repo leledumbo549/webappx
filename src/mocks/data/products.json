@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "Sample Product A",
+    "description": "First sample product",
+    "price": 10000,
+    "category": "Demo",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Sample Product B",
+    "description": "Second sample product",
+    "price": 20000,
+    "category": "Demo",
+    "createdAt": "2025-01-02T00:00:00.000Z"
+  }
+]

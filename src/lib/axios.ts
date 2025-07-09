@@ -9,7 +9,7 @@ instance.interceptors.response.use(
       const status = error.response?.status
       if (status === 401 || status === 403) {
         localStorage.clear()
-        window.location.hash = '/login'
+        window.location.hash = '/auth/login'
       }
     }
     return Promise.reject(error)

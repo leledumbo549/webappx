@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from '../lib/axios'
 import * as Axios from 'axios'
+import { useAuth } from '@/contexts/AuthContext'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'
@@ -20,16 +20,15 @@ function Login() {
   const [error, setError] = useState<string | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     try {
-      const res = await axios.post('/api/login', { username, password })
-      const { token } = res.data as { token: string }
-      localStorage.setItem('token', token)
-      setToken(token)
-      navigate('/home', { replace: true })
+      await login(username, password)
+      setToken(localStorage.getItem('token'))
+      navigate('/buyer', { replace: true })
     } catch (err) {
       if (Axios.isAxiosError(err)) {
         setError(err.response?.data?.message || err.message)
