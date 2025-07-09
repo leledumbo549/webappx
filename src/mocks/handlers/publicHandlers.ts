@@ -1,7 +1,7 @@
 import { rest } from 'msw'
-import productsData from './data/products.json'
-import users from './data/users.json'
-import type { Product } from '../types/Product'
+import productsData from '../data/products.json'
+import users from '../data/users.json'
+import type { Product } from '../../types/Product'
 
 let products: Product[] = [...productsData]
 
@@ -16,7 +16,10 @@ export const handlers = [
     }
     return res(
       ctx.status(200),
-      ctx.json({ token: `token-${user.id}`, user: { id: user.id, name: user.name, role: user.role } })
+      ctx.json({
+        token: `token-${user.id}`,
+        user: { id: user.id, name: user.name, role: user.role },
+      })
     )
   }),
   rest.get('/api/users/me', (req, res, ctx) => {
@@ -26,7 +29,10 @@ export const handlers = [
     const id = Number(token.split('token-')[1])
     const user = users.find((u) => u.id === id)
     if (!user) return res(ctx.status(401))
-    return res(ctx.status(200), ctx.json({ id: user.id, name: user.name, role: user.role }))
+    return res(
+      ctx.status(200),
+      ctx.json({ id: user.id, name: user.name, role: user.role })
+    )
   }),
   rest.get('/api/products', (_, res, ctx) => {
     return res(ctx.status(200), ctx.json(products))

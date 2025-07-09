@@ -2,9 +2,7 @@ import Sidebar from '@/components/Sidebar'
 import { Outlet } from 'react-router-dom'
 
 function AdminDashboardLayout() {
-  const links = [
-    { to: '/admin', label: 'Dashboard' },
-  ]
+  const links = [{ to: '/admin', label: 'Dashboard' }]
   return (
     <div className="flex flex-col min-h-screen">
       <aside className="border-r p-4">

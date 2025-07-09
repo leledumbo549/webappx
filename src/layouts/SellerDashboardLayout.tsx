@@ -2,9 +2,7 @@ import Sidebar from '@/components/Sidebar'
 import { Outlet } from 'react-router-dom'
 
 function SellerDashboardLayout() {
-  const links = [
-    { to: '/seller', label: 'Dashboard' },
-  ]
+  const links = [{ to: '/seller', label: 'Dashboard' }]
   return (
     <div className="flex flex-col min-h-screen">
       <nav className="flex items-center justify-between border-b p-4">
