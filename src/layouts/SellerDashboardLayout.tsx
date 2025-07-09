@@ -1,5 +1,6 @@
 import Sidebar from '@/components/Sidebar'
 import Container from '@/components/Container'
+import Navbar from '@/components/Navbar'
 import { Outlet } from 'react-router-dom'
 
 function SellerDashboardLayout() {
@@ -19,6 +20,7 @@ function SellerDashboardLayout() {
       </nav>
       <main className="flex-1 py-4">
         <Container>
+          <Navbar />
           <Outlet />
         </Container>
       </main>

@@ -26,10 +26,26 @@ function OrdersReceived() {
   }
 
   const columns: ColumnDef<SellerOrder>[] = [
-    { accessorKey: 'productName', header: 'Product' },
-    { accessorKey: 'quantity', header: 'Qty' },
-    { accessorKey: 'total', header: 'Total' },
-    { accessorKey: 'status', header: 'Status' },
+    {
+      accessorKey: 'productName',
+      header: 'Product',
+      meta: { widthClass: 'w-40', cellClass: 'truncate' },
+    },
+    {
+      accessorKey: 'quantity',
+      header: 'Qty',
+      meta: { widthClass: 'hidden md:table-cell w-20', cellClass: 'truncate' },
+    },
+    {
+      accessorKey: 'total',
+      header: 'Total',
+      meta: { widthClass: 'hidden md:table-cell w-24', cellClass: 'truncate' },
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      meta: { widthClass: 'w-28', cellClass: 'truncate' },
+    },
     {
       id: 'actions',
       header: 'Actions',
