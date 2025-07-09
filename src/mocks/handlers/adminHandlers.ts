@@ -4,19 +4,37 @@ import productsData from '../data/products.json'
 
 // Types
 type Role = 'buyer' | 'seller' | 'admin'
-interface User { id: number; name: string; role: Role; status: 'active' | 'banned' }
-interface Seller { id: number; name: string; status: 'pending' | 'active' | 'inactive' }
-interface Product { id: number; name: string; price: number; status: 'pending' | 'active' | 'flagged' }
-interface Report { id: number; message: string; status: 'open' | 'closed' }
+interface User {
+  id: number
+  name: string
+  role: Role
+  status: 'active' | 'banned'
+}
+interface Seller {
+  id: number
+  name: string
+  status: 'pending' | 'active' | 'inactive'
+}
+interface Product {
+  id: number
+  name: string
+  price: number
+  status: 'pending' | 'active' | 'flagged'
+}
+interface Report {
+  id: number
+  message: string
+  status: 'open' | 'closed'
+}
 
-let users: User[] = usersData.map((u) => ({
+const users: User[] = usersData.map((u) => ({
   id: u.id,
   name: u.name,
   role: u.role as Role,
   status: 'active',
 }))
 
-let sellers: Seller[] = [
+const sellers: Seller[] = [
   { id: 1, name: 'Sam Seller', status: 'active' },
   { id: 2, name: 'Jane Doe', status: 'pending' },
 ]
@@ -28,7 +46,7 @@ let products: Product[] = productsData.map((p) => ({
   status: 'pending',
 }))
 
-let reports: Report[] = [{ id: 1, message: 'Spam listing', status: 'open' }]
+const reports: Report[] = [{ id: 1, message: 'Spam listing', status: 'open' }]
 
 let settings = { fees: 5, payoutDelay: 7 }
 
@@ -69,7 +87,8 @@ export const handlers = [
     if (!seller) return res(ctx.status(404))
     const { action } = await req.json()
     if (action === 'approve' || action === 'activate') seller.status = 'active'
-    if (action === 'reject' || action === 'deactivate') seller.status = 'inactive'
+    if (action === 'reject' || action === 'deactivate')
+      seller.status = 'inactive'
     return res(ctx.status(200), ctx.json(seller))
   }),
 

@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "My Item 1",
+    "price": 10000,
+    "description": "First item",
+    "imageUrl": "https://via.placeholder.com/150"
+  },
+  {
+    "id": 2,
+    "name": "My Item 2",
+    "price": 20000,
+    "description": "Second item",
+    "imageUrl": "https://via.placeholder.com/150"
+  }
+]
