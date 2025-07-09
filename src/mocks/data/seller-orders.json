@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "productId": 1,
+    "productName": "My Item 1",
+    "quantity": 2,
+    "total": 20000,
+    "status": "pending"
+  },
+  {
+    "id": 2,
+    "productId": 2,
+    "productName": "My Item 2",
+    "quantity": 1,
+    "total": 20000,
+    "status": "shipped"
+  }
+]
