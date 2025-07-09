@@ -8,7 +8,7 @@ import { ArrowLeft } from 'lucide-react'
 
 function BuyerLayout() {
   const links = [
-    { to: '/buyer', label: 'Home' },
+    { to: '/buyer/home', label: 'Home' },
     { to: '/buyer/catalog', label: 'Catalog' },
     { to: '/buyer/cart', label: 'Cart' },
     { to: '/buyer/orders', label: 'Orders' },
@@ -18,7 +18,7 @@ function BuyerLayout() {
   const navigate = useNavigate()
 
   const titleMap: Record<string, string> = {
-    '/buyer': 'Home',
+    '/buyer/home': 'Home',
     '/buyer/catalog': 'Catalog',
     '/buyer/cart': 'Cart',
     '/buyer/checkout': 'Checkout',

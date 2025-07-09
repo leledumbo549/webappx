@@ -1,6 +1,7 @@
 import { lazy } from 'react'
 import BuyerLayout from '../layouts/BuyerLayout'
 import PrivateRoute from '../components/PrivateRoute'
+import { Navigate } from 'react-router-dom'
 
 const Home = lazy(() => import('../pages/buyer/Home'))
 const Catalog = lazy(() => import('../pages/buyer/Catalog'))
@@ -17,7 +18,8 @@ const buyerRoutes = {
       path: '/buyer',
       element: <BuyerLayout />,
       children: [
-        { index: true, element: <Home /> },
+        { index: true, element: <Navigate to="home" replace /> },
+        { path: 'home', element: <Home /> },
         { path: 'catalog', element: <Catalog /> },
         { path: 'product/:id', element: <ProductDetail /> },
         { path: 'cart', element: <Cart /> },

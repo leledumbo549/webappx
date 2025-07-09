@@ -1,7 +1,8 @@
 import Sidebar from '@/components/Sidebar'
 import Container from '@/components/Container'
-import Navbar from '@/components/Navbar'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { ArrowLeft } from 'lucide-react'
 
 function AdminDashboardLayout() {
   const links = [
@@ -12,16 +13,41 @@ function AdminDashboardLayout() {
     { to: '/admin/reports', label: 'Reports' },
     { to: '/admin/settings', label: 'Settings' },
   ]
+  const location = useLocation()
+  const navigate = useNavigate()
+  const titleMap: Record<string, string> = {
+    '/admin/dashboard': 'Dashboard',
+    '/admin/users': 'Users',
+    '/admin/sellers': 'Sellers',
+    '/admin/products': 'Products',
+    '/admin/reports': 'Reports',
+    '/admin/settings': 'Settings',
+  }
+  const title = titleMap[location.pathname] || 'Admin'
+  const isDeep = location.pathname.split('/').length > 3
   return (
     <div className="flex flex-col min-h-screen">
-      <aside className="border-r py-4">
-        <Container className="flex justify-between">
+      <nav className="border-b py-4">
+        <Container className="flex items-center justify-between">
+          {isDeep ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+              aria-label="Go back"
+              className="focus-visible:ring"
+            >
+              <ArrowLeft className="size-5" />
+            </Button>
+          ) : (
+            <span className="w-9" />
+          )}
+          <span className="flex-1 text-center font-semibold">{title}</span>
           <Sidebar links={links} />
         </Container>
-      </aside>
+      </nav>
       <main className="flex-1 py-4">
         <Container>
-          <Navbar />
           <Outlet />
         </Container>
       </main>
