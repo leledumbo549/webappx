@@ -1,10 +1,12 @@
 import Footer from '../components/Footer'
+import Container from '../components/Container'
+import SectionTitle from '../components/SectionTitle'
 
 function About() {
   return (
     <div className="flex min-h-screen items-start justify-center p-4">
-      <div className="w-full max-w-3xl">
-        <h2 className="text-2xl font-bold mb-4">About Us</h2>
+      <Container className="w-full max-w-3xl">
+        <SectionTitle>About Us</SectionTitle>
         <p className="mb-4 text-gray-700">
           Welcome to our web application! We are passionate developers dedicated
           to building modern, user-friendly, and efficient web experiences. Our
@@ -34,7 +36,7 @@ function About() {
           .
         </p>
         <Footer />
-      </div>
+      </Container>
     </div>
   )
 }

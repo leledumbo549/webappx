@@ -1,4 +1,6 @@
 import Footer from '../components/Footer'
+import Container from '../components/Container'
+import SectionTitle from '../components/SectionTitle'
 
 function Blogs() {
   const blogs = [
@@ -55,8 +57,8 @@ function Blogs() {
   ]
   return (
     <div className="flex min-h-screen items-start justify-center p-4">
-      <div className="w-full max-w-3xl">
-        <h2 className="text-2xl font-bold mb-4">Blogs</h2>
+      <Container className="w-full max-w-3xl">
+        <SectionTitle>Blogs</SectionTitle>
         {blogs.map((blog, idx) => (
           <div key={idx} className="bg-white rounded shadow p-4 border">
             <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>
@@ -67,7 +69,7 @@ function Blogs() {
           </div>
         ))}
         <Footer />
-      </div>
+      </Container>
     </div>
   )
 }
