@@ -87,3 +87,7 @@ export default tseslint.config([
   },
 ])
 ```
+
+## Mock API with MSW
+
+This project uses [Mock Service Worker](https://mswjs.io/) for local API mocking. Handlers are defined in `src/mocks/handlers.ts`. You can add new endpoints there to support features such as the cart, seller orders or admin approvals. Start the dev server normally with `npm run dev` and MSW will intercept requests.

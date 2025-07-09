@@ -1,101 +1,11 @@
-import {
-  HashRouter as Router,
-  Routes,
-  Route,
-  Link,
-  useLocation,
-} from 'react-router-dom'
-
-import Home from './pages/Home'
-import Loading from './pages/Loading'
-import About from './pages/About'
-import Blogs from './pages/Blogs'
-import Products from './pages/Products'
-import Login from './pages/Login'
-import Sidebar from './components/Sidebar'
-import Title from './components/Title'
-
-function AppRoutes() {
-  const handleLogout = () => {
-    localStorage.clear()
-    window.location.hash = '/'
-  }
-  const location = useLocation()
-  const hideNavbar = location.pathname === '/login' || location.pathname === '/'
-
-  return (
-    <div className="flex flex-col h-screen">
-      {!hideNavbar && (
-        <nav className="fixed top-0 left-0 right-0 z-10 bg-white border-b shadow flex items-center px-4 h-16">
-          {/* Navbar title */}
-          <Title />
-          <div className="flex-1" />
-          <Sidebar onLogout={handleLogout} />
-          {/* Navbar menu: visible only in landscape */}
-          <div className="flex items-center gap-4 hidden md:flex portrait:hidden">
-            <Link
-              to="/home"
-              replace
-              className="font-semibold text-lg hover:text-blue-600 transition-colors"
-            >
-              Home
-            </Link>
-            <Link
-              to="/about"
-              replace
-              className="font-semibold text-lg hover:text-blue-600 transition-colors"
-            >
-              About
-            </Link>
-            <Link
-              to="/blogs"
-              replace
-              className="font-semibold text-lg hover:text-blue-600 transition-colors"
-            >
-              Blogs
-            </Link>
-            <Link
-              to="/products"
-              replace
-              className="font-semibold text-lg hover:text-blue-600 transition-colors"
-            >
-              Products
-            </Link>
-            <button
-              type="button"
-              className="font-semibold text-lg hover:text-red-600 transition-colors"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-          </div>
-        </nav>
-      )}
-      <main
-        className={
-          hideNavbar
-            ? 'flex-1 overflow-auto bg-gray-50'
-            : 'flex-1 overflow-auto pt-16 bg-gray-50'
-        }
-      >
-        <Routes>
-          <Route path="/" element={<Loading />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/blogs" element={<Blogs />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-      </main>
-    </div>
-  )
-}
+import AppRoutes from './AppRoutes'
+import { AuthProvider } from './contexts/AuthContext'
 
 function App() {
   return (
-    <Router>
+    <AuthProvider>
       <AppRoutes />
-    </Router>
+    </AuthProvider>
   )
 }
 

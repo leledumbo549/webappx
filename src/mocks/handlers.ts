@@ -1,260 +1,32 @@
 import { rest } from 'msw'
+import productsData from './data/products.json'
+import users from './data/users.json'
 import type { Product } from '../types/Product'
 
-let products: Product[] = [
-  {
-    id: 1,
-    name: 'Nasi Goreng',
-    description: 'Nasi goreng spesial dengan ayam dan telur',
-    price: 25000,
-    category: 'Makanan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 2,
-    name: 'Kopi Luwak',
-    description: 'Kopi premium asli Indonesia',
-    price: 75000,
-    category: 'Minuman',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 3,
-    name: 'Sate Ayam',
-    description: 'Sate ayam bumbu kacang lezat',
-    price: 20000,
-    category: 'Makanan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 4,
-    name: 'Teh Botol',
-    description: 'Minuman teh manis dalam botol',
-    price: 5000,
-    category: 'Minuman',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 5,
-    name: 'Keripik Pisang',
-    description: 'Camilan keripik pisang renyah',
-    price: 10000,
-    category: 'Camilan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 6,
-    name: 'Bakso Malang',
-    description: 'Bakso daging sapi dengan kuah gurih',
-    price: 18000,
-    category: 'Makanan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 7,
-    name: 'Es Cendol',
-    description: 'Minuman tradisional dengan santan dan gula merah',
-    price: 12000,
-    category: 'Minuman',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 8,
-    name: 'Mi Aceh',
-    description: 'Mi pedas khas Aceh dengan irisan daging sapi',
-    price: 30000,
-    category: 'Makanan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 9,
-    name: 'Rendang Padang',
-    description: 'Rendang sapi bumbu khas Padang',
-    price: 45000,
-    category: 'Makanan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 10,
-    name: 'Gudeg Jogja',
-    description: 'Nangka muda dimasak manis khas Yogyakarta',
-    price: 35000,
-    category: 'Makanan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 11,
-    name: 'Laptop Lokal',
-    description: 'Laptop buatan produsen lokal dengan spesifikasi mumpuni',
-    price: 5500000,
-    category: 'Elektronik',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 12,
-    name: 'Kaos Batik',
-    description: 'Kaos dengan motif batik modern',
-    price: 80000,
-    category: 'Fashion',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 13,
-    name: 'Sneakers Lokal',
-    description: 'Sepatu sneakers produksi lokal',
-    price: 350000,
-    category: 'Fashion',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 14,
-    name: 'Tas Rotan',
-    description: 'Tas anyaman rotan khas Bali',
-    price: 150000,
-    category: 'Fashion',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 15,
-    name: 'Kamera Aksi',
-    description: 'Kamera aksi tahan air untuk petualangan',
-    price: 900000,
-    category: 'Elektronik',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 16,
-    name: 'Minyak Telon',
-    description: 'Minyak telon hangat untuk bayi',
-    price: 25000,
-    category: 'Kesehatan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 17,
-    name: 'Balsem Gosok',
-    description: 'Balsem gosok untuk meredakan pegal',
-    price: 18000,
-    category: 'Kesehatan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 18,
-    name: 'Jas Hujan',
-    description: 'Jas hujan model ponco tahan air',
-    price: 50000,
-    category: 'Olahraga',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 19,
-    name: 'Raket Badminton',
-    description: 'Raket ringan untuk bermain badminton',
-    price: 220000,
-    category: 'Olahraga',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 20,
-    name: 'Matras Yoga',
-    description: 'Matras yoga anti slip',
-    price: 150000,
-    category: 'Olahraga',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 21,
-    name: 'Makeup Remover',
-    description: 'Pembersih makeup yang lembut di kulit',
-    price: 60000,
-    category: 'Kecantikan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 22,
-    name: 'Lipstik Merah',
-    description: 'Lipstik warna merah klasik tahan lama',
-    price: 75000,
-    category: 'Kecantikan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 23,
-    name: 'Serum Wajah',
-    description: 'Serum wajah untuk kulit glowing',
-    price: 120000,
-    category: 'Kecantikan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 24,
-    name: 'Sambal Roa',
-    description: 'Sambal khas Manado pedas gurih',
-    price: 35000,
-    category: 'Makanan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 25,
-    name: 'Kerupuk Udang',
-    description: 'Kerupuk udang renyah ukuran besar',
-    price: 20000,
-    category: 'Camilan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 26,
-    name: 'Baju Koko',
-    description: 'Baju koko pria lengan panjang',
-    price: 180000,
-    category: 'Fashion',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 27,
-    name: 'Tablet Lokal',
-    description: 'Tablet Android untuk belajar online',
-    price: 2500000,
-    category: 'Elektronik',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 28,
-    name: 'Kopi Tubruk',
-    description: 'Kopi hitam khas Indonesia',
-    price: 15000,
-    category: 'Minuman',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 29,
-    name: 'Dodol Garut',
-    description: 'Camilan manis khas Garut',
-    price: 25000,
-    category: 'Camilan',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 30,
-    name: 'Batik Tulis',
-    description: 'Kain batik tulis motif klasik',
-    price: 650000,
-    category: 'Fashion',
-    createdAt: new Date().toISOString(),
-  },
-]
+let products: Product[] = [...productsData]
 
 export const handlers = [
-  rest.post('/api/login', async (req, res, ctx) => {
+  rest.post('/api/auth/login', async (req, res, ctx) => {
     const { username, password } = await req.json()
-    // Example: accept any username/password, return a fake token
-    if (username && password) {
-      return res(ctx.status(200), ctx.json({ token: 'my-secret-token' }))
+    const user = users.find(
+      (u) => u.username === username && u.password === password
+    )
+    if (!user) {
+      return res(ctx.status(401), ctx.json({ message: 'Invalid credentials' }))
     }
-    return res(ctx.status(400), ctx.json({ message: 'access denied' }))
+    return res(
+      ctx.status(200),
+      ctx.json({ token: `token-${user.id}`, user: { id: user.id, name: user.name, role: user.role } })
+    )
   }),
-  rest.get('/api/version', (_, res, ctx) => {
-    return res(ctx.status(200), ctx.json({ value: 1 }))
+  rest.get('/api/users/me', (req, res, ctx) => {
+    const auth = req.headers.get('authorization')
+    if (!auth) return res(ctx.status(401))
+    const token = auth.replace('Bearer ', '')
+    const id = Number(token.split('token-')[1])
+    const user = users.find((u) => u.id === id)
+    if (!user) return res(ctx.status(401))
+    return res(ctx.status(200), ctx.json({ id: user.id, name: user.name, role: user.role }))
   }),
   rest.get('/api/products', (_, res, ctx) => {
     return res(ctx.status(200), ctx.json(products))

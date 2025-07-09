@@ -3,11 +3,14 @@ import { MenuIcon } from 'lucide-react'
 import { Button } from './ui/button'
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from './ui/sheet'
 
+export type SidebarLink = { to: string; label: string }
+
 type SidebarProps = {
+  links: SidebarLink[]
   onLogout?: () => void
 }
 
-function Sidebar({ onLogout }: SidebarProps) {
+function Sidebar({ links, onLogout }: SidebarProps) {
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -38,38 +41,16 @@ function Sidebar({ onLogout }: SidebarProps) {
         <div className="p-6 flex flex-col h-full">
           <h2 className="text-xl font-bold mb-6">Menu</h2>
           <nav className="flex flex-col gap-3 flex-1">
-            <SheetClose asChild>
-              <Link
-                to="/home"
-                className="rounded-md px-3 py-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-              >
-                Home
-              </Link>
-            </SheetClose>
-            <SheetClose asChild>
-              <Link
-                to="/about"
-                className="rounded-md px-3 py-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-              >
-                About
-              </Link>
-            </SheetClose>
-            <SheetClose asChild>
-              <Link
-                to="/blogs"
-                className="rounded-md px-3 py-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-              >
-                Blogs
-              </Link>
-            </SheetClose>
-            <SheetClose asChild>
-              <Link
-                to="/products"
-                className="rounded-md px-3 py-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-              >
-                Products
-              </Link>
-            </SheetClose>
+            {links.map((l) => (
+              <SheetClose asChild key={l.to}>
+                <Link
+                  to={l.to}
+                  className="rounded-md px-3 py-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+                >
+                  {l.label}
+                </Link>
+              </SheetClose>
+            ))}
           </nav>
           <SheetClose asChild>
             <Button
