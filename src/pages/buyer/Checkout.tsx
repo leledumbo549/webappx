@@ -1,63 +1,67 @@
 import { useState } from 'react'
-import { useCart } from '@/contexts/CartContext'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useAtomValue } from 'jotai'
+import { cartAtom } from '@/atoms/cartAtoms'
 import { Button } from '@/components/ui/button'
-import axios from '@/lib/axios'
-import { useNavigate } from 'react-router-dom'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 function Checkout() {
-  const { items, total, clear } = useCart()
-  const [name, setName] = useState('')
-  const [address, setAddress] = useState('')
-  const navigate = useNavigate()
+  const cart = useAtomValue(cartAtom)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    await axios.post('/api/orders', {
-      items: items.map((i) => ({
-        productId: i.product.id,
-        quantity: i.quantity,
-      })),
-      total,
-      status: 'processing',
-      createdAt: new Date().toISOString(),
-    })
-    clear()
-    navigate('/buyer/orders')
+  const total = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
+
+  const handleCheckout = async () => {
+    setLoading(true)
+    try {
+      setError('Checkout API not yet implemented')
+    } catch {
+      setError('Failed to create order')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  if (!items.length) return <div>Your cart is empty.</div>
+  if (!cart.length) {
+    return <div>Your cart is empty.</div>
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
-      <div>
-        <Label htmlFor="name">Name</Label>
-        <Input
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <Label htmlFor="address">Address</Label>
-        <Input
-          id="address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          required
-        />
-      </div>
-      <div className="font-semibold">
-        Total:{' '}
-        {new Intl.NumberFormat('id-ID', {
-          style: 'currency',
-          currency: 'IDR',
-        }).format(total)}
-      </div>
-      <Button type="submit">Place Order</Button>
-    </form>
+    <Card>
+      <CardHeader>
+        <CardTitle>Checkout</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {cart.map((item) => (
+            <div key={item.product.id} className="flex justify-between">
+              <span>{item.product.name}</span>
+              <span>
+                {new Intl.NumberFormat('id-ID', {
+                  style: 'currency',
+                  currency: 'IDR',
+                }).format(item.product.price * item.quantity)}
+              </span>
+            </div>
+          ))}
+          <div className="border-t pt-4">
+            <div className="flex justify-between font-bold">
+              <span>Total:</span>
+              <span>
+                {new Intl.NumberFormat('id-ID', {
+                  style: 'currency',
+                  currency: 'IDR',
+                }).format(total)}
+              </span>
+            </div>
+          </div>
+          {error && <div className="text-red-600">{error}</div>}
+          <Button onClick={handleCheckout} disabled={loading} className="w-full">
+            {loading ? 'Processing...' : 'Place Order'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 

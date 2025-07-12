@@ -1,23 +1,38 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAtom } from 'jotai'
+import { tokenAtom, userAtom } from '../atoms/loginAtoms'
 import Footer from '../components/Footer'
-import type { User } from '@/contexts/AuthContext'
 
 function Loading() {
   const navigate = useNavigate()
+  const [token] = useAtom(tokenAtom)
+  const [user] = useAtom(userAtom)
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const stored = localStorage.getItem('user')
-    if (token && stored) {
-      const user: User = JSON.parse(stored) as User
-      if (user.role === 'buyer') navigate('/buyer', { replace: true })
-      else if (user.role === 'seller') navigate('/seller', { replace: true })
-      else if (user.role === 'admin') navigate('/admin', { replace: true })
+    console.log('Loading component - token:', token, 'user:', user)
+    console.log('Current location:', window.location.href)
+
+    // Check if we have token and user from atoms
+    if (token && user) {
+      console.log('User authenticated, navigating to:', user.role)
+      if (user.role === 'buyer') {
+        console.log('Navigating to /home')
+        navigate('/home', { replace: true })
+      } else if (user.role === 'seller') {
+        console.log('Navigating to /seller')
+        navigate('/seller', { replace: true })
+      } else if (user.role === 'admin') {
+        console.log('Navigating to /admin')
+        navigate('/admin', { replace: true })
+      }
     } else {
-      navigate('/auth/login', { replace: true })
+      console.log('No authentication, redirecting to login')
+      console.log('Navigating to /login')
+      // No authentication, redirect to login
+      navigate('/login', { replace: true })
     }
-  }, [navigate])
+  }, [navigate, token, user])
 
   return (
     <div className="flex flex-col items-center justify-center h-screen space-y-4">

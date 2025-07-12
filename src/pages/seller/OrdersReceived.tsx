@@ -1,78 +1,78 @@
 import { useEffect, useState } from 'react'
-import axios from '@/lib/axios'
-import { DataTable } from '@/components/DataTable'
-import { Button } from '@/components/ui/button'
-import type { ColumnDef } from '@tanstack/react-table'
+// import axios from '@/lib/axios'
 import type { SellerOrder } from '@/types/Seller'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 function OrdersReceived() {
-  const [data, setData] = useState<SellerOrder[]>([])
+  const [orders, setOrders] = useState<SellerOrder[]>([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const fetchData = async () => {
     setLoading(true)
-    const res = await axios.get<SellerOrder[]>('/api/seller/orders')
-    setData(res.data)
-    setLoading(false)
+    try {
+      // TODO: This endpoint is not defined in OpenAPI spec yet
+      // const res = await axios.get<SellerOrder[]>('/api/seller/orders')
+      // setOrders(res.data)
+      
+      // Placeholder data until API is defined
+      setOrders([])
+      setError('Seller Orders API not yet implemented in OpenAPI spec')
+    } catch (err) {
+      console.error('Failed to load orders:', err)
+      setError('Failed to load orders')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleUpdateStatus = async (_order: SellerOrder, _action: string) => {
+    try {
+      // TODO: This endpoint is not defined in OpenAPI spec yet
+      // await axios.patch(`/api/seller/orders/${order.id}`, { action })
+      // await fetchData()
+      
+      setError('Update Order Status API not yet implemented in OpenAPI spec')
+    } catch (err) {
+      console.error('Failed to update order status:', err)
+      setError('Failed to update order status')
+    }
   }
 
   useEffect(() => {
     fetchData()
   }, [])
 
-  const updateStatus = async (o: SellerOrder, action: string) => {
-    await axios.patch(`/api/seller/orders/${o.id}`, { action })
-    fetchData()
-  }
+  if (loading) return <div>Loading...</div>
+  if (error) return <div className="text-red-600">{error}</div>
+  if (!orders.length) return <div>No orders yet.</div>
 
-  const columns: ColumnDef<SellerOrder>[] = [
-    {
-      accessorKey: 'productName',
-      header: 'Product',
-      meta: { widthClass: 'w-40', cellClass: 'truncate' },
-    },
-    {
-      accessorKey: 'quantity',
-      header: 'Qty',
-      meta: { widthClass: 'hidden md:table-cell w-20', cellClass: 'truncate' },
-    },
-    {
-      accessorKey: 'total',
-      header: 'Total',
-      meta: { widthClass: 'hidden md:table-cell w-24', cellClass: 'truncate' },
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
-      meta: { widthClass: 'w-28', cellClass: 'truncate' },
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => {
-        const o = row.original
-        if (o.status === 'pending') {
-          return (
-            <Button size="sm" onClick={() => updateStatus(o, 'ship')}>
-              Mark Shipped
-            </Button>
-          )
-        }
-        if (o.status === 'shipped') {
-          return (
-            <Button size="sm" onClick={() => updateStatus(o, 'deliver')}>
-              Mark Delivered
-            </Button>
-          )
-        }
-        return null
-      },
-      enableSorting: false,
-      meta: { widthClass: 'w-40' },
-    },
-  ]
-
-  return <DataTable columns={columns} data={data} isLoading={loading} />
+  return (
+    <div className="space-y-4">
+      {orders.map((order) => (
+        <Card key={order.id}>
+          <CardHeader>
+            <CardTitle>{order.productName}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div>Quantity: {order.quantity}</div>
+            <div>Total: {order.total}</div>
+            <div>Status: {order.status}</div>
+            <div className="flex gap-2 mt-2">
+              <Button onClick={() => handleUpdateStatus(order, 'ship')}>
+                Mark as Shipped
+              </Button>
+              <Button onClick={() => handleUpdateStatus(order, 'deliver')}>
+                Mark as Delivered
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
 }
 
 export default OrdersReceived

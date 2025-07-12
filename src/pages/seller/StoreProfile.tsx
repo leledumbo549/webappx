@@ -1,72 +1,96 @@
 import { useEffect, useState } from 'react'
-import axios from '@/lib/axios'
+// import axios from '@/lib/axios'
+import type { SellerProfile } from '@/types/Seller'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import type { SellerProfile } from '@/types/Seller'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 function StoreProfile() {
-  const [profile, setProfile] = useState<SellerProfile | null>(null)
+  // const [profile, setProfile] = useState<SellerProfile | null>(null)
+  const [profile] = useState<SellerProfile | null>(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const fetchProfile = async () => {
+  const fetchData = async () => {
     setLoading(true)
-    const res = await axios.get<SellerProfile>('/api/seller/profile')
-    setProfile(res.data)
-    setLoading(false)
+    try {
+      // TODO: This endpoint is not defined in OpenAPI spec yet
+      // const res = await axios.get<SellerProfile>('/api/seller/profile')
+      // setProfile(res.data)
+      
+      // Placeholder data until API is defined
+      setError('Seller Profile API not yet implemented in OpenAPI spec')
+    } catch (err) {
+      console.error('Failed to load profile:', err)
+      setError('Failed to load profile')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!profile) return
+
+    setLoading(true)
+    setError(null)
+    
+    // const formData = new FormData(e.currentTarget)
+    // const updatedProfile = {
+    //   name: formData.get('name') as string,
+    //   bio: formData.get('bio') as string,
+    //   contact: formData.get('contact') as string,
+    // }
+
+    try {
+      // TODO: This endpoint is not defined in OpenAPI spec yet
+      // const res = await axios.put<SellerProfile>('/api/seller/profile', updatedProfile)
+      // setProfile(res.data)
+      
+      setError('Update Profile API not yet implemented in OpenAPI spec')
+    } catch (err) {
+      console.error('Failed to update profile:', err)
+      setError('Failed to update profile')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
-    fetchProfile()
+    fetchData()
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!profile) return
-    const res = await axios.put<SellerProfile>('/api/seller/profile', profile)
-    setProfile(res.data)
-  }
-
-  if (!profile) return <div>Loading...</div>
+  if (loading) return <div>Loading...</div>
+  if (error) return <div className="text-red-600">{error}</div>
+  if (!profile) return <div>No profile data.</div>
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-sm">
-      <div>
-        <Label htmlFor="name">Store Name</Label>
-        <Input
-          id="name"
-          value={profile.name}
-          onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-        />
-      </div>
-      <div>
-        <Label htmlFor="logo">Logo URL</Label>
-        <Input
-          id="logo"
-          value={profile.logo}
-          onChange={(e) => setProfile({ ...profile, logo: e.target.value })}
-        />
-      </div>
-      <div>
-        <Label htmlFor="bio">Bio</Label>
-        <Input
-          id="bio"
-          value={profile.bio}
-          onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-        />
-      </div>
-      <div>
-        <Label htmlFor="contact">Contact</Label>
-        <Input
-          id="contact"
-          value={profile.contact}
-          onChange={(e) => setProfile({ ...profile, contact: e.target.value })}
-        />
-      </div>
-      <Button type="submit" disabled={loading}>
-        Save
-      </Button>
-    </form>
+    <Card>
+      <CardHeader>
+        <CardTitle>Store Profile</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="name">Store Name</Label>
+            <Input id="name" name="name" defaultValue={profile.name} required />
+          </div>
+          <div>
+            <Label htmlFor="bio">Bio</Label>
+            <Input id="bio" name="bio" defaultValue={profile.bio || ''} />
+          </div>
+          <div>
+            <Label htmlFor="contact">Contact</Label>
+            <Input id="contact" name="contact" defaultValue={profile.contact || ''} />
+          </div>
+          {error && <div className="text-red-600">{error}</div>}
+          <Button type="submit" disabled={loading}>
+            {loading ? 'Updating...' : 'Update Profile'}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   )
 }
 

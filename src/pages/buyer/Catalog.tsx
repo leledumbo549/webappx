@@ -1,24 +1,29 @@
 import { useEffect, useState } from 'react'
-import axios from '@/lib/axios'
 import * as Axios from 'axios'
 import type { Product } from '@/types/Product'
 import ProductCard from '@/components/ProductCard'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useCart } from '@/contexts/CartContext'
+import { useSetAtom } from 'jotai'
+import { addToCartAtom } from '@/atoms/cartAtoms'
 import { useNavigate } from 'react-router-dom'
 
 function Catalog() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const { add } = useCart()
+  const add = useSetAtom(addToCartAtom)
   const navigate = useNavigate()
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      const res = await axios.get<Product[]>('/api/products')
-      setProducts(res.data)
+      // TODO: This endpoint is not defined in OpenAPI spec
+      // const res = await axios.get<Product[]>('/api/products')
+      // setProducts(res.data)
+      
+      // Placeholder data until API is defined
+      setProducts([])
+      setError('Products API not yet implemented')
     } catch (err) {
       if (Axios.isAxiosError(err)) setError(err.message)
       else setError('Failed to load products')

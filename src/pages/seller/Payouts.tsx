@@ -1,38 +1,55 @@
 import { useEffect, useState } from 'react'
-import axios from '@/lib/axios'
-import { DataTable } from '@/components/DataTable'
-import type { ColumnDef } from '@tanstack/react-table'
+// import axios from '@/lib/axios'
 import type { SellerPayout } from '@/types/Seller'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 function Payouts() {
-  const [data, setData] = useState<SellerPayout[]>([])
+  const [payouts, setPayouts] = useState<SellerPayout[]>([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const fetchData = async () => {
     setLoading(true)
-    const res = await axios.get<SellerPayout[]>('/api/seller/payouts')
-    setData(res.data)
-    setLoading(false)
+    try {
+      // TODO: This endpoint is not defined in OpenAPI spec yet
+      // const res = await axios.get<SellerPayout[]>('/api/seller/payouts')
+      // setPayouts(res.data)
+      
+      // Placeholder data until API is defined
+      setPayouts([])
+      setError('Seller Payouts API not yet implemented in OpenAPI spec')
+    } catch (err) {
+      console.error('Failed to load payouts:', err)
+      setError('Failed to load payouts')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
     fetchData()
   }, [])
 
-  const columns: ColumnDef<SellerPayout>[] = [
-    {
-      accessorKey: 'date',
-      header: 'Date',
-      meta: { widthClass: 'w-32', cellClass: 'truncate' },
-    },
-    {
-      accessorKey: 'amount',
-      header: 'Amount',
-      meta: { widthClass: 'w-32', cellClass: 'truncate' },
-    },
-  ]
+  if (loading) return <div>Loading...</div>
+  if (error) return <div className="text-red-600">{error}</div>
+  if (!payouts.length) return <div>No payouts yet.</div>
 
-  return <DataTable columns={columns} data={data} isLoading={loading} />
+  return (
+    <div className="space-y-4">
+      {payouts.map((payout) => (
+        <Card key={payout.id}>
+          <CardHeader>
+            <CardTitle>Payout #{payout.id}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div>Amount: {payout.amount}</div>
+            <div>Date: {payout.date}</div>
+            <div>Status: {payout.status}</div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
 }
 
 export default Payouts

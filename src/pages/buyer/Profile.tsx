@@ -1,11 +1,12 @@
-import { useAuth } from '@/contexts/AuthContext'
+import { useAtom } from 'jotai'
+import { userAtom } from '@/atoms/loginAtoms'
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 
 function Profile() {
-  const { user } = useAuth()
+  const [user] = useAtom(userAtom)
   const [name, setName] = useState(user?.name || '')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

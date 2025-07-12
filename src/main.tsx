@@ -1,11 +1,11 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
-import { initDb } from './mocks/handlers/db.ts'
+import App from './App'
+import { initDrizzle } from '../server/db'
 
 async function enableMocking() {
-  await initDb()
+  await initDrizzle()
   const { worker } = await import('./mocks/browser')
   await worker.start({
     serviceWorker: { url: '/webappx/mockServiceWorker.js' },

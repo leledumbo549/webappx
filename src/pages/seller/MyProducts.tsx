@@ -1,77 +1,68 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from '@/lib/axios'
-import { DataTable } from '@/components/DataTable'
-import { Button } from '@/components/ui/button'
-import type { ColumnDef } from '@tanstack/react-table'
+// import axios from '@/lib/axios'
 import type { SellerProduct } from '@/types/Seller'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 function MyProducts() {
-  const [data, setData] = useState<SellerProduct[]>([])
+  const [products, setProducts] = useState<SellerProduct[]>([])
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const [error, setError] = useState<string | null>(null)
 
   const fetchData = async () => {
     setLoading(true)
-    const res = await axios.get<SellerProduct[]>('/api/seller/products')
-    setData(res.data)
-    setLoading(false)
+    try {
+      // TODO: This endpoint is not defined in OpenAPI spec
+      // const res = await axios.get<SellerProduct[]>('/api/seller/products')
+      // setProducts(res.data)
+      
+      // Placeholder data until API is defined
+      setProducts([])
+      setError('Seller Products API not yet implemented')
+    } catch {
+      setError('Failed to load products')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleDelete = async (_p: SellerProduct) => {
+    try {
+      // TODO: This endpoint is not defined in OpenAPI spec
+      // await axios.delete(`/api/seller/products/${p.id}`)
+      // await fetchData()
+      
+      setError('Delete Product API not yet implemented')
+    } catch {
+      setError('Failed to delete product')
+    }
   }
 
   useEffect(() => {
     fetchData()
   }, [])
 
-  const deleteProduct = async (p: SellerProduct) => {
-    await axios.delete(`/api/seller/products/${p.id}`)
-    fetchData()
-  }
-
-  const columns: ColumnDef<SellerProduct>[] = [
-    {
-      accessorKey: 'name',
-      header: 'Name',
-      meta: { widthClass: 'w-40', cellClass: 'truncate' },
-    },
-    {
-      accessorKey: 'price',
-      header: 'Price',
-      meta: { widthClass: 'hidden md:table-cell w-32', cellClass: 'truncate' },
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => {
-        const p = row.original
-        return (
-          <div className="flex gap-1 justify-end">
-            <Button
-              size="sm"
-              onClick={() => navigate(`/seller/products/${p.id}/edit`)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => deleteProduct(p)}
-            >
-              Delete
-            </Button>
-          </div>
-        )
-      },
-      enableSorting: false,
-      meta: { widthClass: 'w-40' },
-    },
-  ]
+  if (loading) return <div>Loading...</div>
+  if (error) return <div className="text-red-600">{error}</div>
+  if (!products.length) return <div>No products yet.</div>
 
   return (
     <div className="space-y-4">
-      <Button onClick={() => navigate('/seller/products/new')}>
-        Add Product
-      </Button>
-      <DataTable columns={columns} data={data} isLoading={loading} />
+      {products.map((product) => (
+        <Card key={product.id}>
+          <CardHeader>
+            <CardTitle>{product.name}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div>Price: {product.price}</div>
+            <div>Status: {product.status}</div>
+            <Button onClick={() => handleDelete(product)} variant="destructive">
+              Delete
+            </Button>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   )
 }

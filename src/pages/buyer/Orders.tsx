@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import axios from '@/lib/axios'
 import * as Axios from 'axios'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -18,8 +17,13 @@ function Orders() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const res = await axios.get<Order[]>('/api/orders')
-      setOrders(res.data)
+      // TODO: This endpoint is not defined in OpenAPI spec
+      // const res = await axios.get<Order[]>('/api/orders')
+      // setOrders(res.data)
+      
+      // Placeholder data until API is defined
+      setOrders([])
+      setError('Orders API not yet implemented')
     } catch (err) {
       if (Axios.isAxiosError(err)) setError(err.message)
       else setError('Failed to load orders')

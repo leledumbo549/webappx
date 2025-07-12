@@ -1,4 +1,5 @@
-import { useCart } from '@/contexts/CartContext'
+import { useAtom, useSetAtom } from 'jotai'
+import { cartAtom, removeFromCartAtom, updateCartQuantityAtom, cartTotalAtom } from '@/atoms/cartAtoms'
 import CartItem from '@/components/CartItem'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
@@ -6,7 +7,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useEffect, useState } from 'react'
 
 function Cart() {
-  const { items, remove, update, total } = useCart()
+  const [items] = useAtom(cartAtom)
+  const total = useAtom(cartTotalAtom)[0]
+  const remove = useSetAtom(removeFromCartAtom)
+  const update = useSetAtom(updateCartQuantityAtom)
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
 
@@ -26,7 +30,7 @@ function Cart() {
           product={item.product}
           quantity={item.quantity}
           onRemove={() => remove(item.product.id)}
-          onChange={(q) => update(item.product.id, q)}
+          onChange={(q) => update({ productId: item.product.id, quantity: q })}
         />
       ))}
       <div className="font-semibold">

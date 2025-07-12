@@ -1,8 +1,9 @@
-import { useAuth } from '@/contexts/AuthContext'
+import { useAtom } from 'jotai'
+import { userAtom } from '@/atoms/loginAtoms'
 import SectionTitle from '@/components/SectionTitle'
 
 function BuyerHome() {
-  const { user } = useAuth()
+  const [user] = useAtom(userAtom)
   return (
     <div className="space-y-4">
       <SectionTitle>Welcome, {user?.name}</SectionTitle>
