@@ -22,6 +22,20 @@ import {
   createSellerProduct,
   updateSellerProduct,
   deleteSellerProduct,
+  // Add buyer controllers
+  getBuyerCart,
+  addToCart,
+  updateCartItem,
+  removeFromCart,
+  getBuyerProducts,
+  getBuyerProduct,
+  getBuyerOrders,
+  getBuyerOrder,
+  // Add seller profile controllers
+  getSellerProfile,
+  updateSellerProfile,
+  getSellerOrders,
+  getSellerPayouts,
 } from './controllers';
 
 // === HANDLERS ===
@@ -562,6 +576,289 @@ export const handlers = [
       
     } catch (error) {
       console.error('Delete seller product error:', error);
+      if (error instanceof Error && error.message === 'Access denied') {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // === BUYER ENDPOINTS ===
+  
+  // GET /api/buyer/cart - Get buyer's cart
+  rest.get('/api/buyer/cart', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const cart = await getBuyerCart(token);
+      
+      return res(ctx.status(200), ctx.json(cart));
+      
+    } catch (error) {
+      console.error('Get cart error:', error);
+      if (error instanceof Error && error.message === 'Access denied') {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // POST /api/buyer/cart - Add item to cart
+  rest.post('/api/buyer/cart', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const body = await req.json();
+      
+      await addToCart(token, body);
+      
+      return res(ctx.status(201));
+      
+    } catch (error) {
+      console.error('Add to cart error:', error);
+      if (error instanceof Error && error.message === 'Access denied') {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      if (error instanceof Error && error.message === 'Product not found') {
+        return res(ctx.status(400), ctx.json(createErrorResponse('Product not found')));
+      }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // PATCH /api/buyer/cart/{productId} - Update cart item quantity
+  rest.patch('/api/buyer/cart/:productId', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const productId = Number(req.params.productId);
+      const body = await req.json();
+      const { quantity } = body;
+      
+      if (typeof quantity !== 'number') {
+        return res(ctx.status(400), ctx.json(createErrorResponse('Quantity is required')));
+      }
+      
+      await updateCartItem(token, productId, quantity);
+      
+      return res(ctx.status(200));
+      
+    } catch (error) {
+      console.error('Update cart item error:', error);
+      if (error instanceof Error && error.message === 'Access denied') {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // DELETE /api/buyer/cart/{productId} - Remove item from cart
+  rest.delete('/api/buyer/cart/:productId', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const productId = Number(req.params.productId);
+      
+      await removeFromCart(token, productId);
+      
+      return res(ctx.status(204));
+      
+    } catch (error) {
+      console.error('Remove from cart error:', error);
+      if (error instanceof Error && error.message === 'Access denied') {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/buyer/products - Get all products for buyers
+  rest.get('/api/buyer/products', async (_req, res, ctx) => {
+    try {
+      const products = await getBuyerProducts();
+      return res(ctx.status(200), ctx.json(products));
+    } catch (error) {
+      console.error('Get buyer products error:', error);
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/buyer/products/{id} - Get product details for buyers
+  rest.get('/api/buyer/products/:id', async (req, res, ctx) => {
+    try {
+      const id = Number(req.params.id);
+      const product = await getBuyerProduct(id);
+      
+      if (!product) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Product not found')));
+      }
+      
+      return res(ctx.status(200), ctx.json(product));
+      
+    } catch (error) {
+      console.error('Get buyer product error:', error);
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/buyer/orders - Get buyer's orders
+  rest.get('/api/buyer/orders', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const orders = await getBuyerOrders(token);
+      
+      return res(ctx.status(200), ctx.json(orders));
+      
+    } catch (error) {
+      console.error('Get buyer orders error:', error);
+      if (error instanceof Error && error.message === 'Access denied') {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/buyer/orders/{id} - Get buyer's order details
+  rest.get('/api/buyer/orders/:id', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const orderId = Number(req.params.id);
+      const order = await getBuyerOrder(token, orderId);
+      
+      if (!order) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Order not found')));
+      }
+      
+      return res(ctx.status(200), ctx.json(order));
+      
+    } catch (error) {
+      console.error('Get buyer order error:', error);
+      if (error instanceof Error && error.message === 'Access denied') {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // === SELLER PROFILE ENDPOINTS ===
+  
+  // GET /api/seller/profile - Get seller profile
+  rest.get('/api/seller/profile', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const profile = await getSellerProfile(token);
+      
+      if (!profile) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Seller profile not found')));
+      }
+      
+      return res(ctx.status(200), ctx.json(profile));
+      
+    } catch (error) {
+      console.error('Get seller profile error:', error);
+      if (error instanceof Error && error.message === 'Access denied') {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // PUT /api/seller/profile - Update seller profile
+  rest.put('/api/seller/profile', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const body = await req.json();
+      
+      const profile = await updateSellerProfile(token, body);
+      
+      if (!profile) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Seller profile not found')));
+      }
+      
+      return res(ctx.status(200), ctx.json(profile));
+      
+    } catch (error) {
+      console.error('Update seller profile error:', error);
+      if (error instanceof Error && error.message === 'Access denied') {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/seller/orders - Get seller orders
+  rest.get('/api/seller/orders', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const orders = await getSellerOrders(token);
+      
+      return res(ctx.status(200), ctx.json(orders));
+      
+    } catch (error) {
+      console.error('Get seller orders error:', error);
+      if (error instanceof Error && error.message === 'Access denied') {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/seller/payouts - Get seller payouts
+  rest.get('/api/seller/payouts', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const payouts = await getSellerPayouts(token);
+      
+      return res(ctx.status(200), ctx.json(payouts));
+      
+    } catch (error) {
+      console.error('Get seller payouts error:', error);
       if (error instanceof Error && error.message === 'Access denied') {
         return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
       }

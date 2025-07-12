@@ -6,22 +6,21 @@ info:
   contact:
     name: API Support
     email: support@webappx.com
-
 servers:
-  - url: http://localhost:5173/webappx
-    description: Development server
-  - url: https://api.webappx.com
-    description: Production server
-
+- url: http://localhost:5173/webappx
+  description: Development server
+- url: https://api.webappx.com
+  description: Production server
 paths:
-  # === AUTHENTICATION ===
   /api/login:
     post:
       summary: Authenticate user
-      description: Authenticate a user with username and password, returning a token and user information. This endpoint is publicly accessible and does not require authorization.
+      description: Authenticate a user with username and password, returning a token
+        and user information. This endpoint is publicly accessible and does not require
+        authorization.
       tags:
-        - Authentication
-      security: []  # No security required - public endpoint
+      - Authentication
+      security: []
       requestBody:
         required: true
         content:
@@ -32,18 +31,18 @@ paths:
               admin_user:
                 summary: Admin user login
                 value:
-                  username: "alice"
-                  password: "alice"
+                  username: alice
+                  password: alice
               buyer_user:
                 summary: Buyer user login
                 value:
-                  username: "bob"
-                  password: "bob"
+                  username: bob
+                  password: bob
               seller_user:
                 summary: Seller user login
                 value:
-                  username: "carol"
-                  password: "carol"
+                  username: carol
+                  password: carol
       responses:
         '200':
           description: Login successful
@@ -57,15 +56,15 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
   /api/me:
     get:
       summary: Get current user profile
-      description: Retrieve the current user's profile information using the authentication token
+      description: Retrieve the current user's profile information using the authentication
+        token
       tags:
-        - Authentication
+      - Authentication
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
         '200':
           description: User profile retrieved successfully
@@ -77,15 +76,13 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
-  # === SETTINGS ===
   /api/settings:
     get:
       summary: Get application settings
       description: Retrieve all application settings
       tags:
-        - Settings
-      security: []  # Public endpoint
+      - Settings
+      security: []
       responses:
         '200':
           description: Settings retrieved successfully
@@ -97,16 +94,14 @@ paths:
                   $ref: '#/components/schemas/Setting'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
-  # === ADMIN DASHBOARD ===
   /api/admin/dashboard:
     get:
       summary: Get admin dashboard statistics
       description: Retrieve dashboard statistics for admin users
       tags:
-        - Admin
+      - Admin
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
         '200':
           description: Dashboard statistics retrieved successfully
@@ -120,16 +115,14 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
-  # === ADMIN USERS ===
   /api/admin/users:
     get:
       summary: Get all users
       description: Retrieve all users (admin only)
       tags:
-        - Admin
+      - Admin
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
         '200':
           description: Users retrieved successfully
@@ -145,22 +138,21 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
   /api/admin/users/{id}:
     patch:
       summary: Update user status
       description: Update user status (ban/unban) - admin only
       tags:
-        - Admin
+      - Admin
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: User ID
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: User ID
       requestBody:
         required: true
         content:
@@ -168,14 +160,15 @@ paths:
             schema:
               type: object
               required:
-                - action
+              - action
               properties:
                 action:
                   type: string
-                  enum: ["toggleBan"]
+                  enum:
+                  - toggleBan
                   description: Action to perform on the user
             example:
-              action: "toggleBan"
+              action: toggleBan
       responses:
         '200':
           description: User updated successfully
@@ -191,16 +184,14 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
-  # === ADMIN SELLERS ===
   /api/admin/sellers:
     get:
       summary: Get all sellers
       description: Retrieve all sellers (admin only)
       tags:
-        - Admin
+      - Admin
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
         '200':
           description: Sellers retrieved successfully
@@ -216,22 +207,21 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
   /api/admin/sellers/{id}:
     patch:
       summary: Update seller status
       description: Approve, reject, activate, or deactivate a seller - admin only
       tags:
-        - Admin
+      - Admin
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: Seller ID
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Seller ID
       requestBody:
         required: true
         content:
@@ -239,21 +229,25 @@ paths:
             schema:
               type: object
               required:
-                - action
+              - action
               properties:
                 action:
                   type: string
-                  enum: ["approve", "reject", "activate", "deactivate"]
+                  enum:
+                  - approve
+                  - reject
+                  - activate
+                  - deactivate
                   description: Action to perform on the seller
             examples:
               approve:
                 summary: Approve seller
                 value:
-                  action: "approve"
+                  action: approve
               reject:
                 summary: Reject seller
                 value:
-                  action: "reject"
+                  action: reject
       responses:
         '200':
           description: Seller updated successfully
@@ -269,16 +263,14 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
-  # === ADMIN PRODUCTS ===
   /api/admin/products:
     get:
       summary: Get all products
       description: Retrieve all products (admin only)
       tags:
-        - Admin
+      - Admin
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
         '200':
           description: Products retrieved successfully
@@ -294,22 +286,21 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
   /api/admin/products/{id}:
     patch:
       summary: Update product status
       description: Approve, reject, flag, or remove a product - admin only
       tags:
-        - Admin
+      - Admin
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: Product ID
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Product ID
       requestBody:
         required: true
         content:
@@ -317,21 +308,25 @@ paths:
             schema:
               type: object
               required:
-                - action
+              - action
               properties:
                 action:
                   type: string
-                  enum: ["approve", "reject", "flag", "remove"]
+                  enum:
+                  - approve
+                  - reject
+                  - flag
+                  - remove
                   description: Action to perform on the product
             examples:
               approve:
                 summary: Approve product
                 value:
-                  action: "approve"
+                  action: approve
               remove:
                 summary: Remove product
                 value:
-                  action: "remove"
+                  action: remove
       responses:
         '200':
           description: Product updated successfully
@@ -347,16 +342,14 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
-  # === ADMIN REPORTS ===
   /api/admin/reports:
     get:
       summary: Get all reports
       description: Retrieve all reports (admin only)
       tags:
-        - Admin
+      - Admin
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
         '200':
           description: Reports retrieved successfully
@@ -372,22 +365,21 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
   /api/admin/reports/{id}:
     patch:
       summary: Resolve report
       description: Mark a report as resolved - admin only
       tags:
-        - Admin
+      - Admin
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: Report ID
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Report ID
       requestBody:
         required: true
         content:
@@ -395,14 +387,15 @@ paths:
             schema:
               type: object
               required:
-                - action
+              - action
               properties:
                 action:
                   type: string
-                  enum: ["resolve"]
+                  enum:
+                  - resolve
                   description: Action to perform on the report
             example:
-              action: "resolve"
+              action: resolve
       responses:
         '200':
           description: Report resolved successfully
@@ -418,16 +411,14 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
-  # === ADMIN SETTINGS ===
   /api/admin/settings:
     get:
       summary: Get admin settings
       description: Retrieve admin settings (admin only)
       tags:
-        - Admin
+      - Admin
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
         '200':
           description: Settings retrieved successfully
@@ -438,23 +429,22 @@ paths:
                 additionalProperties:
                   type: string
                 example:
-                  siteName: "MyMarketplace"
-                  currency: "USD"
-                  payoutDelayDays: "7"
+                  siteName: MyMarketplace
+                  currency: USD
+                  payoutDelayDays: '7'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
     put:
       summary: Update admin settings
       description: Update admin settings (admin only)
       tags:
-        - Admin
+      - Admin
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -464,9 +454,9 @@ paths:
               additionalProperties:
                 type: string
             example:
-              siteName: "MyMarketplace"
-              currency: "USD"
-              payoutDelayDays: "7"
+              siteName: MyMarketplace
+              currency: USD
+              payoutDelayDays: '7'
       responses:
         '200':
           description: Settings updated successfully
@@ -482,18 +472,16 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
-  # === SELLER PRODUCTS ===
-  # Note: Seller products are the same as regular products, but with seller-specific access controls.
-  # Only the seller who created the product can view, update, or delete their own products.
   /api/seller/products:
     get:
       summary: Get seller's products
-      description: Retrieve all products created by the authenticated seller. Products are the same as regular products but filtered to only show those belonging to the authenticated user with role 'seller'.
+      description: Retrieve all products created by the authenticated seller. Products
+        are the same as regular products but filtered to only show those belonging
+        to the authenticated user with role 'seller'.
       tags:
-        - Seller
+      - Seller
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
         '200':
           description: Seller's products retrieved successfully
@@ -509,14 +497,15 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
     post:
       summary: Create a new product
-      description: Create a new product for the authenticated seller. Products created here are the same as regular products but are automatically associated with the authenticated seller. Only users with role 'seller' can create products.
+      description: Create a new product for the authenticated seller. Products created
+        here are the same as regular products but are automatically associated with
+        the authenticated seller. Only users with role 'seller' can create products.
       tags:
-        - Seller
+      - Seller
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -524,13 +513,13 @@ paths:
             schema:
               type: object
               required:
-                - name
-                - price
+              - name
+              - price
               properties:
                 name:
                   type: string
                   description: Product name
-                  example: "Wireless Headphones"
+                  example: Wireless Headphones
                   minLength: 1
                   maxLength: 100
                 price:
@@ -542,18 +531,18 @@ paths:
                 description:
                   type: string
                   description: Product description
-                  example: "High-quality wireless headphones with noise cancellation"
+                  example: High-quality wireless headphones with noise cancellation
                   maxLength: 500
                 imageUrl:
                   type: string
                   description: URL to product image
-                  example: "https://example.com/headphones.jpg"
+                  example: https://example.com/headphones.jpg
                   format: uri
             example:
-              name: "Wireless Headphones"
+              name: Wireless Headphones
               price: 79.99
-              description: "High-quality wireless headphones with noise cancellation"
-              imageUrl: "https://example.com/headphones.jpg"
+              description: High-quality wireless headphones with noise cancellation
+              imageUrl: https://example.com/headphones.jpg
       responses:
         '201':
           description: Product created successfully
@@ -569,22 +558,23 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
   /api/seller/products/{id}:
     get:
       summary: Get seller's product details
-      description: Retrieve details of a specific product created by the authenticated seller. Products are the same as regular products but filtered to only show those belonging to the authenticated user with role 'seller'.
+      description: Retrieve details of a specific product created by the authenticated
+        seller. Products are the same as regular products but filtered to only show
+        those belonging to the authenticated user with role 'seller'.
       tags:
-        - Seller
+      - Seller
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: Product ID
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Product ID
       responses:
         '200':
           description: Product details retrieved successfully
@@ -600,21 +590,22 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
     put:
       summary: Update seller's product
-      description: Update a product created by the authenticated seller. Products are the same as regular products but only the seller who created the product can update it.
+      description: Update a product created by the authenticated seller. Products
+        are the same as regular products but only the seller who created the product
+        can update it.
       tags:
-        - Seller
+      - Seller
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: Product ID
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Product ID
       requestBody:
         required: true
         content:
@@ -625,7 +616,7 @@ paths:
                 name:
                   type: string
                   description: Product name
-                  example: "Wireless Headphones"
+                  example: Wireless Headphones
                   minLength: 1
                   maxLength: 100
                 price:
@@ -637,18 +628,18 @@ paths:
                 description:
                   type: string
                   description: Product description
-                  example: "High-quality wireless headphones with noise cancellation"
+                  example: High-quality wireless headphones with noise cancellation
                   maxLength: 500
                 imageUrl:
                   type: string
                   description: URL to product image
-                  example: "https://example.com/headphones.jpg"
+                  example: https://example.com/headphones.jpg
                   format: uri
             example:
-              name: "Wireless Headphones"
+              name: Wireless Headphones
               price: 79.99
-              description: "High-quality wireless headphones with noise cancellation"
-              imageUrl: "https://example.com/headphones.jpg"
+              description: High-quality wireless headphones with noise cancellation
+              imageUrl: https://example.com/headphones.jpg
       responses:
         '200':
           description: Product updated successfully
@@ -666,21 +657,22 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
     delete:
       summary: Delete seller's product
-      description: Delete a product created by the authenticated seller. Products are the same as regular products but only the seller who created the product can delete it.
+      description: Delete a product created by the authenticated seller. Products
+        are the same as regular products but only the seller who created the product
+        can delete it.
       tags:
-        - Seller
+      - Seller
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: Product ID
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Product ID
       responses:
         '204':
           description: Product deleted successfully
@@ -692,48 +684,147 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-
+  /api/buyer/cart:
+    get:
+      summary: Get buyer's cart
+      description: Retrieve all items currently in the buyer's cart.
+      tags:
+      - Buyer
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Cart retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Add item to cart
+      description: Add a product to the buyer's cart.
+      tags:
+      - Buyer
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItem'
+      responses:
+        '201':
+          description: Item added to cart successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/buyer/cart/{productId}:
+    patch:
+      summary: Update item quantity
+      description: Update the quantity of a specific product in the buyer's cart.
+      tags:
+      - Buyer
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID of the product in the cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - quantity
+              properties:
+                quantity:
+                  type: integer
+                  description: New quantity for the product
+      responses:
+        '200':
+          description: Cart item updated successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Remove item from cart
+      description: Remove a product from the buyer's cart.
+      tags:
+      - Buyer
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID of the product in the cart
+      responses:
+        '204':
+          description: Cart item removed successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
-    # === AUTHENTICATION ===
     LoginRequest:
       type: object
       required:
-        - username
-        - password
+      - username
+      - password
       properties:
         username:
           type: string
           description: User's username
-          example: "alice"
+          example: alice
           minLength: 1
           maxLength: 50
         password:
           type: string
           description: User's password
-          example: "alice"
+          example: alice
           minLength: 1
           maxLength: 100
-
     LoginResponse:
       type: object
       required:
-        - token
-        - user
+      - token
+      - user
       properties:
         token:
           type: string
           description: JWT token for authentication
-          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         user:
           $ref: '#/components/schemas/PublicUser'
-
-    # === USER MODELS ===
     User:
       type: object
       required:
-        - id
-        - username
+      - id
+      - username
       properties:
         id:
           type: integer
@@ -742,40 +833,43 @@ components:
         name:
           type: string
           description: User's full name
-          example: "Alice Johnson"
+          example: Alice Johnson
         username:
           type: string
           description: User's username
-          example: "alice"
+          example: alice
         password:
           type: string
           description: User's password (only in internal operations)
-          example: "hashed_password"
+          example: hashed_password
         role:
           type: string
           description: User's role in the system
-          enum: ["admin", "buyer", "seller"]
-          example: "admin"
+          enum:
+          - admin
+          - buyer
+          - seller
+          example: admin
         status:
           type: string
           description: User's account status
-          enum: ["active", "banned", "inactive"]
-          example: "active"
-
+          enum:
+          - active
+          - banned
+          - inactive
+          example: active
     PublicUser:
       allOf:
-        - $ref: '#/components/schemas/User'
-        - type: object
-          not:
-            required:
-              - password
-
-    # === SELLER MODELS ===
+      - $ref: '#/components/schemas/User'
+      - type: object
+        not:
+          required:
+          - password
     Seller:
       type: object
       required:
-        - id
-        - name
+      - id
+      - name
       properties:
         id:
           type: integer
@@ -784,32 +878,33 @@ components:
         name:
           type: string
           description: Seller's business name
-          example: "Acme Co."
+          example: Acme Co.
         logo:
           type: string
           description: URL to seller's logo
-          example: "https://example.com/logo.png"
+          example: https://example.com/logo.png
         bio:
           type: string
           description: Seller's business description
-          example: "Premium electronics retailer"
+          example: Premium electronics retailer
         contact:
           type: string
           description: Seller's contact information
-          example: "contact@acme.com"
+          example: contact@acme.com
         status:
           type: string
           description: Seller's account status
-          enum: ["active", "inactive", "pending"]
-          example: "active"
-
-    # === PRODUCT MODELS ===
+          enum:
+          - active
+          - inactive
+          - pending
+          example: active
     Product:
       type: object
       required:
-        - id
-        - name
-        - price
+      - id
+      - name
+      - price
       properties:
         id:
           type: integer
@@ -818,7 +913,7 @@ components:
         name:
           type: string
           description: Product name
-          example: "Wireless Headphones"
+          example: Wireless Headphones
         price:
           type: number
           format: float
@@ -827,11 +922,11 @@ components:
         description:
           type: string
           description: Product description
-          example: "High-quality wireless headphones with noise cancellation"
+          example: High-quality wireless headphones with noise cancellation
         imageUrl:
           type: string
           description: URL to product image
-          example: "https://example.com/headphones.jpg"
+          example: https://example.com/headphones.jpg
         sellerId:
           type: integer
           description: ID of the seller who owns this product
@@ -839,18 +934,20 @@ components:
         status:
           type: string
           description: Product status
-          enum: ["active", "inactive", "pending", "flagged"]
-          example: "active"
-
-    # === ORDER MODELS ===
+          enum:
+          - active
+          - inactive
+          - pending
+          - flagged
+          example: active
     SellerOrder:
       type: object
       required:
-        - id
-        - productId
-        - productName
-        - quantity
-        - total
+      - id
+      - productId
+      - productName
+      - quantity
+      - total
       properties:
         id:
           type: integer
@@ -863,7 +960,7 @@ components:
         productName:
           type: string
           description: Name of the ordered product
-          example: "Wireless Headphones"
+          example: Wireless Headphones
         quantity:
           type: integer
           description: Quantity ordered
@@ -876,8 +973,11 @@ components:
         status:
           type: string
           description: Order status
-          enum: ["pending", "shipped", "delivered"]
-          example: "pending"
+          enum:
+          - pending
+          - shipped
+          - delivered
+          example: pending
         sellerId:
           type: integer
           description: ID of the seller
@@ -886,14 +986,13 @@ components:
           type: string
           format: date-time
           description: Order creation timestamp
-          example: "2024-01-15T10:30:00Z"
-
+          example: '2024-01-15T10:30:00Z'
     SellerPayout:
       type: object
       required:
-        - id
-        - amount
-        - date
+      - id
+      - amount
+      - date
       properties:
         id:
           type: integer
@@ -903,12 +1002,12 @@ components:
           type: number
           format: float
           description: Payout amount
-          example: 500.00
+          example: 500.0
         date:
           type: string
           format: date
           description: Payout date
-          example: "2024-01-15"
+          example: '2024-01-15'
         sellerId:
           type: integer
           description: ID of the seller
@@ -916,14 +1015,15 @@ components:
         status:
           type: string
           description: Payout status
-          enum: ["pending", "completed", "failed"]
-          example: "pending"
-
-    # === REPORT MODELS ===
+          enum:
+          - pending
+          - completed
+          - failed
+          example: pending
     Report:
       type: object
       required:
-        - id
+      - id
       properties:
         id:
           type: integer
@@ -932,36 +1032,35 @@ components:
         message:
           type: string
           description: Report message
-          example: "Spam product listing"
+          example: Spam product listing
         status:
           type: string
           description: Report status
-          enum: ["open", "closed", "resolved"]
-          example: "open"
-
-    # === SETTING MODELS ===
+          enum:
+          - open
+          - closed
+          - resolved
+          example: open
     Setting:
       type: object
       required:
-        - key
+      - key
       properties:
         key:
           type: string
           description: Setting key
-          example: "siteName"
+          example: siteName
         value:
           type: string
           description: Setting value
-          example: "MyMarketplace"
-
-    # === DASHBOARD MODELS ===
+          example: MyMarketplace
     DashboardStats:
       type: object
       required:
-        - totalUsers
-        - totalSellers
-        - totalSales
-        - openReports
+      - totalUsers
+      - totalSellers
+      - totalSales
+      - openReports
       properties:
         totalUsers:
           type: integer
@@ -975,18 +1074,16 @@ components:
           type: number
           format: float
           description: Total sales amount
-          example: 15000.00
+          example: 15000.0
         openReports:
           type: integer
           description: Number of open reports
           example: 5
-
-    # === CART MODELS ===
     CartItem:
       type: object
       required:
-        - productId
-        - quantity
+      - productId
+      - quantity
       properties:
         productId:
           type: integer
@@ -996,15 +1093,14 @@ components:
           type: integer
           description: Quantity of the product
           example: 2
-
     Order:
       type: object
       required:
-        - id
-        - items
-        - total
-        - status
-        - createdAt
+      - id
+      - items
+      - total
+      - status
+      - createdAt
       properties:
         id:
           type: integer
@@ -1022,15 +1118,17 @@ components:
         status:
           type: string
           description: Order status
-          enum: ["pending", "processing", "shipped", "delivered"]
-          example: "pending"
+          enum:
+          - pending
+          - processing
+          - shipped
+          - delivered
+          example: pending
         createdAt:
           type: string
           format: date-time
           description: Order creation timestamp
-          example: "2024-01-15T10:30:00Z"
-
-  # === RESPONSES ===
+          example: '2024-01-15T10:30:00Z'
   responses:
     BadRequest:
       description: Bad request - invalid input
@@ -1042,12 +1140,11 @@ components:
             missing_credentials:
               summary: Missing credentials
               value:
-                MESSAGE: "Username and password are required"
+                MESSAGE: Username and password are required
             invalid_format:
               summary: Invalid format
               value:
-                MESSAGE: "Invalid username or password format"
-
+                MESSAGE: Invalid username or password format
     Unauthorized:
       description: Unauthorized - invalid or missing authentication
       content:
@@ -1058,12 +1155,11 @@ components:
             invalid_credentials:
               summary: Invalid credentials
               value:
-                MESSAGE: "Invalid username or password"
+                MESSAGE: Invalid username or password
             invalid_token:
               summary: Invalid token
               value:
-                MESSAGE: "Invalid authentication token"
-
+                MESSAGE: Invalid authentication token
     Forbidden:
       description: Forbidden - insufficient permissions
       content:
@@ -1074,8 +1170,7 @@ components:
             access_denied:
               summary: Access denied
               value:
-                MESSAGE: "Access denied"
-
+                MESSAGE: Access denied
     NotFound:
       description: Resource not found
       content:
@@ -1086,12 +1181,11 @@ components:
             user_not_found:
               summary: User not found
               value:
-                MESSAGE: "User not found"
+                MESSAGE: User not found
             product_not_found:
               summary: Product not found
               value:
-                MESSAGE: "Product not found"
-
+                MESSAGE: Product not found
     InternalServerError:
       description: Internal server error
       content:
@@ -1102,36 +1196,34 @@ components:
             server_error:
               summary: Server error
               value:
-                MESSAGE: "Internal server error"
+                MESSAGE: Internal server error
             database_error:
               summary: Database error
               value:
-                MESSAGE: "Database connection failed"
-
+                MESSAGE: Database connection failed
     ErrorResponse:
       type: object
       required:
-        - MESSAGE
+      - MESSAGE
       properties:
         MESSAGE:
           type: string
           description: Error message
-          example: "Invalid username or password"
-
-  # === SECURITY ===
+          example: Invalid username or password
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
       description: JWT token obtained from login endpoint
-
 tags:
-  - name: Authentication
-    description: User authentication operations
-  - name: Settings
-    description: Application settings management
-  - name: Admin
-    description: Administrative operations (admin only)
-  - name: Seller
-    description: Seller operations (seller only) 
+- name: Authentication
+  description: User authentication operations
+- name: Settings
+  description: Application settings management
+- name: Admin
+  description: Administrative operations (admin only)
+- name: Seller
+  description: Seller operations (seller only)
+- name: Buyer
+  description: Buyer operations (buyer only)
