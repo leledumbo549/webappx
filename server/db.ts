@@ -21,10 +21,9 @@ export async function initDrizzle() {
 for (const statement of createTableStatements) {
     await db.run(statement);
   }
-  const tables = await db.all(
-    "SELECT name FROM sqlite_master WHERE type='table';"
-  )
-  console.log('Tables in DB:', tables)
+  // const tables = await db.all(
+  //   "SELECT name FROM sqlite_master WHERE type='table';"
+  // )
   console.log('[sql.js] DB ready!')
 
   await seedDb(db)
