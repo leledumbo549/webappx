@@ -24,5 +24,6 @@ dist-ssr
 *.sw?
 
 public/flattened-source.txt
+public/reffile.zip
 
 backup
