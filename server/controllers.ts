@@ -244,6 +244,62 @@ export async function updateUserStatus(id: number, action: string): Promise<Publ
 }
 
 /**
+ * Update user profile
+ */
+export async function updateUserProfile(token: string, profileData: {
+  name?: string;
+  username?: string;
+}): Promise<PublicUser | null> {
+  const user = await validateToken(token);
+  if (!user) {
+    return null;
+  }
+
+  const db = await drizzleDb();
+  
+  // Check if username is being changed and if it already exists
+  if (profileData.username && profileData.username !== user.username) {
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.username, profileData.username))
+      .all();
+    
+    if (existingUser.length > 0) {
+      throw new Error('Username already exists');
+    }
+  }
+
+  // Update user profile
+  const updateData: Partial<User> = {
+    updatedAt: new Date().toISOString()
+  };
+
+  if (profileData.name !== undefined) {
+    updateData.name = profileData.name;
+  }
+
+  if (profileData.username !== undefined) {
+    updateData.username = profileData.username;
+  }
+
+  await db.update(users).set(updateData).where(eq(users.id, user.id)).run();
+  
+  // Return updated user
+  const updatedUser = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, user.id))
+    .all();
+  
+  if (updatedUser.length === 0) {
+    return null;
+  }
+
+  return createPublicUser(updatedUser[0]);
+}
+
+/**
  * Get all sellers
  */
 export async function getAllSellers(): Promise<Seller[]> {

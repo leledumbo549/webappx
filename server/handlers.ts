@@ -6,8 +6,10 @@ import {
   checkAdminAccess,
   getDashboardStats,
   getAllUsers,
+  getUserById,
   updateUserStatus,
   getAllSellers,
+  getSellerById,
   updateSellerStatus,
   getAllProducts,
   getAdminProduct,
@@ -41,6 +43,7 @@ import {
   createSellerPayout,
   updateSellerOrderStatus,
   createBuyerOrder,
+  updateUserProfile,
 } from './controllers';
 
 // === HANDLERS ===
@@ -97,6 +100,34 @@ export const handlers = [
       
     } catch (error) {
       console.error('Get user profile error:', error);
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // PUT /api/me - Update current user profile
+  rest.put('/api/me', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const body = await req.json();
+      
+      const user = await updateUserProfile(token, body);
+      
+      if (!user) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      return res(ctx.status(200), ctx.json(user));
+      
+    } catch (error) {
+      console.error('Update user profile error:', error);
+      if (error instanceof Error && error.message === 'Username already exists') {
+        return res(ctx.status(409), ctx.json(createErrorResponse('Username already exists')));
+      }
       return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
     }
   }),
@@ -166,6 +197,36 @@ export const handlers = [
     }
   }),
 
+  // GET /api/admin/users/{id} - Get user details
+  rest.get('/api/admin/users/:id', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const admin = await checkAdminAccess(token);
+      
+      if (!admin) {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      
+      const id = Number(req.params.id);
+      const user = await getUserById(id);
+      
+      if (!user) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('User not found')));
+      }
+      
+      return res(ctx.status(200), ctx.json(user));
+      
+    } catch (error) {
+      console.error('Get admin user error:', error);
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
   // PATCH /api/admin/users/{id} - Update user status
   rest.patch('/api/admin/users/:id', async (req, res, ctx) => {
     try {
@@ -225,6 +286,36 @@ export const handlers = [
       
     } catch (error) {
       console.error('Get sellers error:', error);
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/admin/sellers/{id} - Get seller details
+  rest.get('/api/admin/sellers/:id', async (req, res, ctx) => {
+    try {
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      
+      const token = auth.split(' ')[1];
+      const admin = await checkAdminAccess(token);
+      
+      if (!admin) {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      
+      const id = Number(req.params.id);
+      const seller = await getSellerById(id);
+      
+      if (!seller) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Seller not found')));
+      }
+      
+      return res(ctx.status(200), ctx.json(seller));
+      
+    } catch (error) {
+      console.error('Get admin seller error:', error);
       return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
     }
   }),

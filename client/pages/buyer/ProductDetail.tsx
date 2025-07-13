@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import axios from '@/lib/axios'
 import { isAxiosError } from '@/lib/axios'
 import type { Product } from '@/types/Product'
@@ -9,9 +9,11 @@ import { useSetAtom, useAtom } from 'jotai'
 import { addToCartAtom, cartAtom } from '@/atoms/cartAtoms'
 import SectionTitle from '@/components/SectionTitle'
 import { toast } from 'sonner'
+import { ArrowLeft } from 'lucide-react'
 
 function ProductDetail() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -64,7 +66,13 @@ function ProductDetail() {
 
   return (
     <div className="space-y-6">
-      <SectionTitle>{product.name}</SectionTitle>
+      <div className="flex items-center gap-4 mb-2">
+        <Button variant="outline" size="sm" onClick={() => navigate('/catalog')}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Catalog
+        </Button>
+        <SectionTitle>{product.name}</SectionTitle>
+      </div>
       
       <Card>
         <CardContent className="p-6">

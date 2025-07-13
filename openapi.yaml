@@ -76,6 +76,54 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Update current user profile
+      description: Update the current user's profile information
+      tags:
+      - Authentication
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: User's full name
+                  example: John Doe
+                username:
+                  type: string
+                  description: User's username (must be unique)
+                  example: johndoe
+            example:
+              name: John Doe
+              username: johndoe
+      responses:
+        '200':
+          description: User profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicUser'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Username already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  MESSAGE:
+                    type: string
+                    example: Username already exists
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/settings:
     get:
       summary: Get application settings
@@ -139,6 +187,35 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/admin/users/{id}:
+    get:
+      summary: Get user details
+      description: Retrieve details of a specific user - admin only
+      tags:
+      - Admin
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: User ID
+      responses:
+        '200':
+          description: User details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     patch:
       summary: Update user status
       description: Update user status (ban/unban) - admin only
@@ -208,6 +285,35 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/admin/sellers/{id}:
+    get:
+      summary: Get seller details
+      description: Retrieve details of a specific seller - admin only
+      tags:
+      - Admin
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Seller ID
+      responses:
+        '200':
+          description: Seller details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seller'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     patch:
       summary: Update seller status
       description: Approve, reject, activate, or deactivate a seller - admin only
@@ -287,6 +393,35 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/admin/products/{id}:
+    get:
+      summary: Get product details
+      description: Retrieve details of a specific product - admin only
+      tags:
+      - Admin
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Product ID
+      responses:
+        '200':
+          description: Product details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     patch:
       summary: Update product status
       description: Approve, reject, flag, or remove a product - admin only

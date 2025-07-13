@@ -4,6 +4,7 @@ import axios from '@/lib/axios'
 import type { SellerProduct } from '@/types/Seller'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ArrowLeft } from 'lucide-react'
 
 function ViewProduct() {
   const { id } = useParams<{ id: string }>()
@@ -48,9 +49,10 @@ function ViewProduct() {
           </Button>
           <Button 
             variant="outline" 
-            onClick={() => navigate('/seller/dashboard')}
+            onClick={() => navigate('/seller/products')}
           >
-            Back to Dashboard
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to My Products
           </Button>
         </div>
       </div>
