@@ -46,6 +46,112 @@ import {
   updateUserProfile,
 } from './controllers';
 
+// === AUTHORIZATION HELPERS ===
+
+type AuthResult = {
+  success: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  user?: any;
+  error?: { status: number; message: string };
+};
+
+/**
+ * Extract and validate Bearer token from request headers
+ */
+async function extractToken(req: { headers: { get: (name: string) => string | null } }): Promise<AuthResult> {
+  const auth = req.headers.get('authorization');
+  if (!auth || !auth.startsWith('Bearer ')) {
+    return {
+      success: false,
+      error: { status: 401, message: 'Invalid authentication token' }
+    };
+  }
+  
+  const token = auth.split(' ')[1];
+  const user = await validateToken(token);
+  
+  if (!user) {
+    return {
+      success: false,
+      error: { status: 401, message: 'Invalid authentication token' }
+    };
+  }
+  
+  return { success: true, user: { ...user, token } };
+}
+
+/**
+ * Check if user has admin access
+ */
+async function requireAdmin(req: { headers: { get: (name: string) => string | null } }): Promise<AuthResult> {
+  const authResult = await extractToken(req);
+  if (!authResult.success) {
+    return authResult;
+  }
+  
+  const admin = await checkAdminAccess(authResult.user.token);
+  if (!admin) {
+    return {
+      success: false,
+      error: { status: 403, message: 'Access denied' }
+    };
+  }
+  
+  return { success: true, user: admin };
+}
+
+/**
+ * Check if user has seller access
+ */
+async function requireSeller(req: { headers: { get: (name: string) => string | null } }): Promise<AuthResult> {
+  const authResult = await extractToken(req);
+  if (!authResult.success) {
+    return authResult;
+  }
+  
+  if (authResult.user.role !== 'seller') {
+    return {
+      success: false,
+      error: { status: 403, message: 'Access denied' }
+    };
+  }
+  
+  return { success: true, user: authResult.user };
+}
+
+/**
+ * Check if user has buyer access
+ */
+async function requireBuyer(req: { headers: { get: (name: string) => string | null } }): Promise<AuthResult> {
+  const authResult = await extractToken(req);
+  if (!authResult.success) {
+    return authResult;
+  }
+  
+  if (authResult.user.role !== 'buyer') {
+    return {
+      success: false,
+      error: { status: 403, message: 'Access denied' }
+    };
+  }
+  
+  return { success: true, user: authResult.user };
+}
+
+/**
+ * Check if user is authenticated (any role)
+ */
+async function requireAuth(req: { headers: { get: (name: string) => string | null } }): Promise<AuthResult> {
+  return extractToken(req);
+}
+
+/**
+ * Add a 3-second delay to simulate real API latency
+ */
+async function addDelay(): Promise<void> {
+  await new Promise(resolve => setTimeout(resolve, 3000));
+}
+
 // === HANDLERS ===
 export const handlers = [
   // === AUTHENTICATION ===
@@ -53,6 +159,8 @@ export const handlers = [
   // POST /api/login - Authenticate user
   rest.post('/api/login', async (req, res, ctx) => {
     try {
+      await addDelay();
+      
       const body = await req.json();
       
       // Use controller to handle login
@@ -84,19 +192,14 @@ export const handlers = [
   // GET /api/me - Get current user profile
   rest.get('/api/me', async (req, res, ctx) => {
     try {
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      await addDelay();
+      
+      const authResult = await requireAuth(req);
+      if (!authResult.success) {
+        return res(ctx.status(authResult.error!.status), ctx.json(createErrorResponse(authResult.error!.message)));
       }
       
-      const token = auth.split(' ')[1];
-      const user = await validateToken(token);
-      
-      if (!user) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
-      }
-      
-      return res(ctx.status(200), ctx.json(user));
+      return res(ctx.status(200), ctx.json(authResult.user));
       
     } catch (error) {
       console.error('Get user profile error:', error);
@@ -107,15 +210,15 @@ export const handlers = [
   // PUT /api/me - Update current user profile
   rest.put('/api/me', async (req, res, ctx) => {
     try {
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      await addDelay();
+      
+      const authResult = await requireAuth(req);
+      if (!authResult.success) {
+        return res(ctx.status(authResult.error!.status), ctx.json(createErrorResponse(authResult.error!.message)));
       }
       
-      const token = auth.split(' ')[1];
       const body = await req.json();
-      
-      const user = await updateUserProfile(token, body);
+      const user = await updateUserProfile(authResult.user.token, body);
       
       if (!user) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -137,6 +240,7 @@ export const handlers = [
   // GET /api/settings - Get application settings
   rest.get('/api/settings', async (_req, res, ctx) => {
     try {
+      await addDelay();
       const settings = await getSettings();
       return res(ctx.status(200), ctx.json(settings));
     } catch (error) {
@@ -150,16 +254,10 @@ export const handlers = [
   // GET /api/admin/dashboard - Get admin dashboard statistics
   rest.get('/api/admin/dashboard', async (req, res, ctx) => {
     try {
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
-      }
-      
-      const token = auth.split(' ')[1];
-      const admin = await checkAdminAccess(token);
-      
-      if (!admin) {
-        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      await addDelay();
+      const authResult = await requireAdmin(req);
+      if (!authResult.success) {
+        return res(ctx.status(authResult.error!.status), ctx.json(createErrorResponse(authResult.error!.message)));
       }
       
       const stats = await getDashboardStats();
@@ -176,16 +274,10 @@ export const handlers = [
   // GET /api/admin/users - Get all users
   rest.get('/api/admin/users', async (req, res, ctx) => {
     try {
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
-      }
-      
-      const token = auth.split(' ')[1];
-      const admin = await checkAdminAccess(token);
-      
-      if (!admin) {
-        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      await addDelay();
+      const authResult = await requireAdmin(req);
+      if (!authResult.success) {
+        return res(ctx.status(authResult.error!.status), ctx.json(createErrorResponse(authResult.error!.message)));
       }
       
       const users = await getAllUsers();
@@ -200,16 +292,10 @@ export const handlers = [
   // GET /api/admin/users/{id} - Get user details
   rest.get('/api/admin/users/:id', async (req, res, ctx) => {
     try {
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
-      }
-      
-      const token = auth.split(' ')[1];
-      const admin = await checkAdminAccess(token);
-      
-      if (!admin) {
-        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      await addDelay();
+      const authResult = await requireAdmin(req);
+      if (!authResult.success) {
+        return res(ctx.status(authResult.error!.status), ctx.json(createErrorResponse(authResult.error!.message)));
       }
       
       const id = Number(req.params.id);
@@ -230,16 +316,10 @@ export const handlers = [
   // PATCH /api/admin/users/{id} - Update user status
   rest.patch('/api/admin/users/:id', async (req, res, ctx) => {
     try {
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
-      }
-      
-      const token = auth.split(' ')[1];
-      const admin = await checkAdminAccess(token);
-      
-      if (!admin) {
-        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      await addDelay();
+      const authResult = await requireAdmin(req);
+      if (!authResult.success) {
+        return res(ctx.status(authResult.error!.status), ctx.json(createErrorResponse(authResult.error!.message)));
       }
       
       const id = Number(req.params.id);
@@ -269,16 +349,10 @@ export const handlers = [
   // GET /api/admin/sellers - Get all sellers
   rest.get('/api/admin/sellers', async (req, res, ctx) => {
     try {
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
-      }
-      
-      const token = auth.split(' ')[1];
-      const admin = await checkAdminAccess(token);
-      
-      if (!admin) {
-        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      await addDelay();
+      const authResult = await requireAdmin(req);
+      if (!authResult.success) {
+        return res(ctx.status(authResult.error!.status), ctx.json(createErrorResponse(authResult.error!.message)));
       }
       
       const sellers = await getAllSellers();
@@ -293,6 +367,7 @@ export const handlers = [
   // GET /api/admin/sellers/{id} - Get seller details
   rest.get('/api/admin/sellers/:id', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -323,6 +398,7 @@ export const handlers = [
   // PATCH /api/admin/sellers/{id} - Update seller status
   rest.patch('/api/admin/sellers/:id', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -362,6 +438,7 @@ export const handlers = [
   // GET /api/admin/products - Get all products
   rest.get('/api/admin/products', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -386,6 +463,7 @@ export const handlers = [
   // GET /api/admin/products/{id} - Get product details for admin
   rest.get('/api/admin/products/:id', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -416,6 +494,7 @@ export const handlers = [
   // PATCH /api/admin/products/{id} - Update product status
   rest.patch('/api/admin/products/:id', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -459,6 +538,7 @@ export const handlers = [
   // GET /api/admin/reports - Get all reports
   rest.get('/api/admin/reports', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -483,6 +563,7 @@ export const handlers = [
   // PATCH /api/admin/reports/{id} - Resolve report
   rest.patch('/api/admin/reports/:id', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -522,6 +603,7 @@ export const handlers = [
   // GET /api/admin/settings - Get admin settings
   rest.get('/api/admin/settings', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -546,6 +628,7 @@ export const handlers = [
   // PUT /api/admin/settings - Update admin settings
   rest.put('/api/admin/settings', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -573,13 +656,13 @@ export const handlers = [
   // GET /api/seller/products - Get seller's products
   rest.get('/api/seller/products', async (req, res, ctx) => {
     try {
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      await addDelay();
+      const authResult = await requireSeller(req);
+      if (!authResult.success) {
+        return res(ctx.status(authResult.error!.status), ctx.json(createErrorResponse(authResult.error!.message)));
       }
       
-      const token = auth.split(' ')[1];
-      const products = await getSellerProducts(token);
+      const products = await getSellerProducts(authResult.user.token);
       return res(ctx.status(200), ctx.json(products));
       
     } catch (error) {
@@ -594,6 +677,7 @@ export const handlers = [
   // POST /api/seller/products - Create new product
   rest.post('/api/seller/products', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -622,6 +706,7 @@ export const handlers = [
   // GET /api/seller/products/{id} - Get seller's product details
   rest.get('/api/seller/products/:id', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -650,6 +735,7 @@ export const handlers = [
   // PUT /api/seller/products/{id} - Update seller's product
   rest.put('/api/seller/products/:id', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -684,6 +770,7 @@ export const handlers = [
   // DELETE /api/seller/products/{id} - Delete seller's product
   rest.delete('/api/seller/products/:id', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -714,13 +801,13 @@ export const handlers = [
   // GET /api/buyer/cart - Get buyer's cart
   rest.get('/api/buyer/cart', async (req, res, ctx) => {
     try {
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      await addDelay();
+      const authResult = await requireBuyer(req);
+      if (!authResult.success) {
+        return res(ctx.status(authResult.error!.status), ctx.json(createErrorResponse(authResult.error!.message)));
       }
       
-      const token = auth.split(' ')[1];
-      const cart = await getBuyerCart(token);
+      const cart = await getBuyerCart(authResult.user.token);
       
       return res(ctx.status(200), ctx.json(cart));
       
@@ -736,6 +823,7 @@ export const handlers = [
   // POST /api/buyer/cart - Add item to cart
   rest.post('/api/buyer/cart', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -763,6 +851,7 @@ export const handlers = [
   // PATCH /api/buyer/cart/{productId} - Update cart item quantity
   rest.patch('/api/buyer/cart/:productId', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -793,6 +882,7 @@ export const handlers = [
   // DELETE /api/buyer/cart/{productId} - Remove item from cart
   rest.delete('/api/buyer/cart/:productId', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -817,6 +907,7 @@ export const handlers = [
   // GET /api/buyer/products - Get all products for buyers
   rest.get('/api/buyer/products', async (_req, res, ctx) => {
     try {
+      await addDelay();
       const products = await getBuyerProducts();
       return res(ctx.status(200), ctx.json(products));
     } catch (error) {
@@ -828,6 +919,7 @@ export const handlers = [
   // GET /api/buyer/products/{id} - Get product details for buyer
   rest.get('/api/buyer/products/:id', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -851,6 +943,7 @@ export const handlers = [
   // GET /api/buyer/orders - Get buyer's orders
   rest.get('/api/buyer/orders', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -873,6 +966,7 @@ export const handlers = [
   // GET /api/buyer/orders/{id} - Get buyer's order details
   rest.get('/api/buyer/orders/:id', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -902,6 +996,7 @@ export const handlers = [
   // GET /api/seller/profile - Get seller profile
   rest.get('/api/seller/profile', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -928,6 +1023,7 @@ export const handlers = [
   // PUT /api/seller/profile - Update seller profile
   rest.put('/api/seller/profile', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -956,6 +1052,7 @@ export const handlers = [
   // GET /api/seller/orders - Get seller orders
   rest.get('/api/seller/orders', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -978,6 +1075,7 @@ export const handlers = [
   // GET /api/seller/payouts - Get seller payouts
   rest.get('/api/seller/payouts', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -1000,6 +1098,7 @@ export const handlers = [
   // POST /api/seller/payouts - Request new payout
   rest.post('/api/seller/payouts', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -1028,6 +1127,7 @@ export const handlers = [
   // PATCH /api/seller/orders/{id} - Update order status
   rest.patch('/api/seller/orders/:id', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
@@ -1057,6 +1157,7 @@ export const handlers = [
   // POST /api/buyer/orders - Create new order
   rest.post('/api/buyer/orders', async (req, res, ctx) => {
     try {
+      await addDelay();
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));

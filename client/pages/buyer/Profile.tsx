@@ -48,13 +48,15 @@ function Profile() {
       setUser(res.data)
       
       toast.success('Profile updated successfully!')
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to update profile:', err)
       
-      if (err.response?.status === 409) {
+      const axiosError = err as { response?: { status?: number } }
+      
+      if (axiosError.response?.status === 409) {
         setError('Username already exists. Please choose a different username.')
         toast.error('Username already exists')
-      } else if (err.response?.status === 400) {
+      } else if (axiosError.response?.status === 400) {
         setError('Invalid data provided. Please check your input.')
         toast.error('Invalid data provided')
       } else {

@@ -27,9 +27,9 @@ const seedUsers = [
   {
     id: 2,
     name: 'Sari Dewi',
-    username: 'bob',
+    username: 'sari_dewi',
     password: 'bob',
-    role: 'buyer',
+    role: 'bob',
     status: 'active',
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
@@ -87,32 +87,32 @@ const seedUsers = [
 ];
 
 const seedSellers = [
-  { id: 1, userId: 3, name: 'Toko Elektronik Maju', status: 'active', logo: 'https://via.placeholder.com/150', bio: 'Toko elektronik terpercaya dengan produk berkualitas tinggi', contact: 'info@tokomaju.com', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Ahmad owns Toko Elektronik Maju
-  { id: 2, userId: 4, name: 'Warung Buah Segar', status: 'active', logo: 'https://via.placeholder.com/150', bio: 'Buah-buahan segar langsung dari petani lokal', contact: 'hello@warungbuah.com', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Dewi owns Warung Buah Segar
-  { id: 3, userId: 5, name: 'Toko Gadget Indonesia', status: 'active', logo: 'https://via.placeholder.com/150', bio: 'Solusi teknologi terdepan untuk kebutuhan digital Anda', contact: 'info@gadgetindo.com', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Eko owns Toko Gadget Indonesia
-  { id: 4, userId: 7, name: 'Boutique Fashion Nusantara', status: 'active', logo: 'https://via.placeholder.com/150', bio: 'Fashion lokal dengan sentuhan budaya Indonesia', contact: 'gunawan@boutiquenusantara.com', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Gunawan owns Boutique Fashion Nusantara
+  { id: 1, userId: 3, name: 'Toko Elektronik Maju', status: 'active', logo: 'https://picsum.photos/id/1/150/150', bio: 'Toko elektronik terpercaya dengan produk berkualitas tinggi', contact: 'info@tokomaju.com', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Ahmad owns Toko Elektronik Maju
+  { id: 2, userId: 4, name: 'Warung Buah Segar', status: 'active', logo: 'https://picsum.photos/id/2/150/150', bio: 'Buah-buahan segar langsung dari petani lokal', contact: 'hello@warungbuah.com', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Dewi owns Warung Buah Segar
+  { id: 3, userId: 5, name: 'Toko Gadget Indonesia', status: 'active', logo: 'https://picsum.photos/id/3/150/150', bio: 'Solusi teknologi terdepan untuk kebutuhan digital Anda', contact: 'info@gadgetindo.com', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Eko owns Toko Gadget Indonesia
+  { id: 4, userId: 7, name: 'Boutique Fashion Nusantara', status: 'active', logo: 'https://picsum.photos/id/4/150/150', bio: 'Fashion lokal dengan sentuhan budaya Indonesia', contact: 'gunawan@boutiquenusantara.com', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Gunawan owns Boutique Fashion Nusantara
 ];
 
 const seedProducts = [
   // Toko Elektronik Maju products (sellerId: 1)
-  { id: 1, name: 'Headphone Wireless Sony WH-1000XM4', price: 2500000, status: 'active', sellerId: 1, description: 'Headphone wireless premium dengan noise cancellation terbaik', imageUrl: 'https://via.placeholder.com/300x200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 2, name: 'Speaker Bluetooth JBL Flip 5', price: 850000, status: 'active', sellerId: 1, description: 'Speaker portable dengan suara jernih dan tahan air', imageUrl: 'https://via.placeholder.com/300x200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 3, name: 'Smartwatch Samsung Galaxy Watch 5', price: 3500000, status: 'active', sellerId: 1, description: 'Smartwatch canggih dengan fitur kesehatan lengkap', imageUrl: 'https://via.placeholder.com/300x200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 1, name: 'Headphone Wireless Sony WH-1000XM4', price: 2500000, status: 'active', sellerId: 1, description: 'Headphone wireless premium dengan noise cancellation terbaik', imageUrl: 'https://picsum.photos/id/10/300/200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 2, name: 'Speaker Bluetooth JBL Flip 5', price: 850000, status: 'active', sellerId: 1, description: 'Speaker portable dengan suara jernih dan tahan air', imageUrl: 'https://picsum.photos/id/11/300/200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 3, name: 'Smartwatch Samsung Galaxy Watch 5', price: 3500000, status: 'active', sellerId: 1, description: 'Smartwatch canggih dengan fitur kesehatan lengkap', imageUrl: 'https://picsum.photos/id/12/300/200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
   
   // Warung Buah Segar products (sellerId: 2)
-  { id: 4, name: 'Alpukat Mentega Segar', price: 25000, status: 'active', sellerId: 2, description: 'Alpukat mentega segar dari petani lokal Jawa Barat', imageUrl: 'https://via.placeholder.com/300x200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 5, name: 'Stroberi Segar Lembang', price: 45000, status: 'active', sellerId: 2, description: 'Stroberi segar dari kebun Lembang, Bandung', imageUrl: 'https://via.placeholder.com/300x200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 6, name: 'Pisang Raja Premium', price: 15000, status: 'active', sellerId: 2, description: 'Pisang raja premium kaya kalium dan vitamin', imageUrl: 'https://via.placeholder.com/300x200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 4, name: 'Alpukat Mentega Segar', price: 25000, status: 'active', sellerId: 2, description: 'Alpukat mentega segar dari petani lokal Jawa Barat', imageUrl: 'https://picsum.photos/id/20/300/200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 5, name: 'Stroberi Segar Lembang', price: 45000, status: 'active', sellerId: 2, description: 'Stroberi segar dari kebun Lembang, Bandung', imageUrl: 'https://picsum.photos/id/21/300/200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 6, name: 'Pisang Raja Premium', price: 15000, status: 'active', sellerId: 2, description: 'Pisang raja premium kaya kalium dan vitamin', imageUrl: 'https://picsum.photos/id/22/300/200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
   
   // Toko Gadget Indonesia products (sellerId: 3)
-  { id: 7, name: 'Laptop Stand Aluminium Premium', price: 350000, status: 'active', sellerId: 3, description: 'Stand laptop aluminium untuk ergonomi kerja yang lebih baik', imageUrl: 'https://via.placeholder.com/300x200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 8, name: 'Keyboard Mechanical RGB Logitech', price: 1200000, status: 'active', sellerId: 3, description: 'Keyboard mechanical premium dengan lampu RGB yang cantik', imageUrl: 'https://via.placeholder.com/300x200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 9, name: 'Mouse Gaming Razer DeathAdder V3', price: 850000, status: 'active', sellerId: 3, description: 'Mouse gaming presisi tinggi dengan tombol yang dapat dikustomisasi', imageUrl: 'https://via.placeholder.com/300x200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 7, name: 'Laptop Stand Aluminium Premium', price: 350000, status: 'active', sellerId: 3, description: 'Stand laptop aluminium untuk ergonomi kerja yang lebih baik', imageUrl: 'https://picsum.photos/id/30/300/200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 8, name: 'Keyboard Mechanical RGB Logitech', price: 1200000, status: 'active', sellerId: 3, description: 'Keyboard mechanical premium dengan lampu RGB yang cantik', imageUrl: 'https://picsum.photos/id/31/300/200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 9, name: 'Mouse Gaming Razer DeathAdder V3', price: 850000, status: 'active', sellerId: 3, description: 'Mouse gaming presisi tinggi dengan tombol yang dapat dikustomisasi', imageUrl: 'https://picsum.photos/id/32/300/200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
   
   // Boutique Fashion Nusantara products (sellerId: 4)
-  { id: 10, name: 'Tas Kulit Asli Batik', price: 1800000, status: 'active', sellerId: 4, description: 'Tas kulit asli dengan motif batik tradisional Indonesia', imageUrl: 'https://via.placeholder.com/300x200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 11, name: 'Selendang Sutra Batik Pesisir', price: 550000, status: 'active', sellerId: 4, description: 'Selendang sutra dengan motif batik pesisir yang elegan', imageUrl: 'https://via.placeholder.com/300x200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 12, name: 'Dompet Kulit Asli Garut', price: 350000, status: 'active', sellerId: 4, description: 'Dompet kulit asli dari Garut dengan kualitas terbaik', imageUrl: 'https://via.placeholder.com/300x200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 10, name: 'Tas Kulit Asli Batik', price: 1800000, status: 'active', sellerId: 4, description: 'Tas kulit asli dengan motif batik tradisional Indonesia', imageUrl: 'https://picsum.photos/id/40/300/200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 11, name: 'Selendang Sutra Batik Pesisir', price: 550000, status: 'active', sellerId: 4, description: 'Selendang sutra dengan motif batik pesisir yang elegan', imageUrl: 'https://picsum.photos/id/41/300/200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 12, name: 'Dompet Kulit Asli Garut', price: 350000, status: 'active', sellerId: 4, description: 'Dompet kulit asli dari Garut dengan kualitas terbaik', imageUrl: 'https://picsum.photos/id/42/300/200', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
 ];
 
 const seedReports = [
