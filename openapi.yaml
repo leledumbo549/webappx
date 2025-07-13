@@ -472,6 +472,36 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/admin/products/{id}:
+    get:
+      summary: Get product details for admin
+      description: Retrieve detailed information about a specific product for admin review and management.
+      tags:
+      - Admin
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Product ID
+      responses:
+        '200':
+          description: Product details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/seller/products:
     get:
       summary: Get seller's products
@@ -684,34 +714,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /api/buyer/product/{id}:
-    get:
-      summary: Get product details for buyer
-      description: Retrieve details of a specific product that buyers can view and purchase.
-      tags:
-      - Buyer
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-        description: Product ID
-      responses:
-        '200':
-          description: Product details retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Product'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
   /api/buyer/cart:
     get:
       summary: Get buyer's cart
@@ -814,6 +816,414 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/buyer/products:
+    get:
+      summary: Get all products for buyers
+      description: Retrieve all available products that buyers can browse and purchase.
+      tags:
+      - Buyer
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 1
+        description: Page number for pagination
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 20
+        description: Number of items per page
+      - name: search
+        in: query
+        schema:
+          type: string
+        description: Search term for product name or description
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/buyer/products/{id}:
+    get:
+      summary: Get product details for buyer
+      description: Retrieve detailed information about a specific product for buyers to view.
+      tags:
+      - Buyer
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Product ID
+      responses:
+        '200':
+          description: Product details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/buyer/orders:
+    get:
+      summary: Get buyer's orders
+      description: Retrieve all orders for the current buyer.
+      tags:
+      - Buyer
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 1
+        description: Page number for pagination
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 20
+        description: Number of items per page
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [pending, processing, shipped, delivered, cancelled]
+        description: Filter by order status
+      responses:
+        '200':
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create new order
+      description: Create a new order from the buyer's cart items.
+      tags:
+      - Buyer
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - items
+              - shippingAddress
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - productId
+                    - quantity
+                    properties:
+                      productId:
+                        type: integer
+                        description: ID of the product
+                      quantity:
+                        type: integer
+                        description: Quantity of the product
+                shippingAddress:
+                  type: string
+                  description: Shipping address for the order
+                paymentMethod:
+                  type: string
+                  enum: [credit_card, bank_transfer, cash_on_delivery]
+                  description: Payment method for the order
+            example:
+              items:
+                - productId: 1
+                  quantity: 2
+                - productId: 3
+                  quantity: 1
+              shippingAddress: "123 Main St, City, Country"
+              paymentMethod: "credit_card"
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/buyer/orders/{id}:
+    get:
+      summary: Get order details
+      description: Retrieve detailed information about a specific order.
+      tags:
+      - Buyer
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Order ID
+      responses:
+        '200':
+          description: Order details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/seller/orders:
+    get:
+      summary: Get seller's orders
+      description: Retrieve all orders for the current seller.
+      tags:
+      - Seller
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 1
+        description: Page number for pagination
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 20
+        description: Number of items per page
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [pending, processing, shipped, delivered, cancelled]
+        description: Filter by order status
+      responses:
+        '200':
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/seller/orders/{id}:
+    patch:
+      summary: Update order status
+      description: Update the status of a specific order (seller only).
+      tags:
+      - Seller
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Order ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum: [processing, shipped, delivered]
+                  description: New status for the order
+                trackingNumber:
+                  type: string
+                  description: Tracking number for shipping
+            example:
+              status: "shipped"
+              trackingNumber: "TRK123456789"
+      responses:
+        '200':
+          description: Order status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/seller/profile:
+    get:
+      summary: Get seller profile
+      description: Retrieve the current seller's profile information.
+      tags:
+      - Seller
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Seller profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SellerProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Update seller profile
+      description: Update the current seller's profile information.
+      tags:
+      - Seller
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SellerProfile'
+      responses:
+        '200':
+          description: Seller profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SellerProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/seller/payouts:
+    get:
+      summary: Get seller payouts
+      description: Retrieve payout history for the current seller.
+      tags:
+      - Seller
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 1
+        description: Page number for pagination
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 20
+        description: Number of items per page
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [pending, processed, failed]
+        description: Filter by payout status
+      responses:
+        '200':
+          description: Payouts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SellerPayout'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Request payout
+      description: Request a new payout for the current seller.
+      tags:
+      - Seller
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              - bankAccount
+              properties:
+                amount:
+                  type: number
+                  format: float
+                  description: Amount to payout
+                bankAccount:
+                  type: string
+                  description: Bank account details
+            example:
+              amount: 1500.00
+              bankAccount: "1234567890"
+      responses:
+        '201':
+          description: Payout requested successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SellerPayout'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
 components:
@@ -1167,11 +1577,105 @@ components:
           - processing
           - shipped
           - delivered
+          - cancelled
           example: pending
         createdAt:
           type: string
           format: date-time
           description: Order creation timestamp
+          example: '2024-01-15T10:30:00Z'
+        shippingAddress:
+          type: string
+          description: Shipping address for the order
+          example: "123 Main St, City, Country"
+        paymentMethod:
+          type: string
+          enum: [credit_card, bank_transfer, cash_on_delivery]
+          description: Payment method used for the order
+          example: "credit_card"
+        trackingNumber:
+          type: string
+          description: Tracking number for shipping
+          example: "TRK123456789"
+    SellerProfile:
+      type: object
+      required:
+      - id
+      - name
+      - bio
+      properties:
+        id:
+          type: integer
+          description: Seller profile's unique identifier
+          example: 1
+        name:
+          type: string
+          description: Store name
+          example: "Carol's Electronics"
+        bio:
+          type: string
+          description: Store description
+          example: "Quality electronics at affordable prices"
+        contact:
+          type: string
+          description: Contact information
+          example: "carol@example.com"
+        address:
+          type: string
+          description: Store address
+          example: "456 Business Ave, City, Country"
+        website:
+          type: string
+          description: Store website URL
+          example: "https://carols-electronics.com"
+        createdAt:
+          type: string
+          format: date-time
+          description: Profile creation timestamp
+          example: '2024-01-15T10:30:00Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Profile last update timestamp
+          example: '2024-01-15T10:30:00Z'
+    SellerPayout:
+      type: object
+      required:
+      - id
+      - amount
+      - status
+      - createdAt
+      properties:
+        id:
+          type: integer
+          description: Payout's unique identifier
+          example: 1
+        amount:
+          type: number
+          format: float
+          description: Payout amount
+          example: 1500.00
+        status:
+          type: string
+          description: Payout status
+          enum:
+          - pending
+          - processed
+          - failed
+          example: pending
+        bankAccount:
+          type: string
+          description: Bank account details
+          example: "1234567890"
+        processedAt:
+          type: string
+          format: date-time
+          description: Payout processing timestamp
+          example: '2024-01-15T10:30:00Z'
+        createdAt:
+          type: string
+          format: date-time
+          description: Payout creation timestamp
           example: '2024-01-15T10:30:00Z'
   responses:
     BadRequest:

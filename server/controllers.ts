@@ -716,11 +716,11 @@ export async function getBuyerProducts(): Promise<Product[]> {
 }
 
 /**
- * Get product details for buyers
+ * Get product details for buyer
  */
-export async function getBuyerProduct(id: number): Promise<Product | null> {
+export async function getBuyerProduct(productId: number): Promise<Product | null> {
   const db = await drizzleDb();
-  const productRows = await db.select().from(products).where(and(eq(products.id, id), eq(products.status, 'active'))).all();
+  const productRows = await db.select().from(products).where(and(eq(products.id, productId), eq(products.status, 'active'))).all();
   
   if (productRows.length === 0) {
     return null;
@@ -728,6 +728,22 @@ export async function getBuyerProduct(id: number): Promise<Product | null> {
   
   return productRows[0];
 }
+
+/**
+ * Get product details for admin
+ */
+export async function getAdminProduct(productId: number): Promise<Product | null> {
+  const db = await drizzleDb();
+  const productRows = await db.select().from(products).where(eq(products.id, productId)).all();
+  
+  if (productRows.length === 0) {
+    return null;
+  }
+  
+  return productRows[0];
+}
+
+
 
 /**
  * Get buyer's orders
@@ -840,6 +856,122 @@ export async function getSellerPayouts(token: string): Promise<SellerPayout[]> {
   }
 
   return await db.select().from(sellerPayouts).where(eq(sellerPayouts.sellerId, sellerProfile[0].id)).all();
+}
+
+/**
+ * Create seller payout
+ */
+export async function createSellerPayout(token: string, payoutData: {
+  amount: number;
+  bankAccount: string;
+}): Promise<SellerPayout | null> {
+  const seller = await checkSellerAccess(token);
+  if (!seller) {
+    throw new Error('Access denied');
+  }
+
+  const db = await drizzleDb();
+  
+  // Find the seller profile that belongs to this user
+  const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
+  if (sellerProfile.length === 0) {
+    throw new Error('Seller profile not found');
+  }
+
+  const payout = await db.insert(sellerPayouts).values({
+    amount: payoutData.amount,
+    date: new Date().toISOString(),
+    sellerId: sellerProfile[0].id,
+    status: 'pending'
+  }).returning().get();
+
+  return payout;
+}
+
+/**
+ * Update seller order status
+ */
+export async function updateSellerOrderStatus(token: string, orderId: number, statusData: {
+  status: 'processing' | 'shipped' | 'delivered';
+  trackingNumber?: string;
+}): Promise<Order | null> {
+  const seller = await checkSellerAccess(token);
+  if (!seller) {
+    throw new Error('Access denied');
+  }
+
+  const db = await drizzleDb();
+  
+  // Find the seller profile that belongs to this user
+  const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
+  if (sellerProfile.length === 0) {
+    throw new Error('Seller profile not found');
+  }
+
+  // Check if order exists and belongs to this seller
+  const orderRows = await db.select().from(orders).where(and(eq(orders.id, orderId), eq(orders.sellerId, sellerProfile[0].id))).all();
+  if (orderRows.length === 0) {
+    return null;
+  }
+
+  // Update order status
+  await db.update(orders).set({ 
+    status: statusData.status, 
+    updatedAt: new Date().toISOString() 
+  }).where(eq(orders.id, orderId)).run();
+
+  // Return updated order
+  const updatedOrder = await db.select().from(orders).where(eq(orders.id, orderId)).all();
+  return updatedOrder[0] || null;
+}
+
+/**
+ * Create buyer order
+ */
+export async function createBuyerOrder(token: string, orderData: {
+  items: Array<{ productId: number; quantity: number }>;
+  shippingAddress: string;
+  paymentMethod?: 'credit_card' | 'bank_transfer' | 'cash_on_delivery';
+}): Promise<Order | null> {
+  const buyer = await checkBuyerAccess(token);
+  if (!buyer) {
+    throw new Error('Access denied');
+  }
+
+  const db = await drizzleDb();
+  
+  // Calculate total and create orders for each item
+  const createdOrders: Order[] = [];
+
+  for (const item of orderData.items) {
+    // Get product details
+    const product = await db.select().from(products).where(eq(products.id, item.productId)).all();
+    if (product.length === 0) {
+      throw new Error(`Product ${item.productId} not found`);
+    }
+
+    const productData = product[0];
+    const itemTotal = productData.price * item.quantity;
+
+    // Create order
+    const order = await db.insert(orders).values({
+      productId: item.productId,
+      productName: productData.name,
+      quantity: item.quantity,
+      total: itemTotal,
+      status: 'pending',
+      buyerId: buyer.id,
+      sellerId: productData.sellerId
+    }).returning().get();
+
+    createdOrders.push(order);
+  }
+
+  // Clear buyer's cart after successful order creation
+  await db.delete(cart).where(eq(cart.userId, buyer.id)).run();
+
+  // Return the first order (or you could return all orders)
+  return createdOrders[0] || null;
 }
 
 // === EXISTING CONTROLLERS ===
