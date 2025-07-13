@@ -34,7 +34,7 @@ function Checkout() {
       <CardContent>
         <div className="space-y-4">
           {cart.map((item) => (
-            <div key={item.product.id} className="flex justify-between">
+            <div key={item.id} className="flex justify-between">
               <span>{item.product.name}</span>
               <span>
                 {new Intl.NumberFormat('id-ID', {

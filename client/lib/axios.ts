@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { getDefaultStore } from 'jotai'
-import { tokenAtom } from '@/atoms/loginAtoms'
+import { tokenAtom, userAtom } from '@/atoms/loginAtoms'
 
 const instance = axios.create()
 
@@ -27,8 +27,12 @@ instance.interceptors.response.use(
     if (axios.isAxiosError(error)) {
       const status = error.response?.status
       if (status === 401 || status === 403) {
-        // Clear any stored auth data and redirect to login
-        // Note: Since we're not using localStorage, we'll just redirect
+        // Clear stored auth data and redirect to login
+        const store = getDefaultStore()
+        store.set(tokenAtom, null)
+        store.set(userAtom, null)
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('auth_user')
         window.location.hash = '/login'
       }
     }
@@ -37,3 +41,4 @@ instance.interceptors.response.use(
 )
 
 export default instance
+export { isAxiosError } from 'axios'

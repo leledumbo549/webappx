@@ -26,12 +26,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "./src/*"
+        "./client/*"
       ],
       "@/server/*": [
         "./server/*"
       ]
     }
   },
-  "include": ["src", "server"]
+  "include": ["client", "server"]
 }

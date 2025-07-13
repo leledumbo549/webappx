@@ -1,0 +1,97 @@
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import axios from '@/lib/axios'
+import { isAxiosError } from '@/lib/axios'
+import type { Product } from '@/types/Product'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { useSetAtom, useAtom } from 'jotai'
+import { addToCartAtom, cartAtom } from '@/atoms/cartAtoms'
+import SectionTitle from '@/components/SectionTitle'
+import { toast } from 'sonner'
+
+function ProductDetail() {
+  const { id } = useParams<{ id: string }>()
+  const [product, setProduct] = useState<Product | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const add = useSetAtom(addToCartAtom)
+  const [cart] = useAtom(cartAtom)
+
+  const fetchData = async (idval: string | null) => {
+    if (!idval) return
+    
+    setLoading(true)
+    try {
+      const res = await axios.get<Product>(`/api/buyer/product/${idval}`)
+      setProduct(res.data)
+    } catch (err) {
+      if (isAxiosError(err)) setError(err.message)
+      else setError('Failed to load product')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (id) {
+      fetchData(id)
+    }
+  }, [id])
+
+  const handleAddToCart = async () => {
+    if (product) {
+      try {
+        // Check if product already exists in cart before adding
+        const existingItem = cart.find(item => item.productId === product.id)
+        
+        await add(product)
+        
+        if (existingItem) {
+          toast.success(`${product.name} quantity updated in cart!`)
+        } else {
+          toast.success(`${product.name} added to cart!`)
+        }
+      } catch {
+        toast.error('Failed to add item to cart')
+      }
+    }
+  }
+
+  if (loading) return <div>Loading...</div>
+  if (error) return <div className="text-red-600">{error}</div>
+  if (!product) return <div>Product not found.</div>
+
+  return (
+    <div className="space-y-6">
+      <SectionTitle>{product.name}</SectionTitle>
+      
+      <Card>
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold">Description</h3>
+              <p className="text-muted-foreground">{product.description}</p>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-semibold">Price</h3>
+              <p className="text-2xl font-bold text-green-600">
+                {new Intl.NumberFormat('id-ID', {
+                  style: 'currency',
+                  currency: 'IDR',
+                }).format(product.price)}
+              </p>
+            </div>
+            
+            <Button onClick={handleAddToCart} className="w-full">
+              Add to Cart
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default ProductDetail

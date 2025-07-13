@@ -7,6 +7,7 @@ import {
   primaryKey,
   uniqueIndex,
 } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
 
 //
 // USERS TABLE
@@ -20,9 +21,12 @@ export const users = sqliteTable(
     password: text('password'),
     role: text('role'), // 'admin' | 'buyer' | 'seller'
     status: text('status'), // 'active' | 'banned' | 'inactive'
+    createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => ({
     usernameIndex: uniqueIndex('username_unique').on(table.username),
+    nameIndex: uniqueIndex('name_unique').on(table.name),
   })
 );
 
@@ -31,11 +35,14 @@ export const users = sqliteTable(
 //
 export const sellers = sqliteTable('sellers', {
   id: integer('id').primaryKey(),
+  userId: integer('userId').notNull().unique(), // ID of the user who owns this seller profile (unique - one seller per user)
   name: text('name').notNull(),
   logo: text('logo'),
   bio: text('bio'),
   contact: text('contact'),
   status: text('status'), // 'active' | 'inactive' | 'pending'
+  createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
 });
 
 //
@@ -49,20 +56,24 @@ export const products = sqliteTable('products', {
   imageUrl: text('imageUrl'),
   sellerId: integer('sellerId'),
   status: text('status'), // 'active' | 'inactive' | 'pending' | 'flagged'
+  createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
 });
 
 //
-// SELLER ORDERS TABLE
+// ORDERS TABLE (Unified for both buyer and seller views)
 //
-export const sellerOrders = sqliteTable('sellerOrders', {
+export const orders = sqliteTable('orders', {
   id: integer('id').primaryKey(),
   productId: integer('productId').notNull(),
   productName: text('productName').notNull(),
   quantity: integer('quantity').notNull(),
   total: real('total').notNull(),
-  status: text('status'), // 'pending' | 'shipped' | 'delivered'
-  sellerId: integer('sellerId'),
-  createdAt: text('createdAt'),
+  status: text('status'), // 'pending' | 'processing' | 'shipped' | 'delivered'
+  buyerId: integer('buyerId'), // ID of the buyer who placed the order
+  sellerId: integer('sellerId'), // ID of the seller who owns the product
+  createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
 });
 
 //
@@ -74,6 +85,8 @@ export const sellerPayouts = sqliteTable('sellerPayouts', {
   date: text('date').notNull(),
   sellerId: integer('sellerId'),
   status: text('status'), // 'pending' | 'completed' | 'failed'
+  createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
 });
 
 //
@@ -83,6 +96,8 @@ export const reports = sqliteTable('reports', {
   id: integer('id').primaryKey(),
   message: text('message'),
   status: text('status'), // 'open' | 'closed' | 'resolved'
+  createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
 });
 
 //
@@ -103,35 +118,22 @@ export const settings = sqliteTable(
 // CART TABLE
 //
 export const cart = sqliteTable('cart', {
-  productId: integer('productId').primaryKey(),
-  quantity: integer('quantity'),
-});
-
-//
-// ORDERS TABLE
-//
-export const orders = sqliteTable('orders', {
   id: integer('id').primaryKey(),
-  items: text('items'), // Stored as JSON string
-  total: real('total'),
-  status: text('status'), // 'pending' | 'processing' | 'shipped' | 'delivered'
-  createdAt: text('createdAt'),
+  userId: integer('userId').notNull(), // ID of the user who owns this cart item
+  productId: integer('productId').notNull(),
+  quantity: integer('quantity').notNull(),
+  createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
 });
 
 //
 // Type helpers
 //
 export interface CartItem {
+  id: number;
+  userId: number;
   productId: number;
   quantity: number;
-}
-
-export interface Order {
-  id: number;
-  items: CartItem[];
-  total: number;
-  status: string;
-  createdAt: string;
 }
 
 export interface DashboardStats {
@@ -146,7 +148,7 @@ export type User = InferSelectModel<typeof users>;
 export type PublicUser = Omit<User, 'password'>;
 export type Product = InferSelectModel<typeof products>;
 export type Seller = InferSelectModel<typeof sellers>;
-export type SellerOrder = InferSelectModel<typeof sellerOrders>;
+export type Order = InferSelectModel<typeof orders>;
 export type SellerPayout = InferSelectModel<typeof sellerPayouts>;
 export type Report = InferSelectModel<typeof reports>;
 export type Setting = InferSelectModel<typeof settings>;
@@ -167,21 +169,26 @@ export const createTableStatements = [
   `
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY,
-    name TEXT,
+    name TEXT UNIQUE,
     username TEXT NOT NULL UNIQUE,
     password TEXT,
     role TEXT,
-    status TEXT
+    status TEXT,
+    createdAt TEXT,
+    updatedAt TEXT
   );
   `,
   `
   CREATE TABLE IF NOT EXISTS sellers (
     id INTEGER PRIMARY KEY,
+    userId INTEGER NOT NULL UNIQUE,
     name TEXT NOT NULL,
     logo TEXT,
     bio TEXT,
     contact TEXT,
-    status TEXT
+    status TEXT,
+    createdAt TEXT,
+    updatedAt TEXT
   );
   `,
   `
@@ -192,19 +199,23 @@ export const createTableStatements = [
     description TEXT,
     imageUrl TEXT,
     sellerId INTEGER,
-    status TEXT
+    status TEXT,
+    createdAt TEXT,
+    updatedAt TEXT
   );
   `,
   `
-  CREATE TABLE IF NOT EXISTS sellerOrders (
+  CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY,
     productId INTEGER NOT NULL,
     productName TEXT NOT NULL,
     quantity INTEGER NOT NULL,
     total REAL NOT NULL,
     status TEXT,
+    buyerId INTEGER,
     sellerId INTEGER,
-    createdAt TEXT
+    createdAt TEXT,
+    updatedAt TEXT
   );
   `,
   `
@@ -213,14 +224,18 @@ export const createTableStatements = [
     amount REAL NOT NULL,
     date TEXT NOT NULL,
     sellerId INTEGER,
-    status TEXT
+    status TEXT,
+    createdAt TEXT,
+    updatedAt TEXT
   );
   `,
   `
   CREATE TABLE IF NOT EXISTS reports (
     id INTEGER PRIMARY KEY,
     message TEXT,
-    status TEXT
+    status TEXT,
+    createdAt TEXT,
+    updatedAt TEXT
   );
   `,
   `
@@ -231,17 +246,12 @@ export const createTableStatements = [
   `,
   `
   CREATE TABLE IF NOT EXISTS cart (
-    productId INTEGER PRIMARY KEY,
-    quantity INTEGER
-  );
-  `,
-  `
-  CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY,
-    items TEXT,
-    total REAL,
-    status TEXT,
-    createdAt TEXT
+    userId INTEGER NOT NULL,
+    productId INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+    createdAt TEXT,
+    updatedAt TEXT
   );
   `,
 ];

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAtom } from 'jotai'
 import axios from '@/lib/axios'
-import type { SellerProduct, SellerOrder } from '@/types/Seller'
+import type { SellerProduct, Order } from '@/types/Seller'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { sellerProductsRefreshAtom } from '@/atoms/sellerAtoms'
@@ -10,7 +10,7 @@ import { sellerProductsRefreshAtom } from '@/atoms/sellerAtoms'
 function SellerDashboard() {
   const navigate = useNavigate()
   const [products, setProducts] = useState<SellerProduct[]>([])
-  const [orders, setOrders] = useState<SellerOrder[]>([])
+  const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [refreshCounter] = useAtom(sellerProductsRefreshAtom)

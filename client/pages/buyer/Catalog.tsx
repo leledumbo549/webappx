@@ -1,31 +1,29 @@
 import { useEffect, useState } from 'react'
-import * as Axios from 'axios'
+import axios from '@/lib/axios'
+import { isAxiosError } from '@/lib/axios'
 import type { Product } from '@/types/Product'
 import ProductCard from '@/components/ProductCard'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useSetAtom } from 'jotai'
-import { addToCartAtom } from '@/atoms/cartAtoms'
+import { useSetAtom, useAtom } from 'jotai'
+import { addToCartAtom, cartAtom } from '@/atoms/cartAtoms'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
 function Catalog() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const add = useSetAtom(addToCartAtom)
+  const [cart] = useAtom(cartAtom)
   const navigate = useNavigate()
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      // TODO: This endpoint is not defined in OpenAPI spec
-      // const res = await axios.get<Product[]>('/api/products')
-      // setProducts(res.data)
-      
-      // Placeholder data until API is defined
-      setProducts([])
-      setError('Products API not yet implemented')
-    } catch (err) {
-      if (Axios.isAxiosError(err)) setError(err.message)
+      const res = await axios.get<Product[]>('/api/buyer/products')
+      setProducts(res.data)
+    } catch (err: unknown) {
+      if (isAxiosError(err)) setError(err.message)
       else setError('Failed to load products')
     } finally {
       setLoading(false)
@@ -35,6 +33,23 @@ function Catalog() {
   useEffect(() => {
     fetchData()
   }, [])
+
+  const handleAddToCart = async (product: Product) => {
+    try {
+      // Check if product already exists in cart before adding
+      const existingItem = cart.find(item => item.productId === product.id)
+      
+      await add(product)
+      
+      if (existingItem) {
+        toast.success(`${product.name} quantity updated in cart!`)
+      } else {
+        toast.success(`${product.name} added to cart!`)
+      }
+    } catch {
+      toast.error('Failed to add item to cart')
+    }
+  }
 
   if (loading) {
     return (
@@ -56,7 +71,7 @@ function Catalog() {
         <ProductCard
           key={p.id}
           product={p}
-          onAdd={() => add(p)}
+          onAdd={() => handleAddToCart(p)}
           onView={() => navigate(`/buyer/product/${p.id}`)}
         />
       ))}

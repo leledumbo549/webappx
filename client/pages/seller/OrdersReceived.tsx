@@ -1,43 +1,37 @@
 import { useEffect, useState } from 'react'
-// import axios from '@/lib/axios'
-import type { SellerOrder } from '@/types/Seller'
+import axios from '@/lib/axios'
+import { isAxiosError } from '@/lib/axios'
+import type { Order } from '@/types/Seller'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 function OrdersReceived() {
-  const [orders, setOrders] = useState<SellerOrder[]>([])
+  const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      // TODO: This endpoint is not defined in OpenAPI spec yet
-      // const res = await axios.get<SellerOrder[]>('/api/seller/orders')
-      // setOrders(res.data)
-      
-      // Placeholder data until API is defined
-      setOrders([])
-      setError('Seller Orders API not yet implemented in OpenAPI spec')
-    } catch (err) {
-      console.error('Failed to load orders:', err)
-      setError('Failed to load orders')
+      const res = await axios.get<Order[]>('/api/seller/orders')
+      setOrders(res.data)
+    } catch (err: unknown) {
+      if (isAxiosError(err)) setError(err.message)
+      else setError('Failed to load orders')
     } finally {
       setLoading(false)
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleUpdateStatus = async (_order: SellerOrder, _action: string) => {
+  const handleUpdateStatus = async (_order: Order, _action: string) => {
     try {
-      // TODO: This endpoint is not defined in OpenAPI spec yet
+      // Note: This endpoint is not yet implemented in the backend
       // await axios.patch(`/api/seller/orders/${order.id}`, { action })
       // await fetchData()
-      
-      setError('Update Order Status API not yet implemented in OpenAPI spec')
-    } catch (err) {
-      console.error('Failed to update order status:', err)
-      setError('Failed to update order status')
+      setError('Update Order Status API not yet implemented in backend')
+    } catch (err: unknown) {
+      if (isAxiosError(err)) setError(err.message)
+      else setError('Failed to update order status')
     }
   }
 

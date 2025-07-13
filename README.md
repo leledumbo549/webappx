@@ -8,7 +8,7 @@ The application contains three simple routes implemented with React Router:
 - **Blogs** – displays a list of sample blog posts.
 - **About** – a short description of the project.
 
-The code is located in the `src/` folder. UI primitives live in `src/components/ui` and each route is in `src/pages`.
+The code is located in the `client/` folder. UI primitives live in `client/components/ui` and each route is in `client/pages`.
 
 ## Scripts
 
@@ -90,4 +90,4 @@ export default tseslint.config([
 
 ## Mock API with MSW
 
-This project uses [Mock Service Worker](https://mswjs.io/) for local API mocking. Handlers are defined in `src/mocks/handlers.ts`. You can add new endpoints there to support features such as the cart, seller orders or admin approvals. Start the dev server normally with `npm run dev` and MSW will intercept requests.
+This project uses [Mock Service Worker](https://mswjs.io/) for local API mocking. Handlers are defined in `client/mocks/handlers.ts`. You can add new endpoints there to support features such as the cart, seller orders or admin approvals. Start the dev server normally with `npm run dev` and MSW will intercept requests.

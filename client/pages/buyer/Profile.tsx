@@ -8,9 +8,7 @@ import { Button } from '@/components/ui/button'
 function Profile() {
   const [user] = useAtom(userAtom)
   const [name, setName] = useState(user?.name || '')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [address, setAddress] = useState('')
+  const [username, setUsername] = useState(user?.username || '')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,28 +26,27 @@ function Profile() {
         />
       </div>
       <div>
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="username">Username</Label>
         <Input
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          id="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
       </div>
       <div>
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="role">Role</Label>
         <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          id="role"
+          value={user?.role || ''}
+          disabled
         />
       </div>
       <div>
-        <Label htmlFor="address">Address</Label>
+        <Label htmlFor="status">Status</Label>
         <Input
-          id="address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
+          id="status"
+          value={user?.status || ''}
+          disabled
         />
       </div>
       <Button type="submit">Save</Button>

@@ -7,7 +7,7 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
-const SRC_DIR = path.resolve('src');
+const SRC_DIR = path.resolve('client');
 const SERVER_DIR = path.resolve('server');
 const PACKAGE_JSON = path.resolve('package.json');
 const OPENAPI_YAML = path.resolve('openapi.yaml');

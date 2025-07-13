@@ -1,9 +1,9 @@
 // server/controllers.ts
 // Controllers for all API endpoints using drizzle and db.ts
 
-import type { User, PublicUser, Product, Seller, Report, Setting, DashboardStats, CartItem, Order, SellerOrder, SellerPayout } from './schema';
+import type { User, PublicUser, Product, Seller, Report, Setting, DashboardStats, CartItem, Order, SellerPayout } from './schema';
 import { drizzleDb } from './db';
-import { users, sellers, products, reports, settings, cart, orders, sellerOrders, sellerPayouts } from './schema';
+import { users, sellers, products, reports, settings, cart, orders, sellerPayouts } from './schema';
 import { and, eq, sql } from 'drizzle-orm';
 
 // === AUTHENTICATION CONTROLLERS ===
@@ -59,9 +59,9 @@ export function validateLoginRequest(data: unknown): LoginRequest | LoginError {
  */
  
 export function createPublicUser(user: User): PublicUser {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { password, ...publicUser } = user;
-  return publicUser;
+  const publicUser = { ...user }; // ai: dont modify this line
+  delete (publicUser as Record<string, unknown>).password;  
+  return publicUser as PublicUser;
 }
 
 /**
@@ -238,7 +238,7 @@ export async function updateUserStatus(id: number, action: string): Promise<Publ
     newStatus = user.status === 'banned' ? 'active' : 'banned';
   }
   
-  await db.update(users).set({ status: newStatus }).where(eq(users.id, id)).run();
+  await db.update(users).set({ status: newStatus, updatedAt: new Date().toISOString() }).where(eq(users.id, id)).run();
   
   return { ...user, status: newStatus };
 }
@@ -278,7 +278,7 @@ export async function updateSellerStatus(id: number, action: string): Promise<Se
     newStatus = 'inactive';
   }
   
-  await db.update(sellers).set({ status: newStatus }).where(eq(sellers.id, id)).run();
+  await db.update(sellers).set({ status: newStatus, updatedAt: new Date().toISOString() }).where(eq(sellers.id, id)).run();
   
   return { ...seller, status: newStatus };
 }
@@ -323,7 +323,7 @@ export async function updateProductStatus(id: number, action: string): Promise<P
     return null;
   }
   
-  await db.update(products).set({ status: newStatus }).where(eq(products.id, id)).run();
+  await db.update(products).set({ status: newStatus, updatedAt: new Date().toISOString() }).where(eq(products.id, id)).run();
   
   return { ...product, status: newStatus };
 }
@@ -356,7 +356,7 @@ export async function resolveReport(id: number): Promise<Report | null> {
     return null;
   }
   
-  await db.update(reports).set({ status: 'resolved' }).where(eq(reports.id, id)).run();
+  await db.update(reports).set({ status: 'resolved', updatedAt: new Date().toISOString() }).where(eq(reports.id, id)).run();
   
   return { ...report, status: 'resolved' };
 }
@@ -424,10 +424,17 @@ export async function getSellerProducts(token: string): Promise<Product[]> {
   }
 
   const db = await drizzleDb();
+  
+  // Find the seller profile that belongs to this user
+  const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
+  if (sellerProfile.length === 0) {
+    throw new Error('Seller profile not found');
+  }
+
   return await db
     .select()
     .from(products)
-    .where(eq(products.sellerId, seller.id))
+    .where(eq(products.sellerId, sellerProfile[0].id))
     .all();
 }
 
@@ -441,10 +448,17 @@ export async function getSellerProduct(token: string, productId: number): Promis
   }
 
   const db = await drizzleDb();
+  
+  // Find the seller profile that belongs to this user
+  const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
+  if (sellerProfile.length === 0) {
+    throw new Error('Seller profile not found');
+  }
+
   const rows = await db
     .select()
     .from(products)
-    .where(and(eq(products.id, productId), eq(products.sellerId, seller.id)))
+    .where(and(eq(products.id, productId), eq(products.sellerId, sellerProfile[0].id)))
     .all();
 
   return rows[0] || null;
@@ -478,6 +492,13 @@ export async function createSellerProduct(token: string, productData: {
   }
 
   const db = await drizzleDb();
+  
+  // Find the seller profile that belongs to this user
+  const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
+  if (sellerProfile.length === 0) {
+    throw new Error('Seller profile not found');
+  }
+
   const result = await db
     .insert(products)
     .values({
@@ -485,7 +506,7 @@ export async function createSellerProduct(token: string, productData: {
       price: productData.price,
       description: productData.description || null,
       imageUrl: productData.imageUrl || null,
-      sellerId: seller.id,
+      sellerId: sellerProfile[0].id,
       status: 'active',
     })
     .returning()
@@ -532,6 +553,13 @@ export async function updateSellerProduct(token: string, productId: number, prod
   }
 
   const db = await drizzleDb();
+  
+  // Find the seller profile that belongs to this user
+  const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
+  if (sellerProfile.length === 0) {
+    throw new Error('Seller profile not found');
+  }
+
   const result = await db
     .update(products)
     .set({
@@ -539,8 +567,9 @@ export async function updateSellerProduct(token: string, productId: number, prod
       ...(productData.price !== undefined && { price: productData.price }),
       ...(productData.description !== undefined && { description: productData.description }),
       ...(productData.imageUrl !== undefined && { imageUrl: productData.imageUrl }),
+      updatedAt: new Date().toISOString(),
     })
-    .where(and(eq(products.id, productId), eq(products.sellerId, seller.id)))
+    .where(and(eq(products.id, productId), eq(products.sellerId, sellerProfile[0].id)))
     .returning()
     .get();
 
@@ -563,9 +592,16 @@ export async function deleteSellerProduct(token: string, productId: number): Pro
   }
 
   const db = await drizzleDb();
+  
+  // Find the seller profile that belongs to this user
+  const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
+  if (sellerProfile.length === 0) {
+    throw new Error('Seller profile not found');
+  }
+
   await db
     .delete(products)
-    .where(and(eq(products.id, productId), eq(products.sellerId, seller.id)))
+    .where(and(eq(products.id, productId), eq(products.sellerId, sellerProfile[0].id)))
     .run();
 
   return true;
@@ -594,11 +630,13 @@ export async function getBuyerCart(token: string): Promise<CartItem[]> {
   }
 
   const db = await drizzleDb();
-  const cartItems = await db.select().from(cart).all();
+  const cartItems = await db.select().from(cart).where(eq(cart.userId, buyer.id)).all();
   
   return cartItems.map(item => ({
+    id: item.id,
+    userId: item.userId,
     productId: item.productId,
-    quantity: item.quantity || 0
+    quantity: item.quantity
   }));
 }
 
@@ -619,14 +657,21 @@ export async function addToCart(token: string, cartItem: CartItem): Promise<void
     throw new Error('Product not found');
   }
 
-  // Add or update cart item
-  await db.insert(cart).values({
-    productId: cartItem.productId,
-    quantity: cartItem.quantity
-  }).onConflictDoUpdate({
-    target: cart.productId,
-    set: { quantity: cartItem.quantity }
-  }).run();
+  // Check if item already exists in user's cart
+  const existingItem = await db.select().from(cart).where(and(eq(cart.userId, buyer.id), eq(cart.productId, cartItem.productId))).all();
+  
+  if (existingItem.length > 0) {
+    // Add to existing item quantity
+    const newQuantity = existingItem[0].quantity + cartItem.quantity;
+    await db.update(cart).set({ quantity: newQuantity, updatedAt: new Date().toISOString() }).where(and(eq(cart.userId, buyer.id), eq(cart.productId, cartItem.productId))).run();
+  } else {
+    // Add new item to cart
+    await db.insert(cart).values({
+      userId: buyer.id,
+      productId: cartItem.productId,
+      quantity: cartItem.quantity
+    }).run();
+  }
 }
 
 /**
@@ -642,10 +687,10 @@ export async function updateCartItem(token: string, productId: number, quantity:
   
   if (quantity <= 0) {
     // Remove item if quantity is 0 or negative
-    await db.delete(cart).where(eq(cart.productId, productId)).run();
+    await db.delete(cart).where(and(eq(cart.userId, buyer.id), eq(cart.productId, productId))).run();
   } else {
     // Update quantity
-    await db.update(cart).set({ quantity }).where(eq(cart.productId, productId)).run();
+    await db.update(cart).set({ quantity, updatedAt: new Date().toISOString() }).where(and(eq(cart.userId, buyer.id), eq(cart.productId, productId))).run();
   }
 }
 
@@ -659,7 +704,7 @@ export async function removeFromCart(token: string, productId: number): Promise<
   }
 
   const db = await drizzleDb();
-  await db.delete(cart).where(eq(cart.productId, productId)).run();
+  await db.delete(cart).where(and(eq(cart.userId, buyer.id), eq(cart.productId, productId))).run();
 }
 
 /**
@@ -694,15 +739,7 @@ export async function getBuyerOrders(token: string): Promise<Order[]> {
   }
 
   const db = await drizzleDb();
-  const orderRows = await db.select().from(orders).all();
-  
-  return orderRows.map(row => ({
-    id: row.id,
-    items: JSON.parse(row.items || '[]'),
-    total: row.total || 0,
-    status: row.status || 'pending',
-    createdAt: row.createdAt || new Date().toISOString()
-  }));
+  return await db.select().from(orders).where(eq(orders.buyerId, buyer.id)).all();
 }
 
 /**
@@ -715,20 +752,13 @@ export async function getBuyerOrder(token: string, orderId: number): Promise<Ord
   }
 
   const db = await drizzleDb();
-  const orderRows = await db.select().from(orders).where(eq(orders.id, orderId)).all();
+  const orderRows = await db.select().from(orders).where(and(eq(orders.id, orderId), eq(orders.buyerId, buyer.id))).all();
   
   if (orderRows.length === 0) {
     return null;
   }
   
-  const order = orderRows[0];
-  return {
-    id: order.id,
-    items: JSON.parse(order.items || '[]'),
-    total: order.total || 0,
-    status: order.status || 'pending',
-    createdAt: order.createdAt || new Date().toISOString()
-  };
+  return orderRows[0];
 }
 
 // === SELLER PROFILE CONTROLLERS ===
@@ -743,7 +773,7 @@ export async function getSellerProfile(token: string): Promise<Seller | null> {
   }
 
   const db = await drizzleDb();
-  const sellerRows = await db.select().from(sellers).where(eq(sellers.id, seller.id)).all();
+  const sellerRows = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
   
   if (sellerRows.length === 0) {
     return null;
@@ -767,7 +797,7 @@ export async function updateSellerProfile(token: string, profileData: {
   }
 
   const db = await drizzleDb();
-  await db.update(sellers).set(profileData).where(eq(sellers.id, seller.id)).run();
+  await db.update(sellers).set({ ...profileData, updatedAt: new Date().toISOString() }).where(eq(sellers.userId, seller.id)).run();
   
   return await getSellerProfile(token);
 }
@@ -775,14 +805,21 @@ export async function updateSellerProfile(token: string, profileData: {
 /**
  * Get seller orders
  */
-export async function getSellerOrders(token: string): Promise<SellerOrder[]> {
+export async function getSellerOrders(token: string): Promise<Order[]> {
   const seller = await checkSellerAccess(token);
   if (!seller) {
     throw new Error('Access denied');
   }
 
   const db = await drizzleDb();
-  return await db.select().from(sellerOrders).where(eq(sellerOrders.sellerId, seller.id)).all();
+  
+  // Find the seller profile that belongs to this user
+  const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
+  if (sellerProfile.length === 0) {
+    throw new Error('Seller profile not found');
+  }
+
+  return await db.select().from(orders).where(eq(orders.sellerId, sellerProfile[0].id)).all();
 }
 
 /**
@@ -795,7 +832,14 @@ export async function getSellerPayouts(token: string): Promise<SellerPayout[]> {
   }
 
   const db = await drizzleDb();
-  return await db.select().from(sellerPayouts).where(eq(sellerPayouts.sellerId, seller.id)).all();
+  
+  // Find the seller profile that belongs to this user
+  const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
+  if (sellerProfile.length === 0) {
+    throw new Error('Seller profile not found');
+  }
+
+  return await db.select().from(sellerPayouts).where(eq(sellerPayouts.sellerId, sellerProfile[0].id)).all();
 }
 
 // === EXISTING CONTROLLERS ===

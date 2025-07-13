@@ -684,6 +684,34 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/buyer/product/{id}:
+    get:
+      summary: Get product details for buyer
+      description: Retrieve details of a specific product that buyers can view and purchase.
+      tags:
+      - Buyer
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Product ID
+      responses:
+        '200':
+          description: Product details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/buyer/cart:
     get:
       summary: Get buyer's cart
@@ -825,6 +853,7 @@ components:
       required:
       - id
       - username
+      - name
       properties:
         id:
           type: integer
@@ -832,7 +861,7 @@ components:
           example: 1
         name:
           type: string
-          description: User's full name
+          description: User's full name (must be unique)
           example: Alice Johnson
         username:
           type: string
@@ -869,12 +898,17 @@ components:
       type: object
       required:
       - id
+      - userId
       - name
       properties:
         id:
           type: integer
           description: Seller's unique identifier
           example: 1
+        userId:
+          type: integer
+          description: ID of the user who owns this seller profile
+          example: 3
         name:
           type: string
           description: Seller's business name
@@ -1082,9 +1116,19 @@ components:
     CartItem:
       type: object
       required:
+      - id
+      - userId
       - productId
       - quantity
       properties:
+        id:
+          type: integer
+          description: Cart item's unique identifier
+          example: 1
+        userId:
+          type: integer
+          description: ID of the user who owns this cart item
+          example: 2
         productId:
           type: integer
           description: ID of the product in cart

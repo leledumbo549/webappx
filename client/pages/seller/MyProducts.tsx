@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-// import axios from '@/lib/axios'
+import axios from '@/lib/axios'
+import { isAxiosError } from '@/lib/axios'
 import type { SellerProduct } from '@/types/Seller'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,30 +13,23 @@ function MyProducts() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      // TODO: This endpoint is not defined in OpenAPI spec
-      // const res = await axios.get<SellerProduct[]>('/api/seller/products')
-      // setProducts(res.data)
-      
-      // Placeholder data until API is defined
-      setProducts([])
-      setError('Seller Products API not yet implemented')
-    } catch {
-      setError('Failed to load products')
+      const res = await axios.get<SellerProduct[]>('/api/seller/products')
+      setProducts(res.data)
+    } catch (err: unknown) {
+      if (isAxiosError(err)) setError(err.message)
+      else setError('Failed to load products')
     } finally {
       setLoading(false)
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleDelete = async (_p: SellerProduct) => {
+  const handleDelete = async (product: SellerProduct) => {
     try {
-      // TODO: This endpoint is not defined in OpenAPI spec
-      // await axios.delete(`/api/seller/products/${p.id}`)
-      // await fetchData()
-      
-      setError('Delete Product API not yet implemented')
-    } catch {
-      setError('Failed to delete product')
+      await axios.delete(`/api/seller/products/${product.id}`)
+      await fetchData()
+    } catch (err: unknown) {
+      if (isAxiosError(err)) setError(err.message)
+      else setError('Failed to delete product')
     }
   }
 

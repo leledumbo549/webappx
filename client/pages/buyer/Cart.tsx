@@ -1,5 +1,5 @@
 import { useAtom, useSetAtom } from 'jotai'
-import { cartAtom, removeFromCartAtom, updateCartQuantityAtom, cartTotalAtom } from '@/atoms/cartAtoms'
+import { cartAtom, removeFromCartAtom, updateCartQuantityAtom, cartTotalAtom, loadCartAtom } from '@/atoms/cartAtoms'
 import CartItem from '@/components/CartItem'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
@@ -11,12 +11,24 @@ function Cart() {
   const total = useAtom(cartTotalAtom)[0]
   const remove = useSetAtom(removeFromCartAtom)
   const update = useSetAtom(updateCartQuantityAtom)
+  const loadCart = useSetAtom(loadCartAtom)
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(false)
-  }, [])
+    const fetchCart = async () => {
+      setLoading(true)
+      try {
+        await loadCart()
+      } catch (error) {
+        console.error('Failed to load cart:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCart()
+  }, [loadCart])
 
   if (loading) return <Skeleton className="h-20" />
 
@@ -26,11 +38,11 @@ function Cart() {
     <div className="space-y-4">
       {items.map((item) => (
         <CartItem
-          key={item.product.id}
+          key={item.id}
           product={item.product}
           quantity={item.quantity}
-          onRemove={() => remove(item.product.id)}
-          onChange={(q) => update({ productId: item.product.id, quantity: q })}
+          onRemove={() => remove(item.productId)}
+          onChange={(q) => update({ productId: item.productId, quantity: q })}
         />
       ))}
       <div className="font-semibold">

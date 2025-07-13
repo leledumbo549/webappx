@@ -717,6 +717,24 @@ export const handlers = [
     }
   }),
 
+  // GET /api/buyer/product/{id} - Get product details for buyers (singular)
+  rest.get('/api/buyer/product/:id', async (req, res, ctx) => {
+    try {
+      const id = Number(req.params.id);
+      const product = await getBuyerProduct(id);
+      
+      if (!product) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Product not found')));
+      }
+      
+      return res(ctx.status(200), ctx.json(product));
+      
+    } catch (error) {
+      console.error('Get buyer product error:', error);
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
   // GET /api/buyer/orders - Get buyer's orders
   rest.get('/api/buyer/orders', async (req, res, ctx) => {
     try {
