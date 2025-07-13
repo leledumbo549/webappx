@@ -21,9 +21,9 @@ function SellerDashboard() {
       // Fetch seller products from the API
       const productsRes = await axios.get<SellerProduct[]>('/api/seller/products')
       setProducts(productsRes.data)
-      
-      // TODO: Orders API not yet implemented
-      setOrders([])
+      // Fetch seller orders from the API
+      const ordersRes = await axios.get<Order[]>('/api/seller/orders')
+      setOrders(ordersRes.data)
     } catch (err) {
       console.error('Failed to load dashboard data:', err)
       setError('Failed to load dashboard data')

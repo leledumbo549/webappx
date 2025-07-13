@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from '@/lib/axios'
 import { DataTable } from '@/components/DataTable'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import type { AdminUser } from '@/types/Admin'
+import { Eye } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,6 +20,7 @@ function ManageUsers() {
   const [data, setData] = useState<AdminUser[]>([])
   const [loading, setLoading] = useState(false)
   const [target, setTarget] = useState<AdminUser | null>(null)
+  const navigate = useNavigate()
 
   const fetchData = async () => {
     setLoading(true)
@@ -57,13 +60,22 @@ function ManageUsers() {
       cell: ({ row }) => {
         const u = row.original
         return (
-          <Button
-            variant={u.status === 'banned' ? 'secondary' : 'destructive'}
-            size="sm"
-            onClick={() => setTarget(u)}
-          >
-            {u.status === 'banned' ? 'Unban' : 'Ban'}
-          </Button>
+          <div className="flex gap-1">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => navigate(`/admin/users/${u.id}`)}
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={u.status === 'banned' ? 'secondary' : 'destructive'}
+              size="sm"
+              onClick={() => setTarget(u)}
+            >
+              {u.status === 'banned' ? 'Unban' : 'Ban'}
+            </Button>
+          </div>
         )
       },
       enableSorting: false,

@@ -23,12 +23,11 @@ function OrdersReceived() {
     }
   }
 
-  const handleUpdateStatus = async (_order: Order, _action: string) => {
+  const handleUpdateStatus = async (order: Order, action: string) => {
     try {
-      // Note: This endpoint is not yet implemented in the backend
-      // await axios.patch(`/api/seller/orders/${order.id}`, { action })
-      // await fetchData()
-      setError('Update Order Status API not yet implemented in backend')
+      await axios.patch(`/api/seller/orders/${order.id}`, { status: action })
+      await fetchData()
+      setError(null)
     } catch (err: unknown) {
       if (isAxiosError(err)) setError(err.message)
       else setError('Failed to update order status')

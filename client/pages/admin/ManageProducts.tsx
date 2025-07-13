@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from '@/lib/axios'
 import { DataTable } from '@/components/DataTable'
 import { Button } from '@/components/ui/button'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { AdminProduct } from '@/types/Admin'
+import { Eye } from 'lucide-react'
 
 function ManageProducts() {
   const [data, setData] = useState<AdminProduct[]>([])
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   const fetchData = async () => {
     setLoading(true)
@@ -46,41 +49,48 @@ function ManageProducts() {
       header: 'Actions',
       cell: ({ row }) => {
         const p = row.original
-        if (p.status === 'pending') {
-          return (
-            <div className="flex gap-1 justify-end">
-              <Button size="sm" onClick={() => updateStatus(p, 'approve')}>
-                Approve
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => updateStatus(p, 'reject')}
-              >
-                Reject
-              </Button>
-            </div>
-          )
-        }
-        if (p.status === 'flagged') {
-          return (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => updateStatus(p, 'remove')}
-            >
-              Remove
-            </Button>
-          )
-        }
         return (
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => updateStatus(p, 'flag')}
-          >
-            Flag
-          </Button>
+          <div className="flex gap-1">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => navigate(`/admin/products/${p.id}`)}
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+            {p.status === 'pending' && (
+              <>
+                <Button size="sm" onClick={() => updateStatus(p, 'approve')}>
+                  Approve
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => updateStatus(p, 'reject')}
+                >
+                  Reject
+                </Button>
+              </>
+            )}
+            {p.status === 'active' && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => updateStatus(p, 'flag')}
+                >
+                  Flag
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => updateStatus(p, 'remove')}
+                >
+                  Remove
+                </Button>
+              </>
+            )}
+          </div>
         )
       },
       enableSorting: false,

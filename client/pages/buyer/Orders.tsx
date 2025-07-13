@@ -1,19 +1,17 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from '@/lib/axios'
 import { isAxiosError } from '@/lib/axios'
+import type { Order } from '@/server/schema'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-
-interface Order {
-  id: number
-  total: number
-  status: string
-  createdAt: string
-}
+import { Eye } from 'lucide-react'
 
 function Orders() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   const fetchData = async () => {
     setLoading(true)
@@ -37,24 +35,56 @@ function Orders() {
   if (!orders.length) return <div>No orders yet.</div>
 
   return (
-    <ul className="space-y-2">
-      {orders.map((o) => (
-        <li key={o.id} className="border p-2 rounded">
-          <div>ID: {o.id}</div>
-          <div>Status: {o.status}</div>
-          <div>
-            Total:{' '}
-            {new Intl.NumberFormat('id-ID', {
-              style: 'currency',
-              currency: 'IDR',
-            }).format(o.total)}
+    <div className="space-y-4">
+      <h2 className="text-2xl font-bold">My Orders</h2>
+      <div className="space-y-4">
+        {orders.map((o) => (
+          <div key={o.id} className="border p-4 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-4">
+                  <div>
+                    <span className="font-semibold">Order #{o.id}</span>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Status: </span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      o.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                      o.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                      o.status === 'shipped' ? 'bg-purple-100 text-purple-800' :
+                      o.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {o.status}
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <span className="text-sm text-gray-600">Total: </span>
+                  <span className="font-semibold">
+                    {new Intl.NumberFormat('en-US', {
+                      style: 'currency',
+                      currency: 'USD',
+                    }).format(o.total)}
+                  </span>
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {o.createdAt ? new Date(o.createdAt).toLocaleString('en-US') : 'N/A'}
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => navigate(`/orders/${o.id}`)}
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                View Details
+              </Button>
+            </div>
           </div>
-          <div className="text-xs text-muted-foreground">
-            {new Date(o.createdAt).toLocaleString('id-ID')}
-          </div>
-        </li>
-      ))}
-    </ul>
+        ))}
+      </div>
+    </div>
   )
 }
 

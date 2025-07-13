@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from '@/lib/axios'
 import { DataTable } from '@/components/DataTable'
 import { Button } from '@/components/ui/button'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { AdminSeller } from '@/types/Admin'
+import { Eye } from 'lucide-react'
 
 function ManageSellers() {
   const [data, setData] = useState<AdminSeller[]>([])
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   const fetchData = async () => {
     setLoading(true)
@@ -41,37 +44,44 @@ function ManageSellers() {
       header: 'Actions',
       cell: ({ row }) => {
         const s = row.original
-        if (s.status === 'pending') {
-          return (
-            <div className="flex gap-1 justify-end">
-              <Button size="sm" onClick={() => updateStatus(s, 'approve')}>
-                Approve
-              </Button>
+        return (
+          <div className="flex gap-1">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => navigate(`/admin/sellers/${s.id}`)}
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+            {s.status === 'pending' && (
+              <>
+                <Button size="sm" onClick={() => updateStatus(s, 'approve')}>
+                  Approve
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => updateStatus(s, 'reject')}
+                >
+                  Reject
+                </Button>
+              </>
+            )}
+            {s.status === 'active' && (
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={() => updateStatus(s, 'reject')}
+                onClick={() => updateStatus(s, 'deactivate')}
               >
-                Reject
+                Deactivate
               </Button>
-            </div>
-          )
-        }
-        if (s.status === 'active') {
-          return (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => updateStatus(s, 'deactivate')}
-            >
-              Deactivate
-            </Button>
-          )
-        }
-        return (
-          <Button size="sm" onClick={() => updateStatus(s, 'activate')}>
-            Activate
-          </Button>
+            )}
+            {s.status === 'inactive' && (
+              <Button size="sm" onClick={() => updateStatus(s, 'activate')}>
+                Activate
+              </Button>
+            )}
+          </div>
         )
       },
       enableSorting: false,

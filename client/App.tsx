@@ -10,6 +10,7 @@ import Home from './pages/buyer/Home'
 import Catalog from './pages/buyer/Catalog'
 import Cart from './pages/buyer/Cart'
 import Orders from './pages/buyer/Orders'
+import OrderDetail from './pages/buyer/OrderDetail'
 import Profile from './pages/buyer/Profile'
 import ProductDetail from './pages/buyer/ProductDetail'
 import SellerDashboard from './pages/seller/SellerDashboard'
@@ -22,8 +23,11 @@ import Payouts from './pages/seller/Payouts'
 import StoreProfile from './pages/seller/StoreProfile'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import ManageUsers from './pages/admin/ManageUsers'
+import ViewUser from './pages/admin/ViewUser'
 import ManageSellers from './pages/admin/ManageSellers'
+import ViewSeller from './pages/admin/ViewSeller'
 import ManageProducts from './pages/admin/ManageProducts'
+import AdminViewProduct from './pages/admin/ViewProduct'
 import Reports from './pages/admin/Reports'
 import SiteSettings from './pages/admin/SiteSettings'
 import { Toaster } from './components/ui/sonner'
@@ -67,6 +71,7 @@ function App() {
               <Route path="/catalog" element={<Catalog />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path="/orders/:id" element={<OrderDetail />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/buyer/product/:id" element={<ProductDetail />} />
               
@@ -84,8 +89,11 @@ function App() {
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<ManageUsers />} />
+              <Route path="/admin/users/:id" element={<ViewUser />} />
               <Route path="/admin/sellers" element={<ManageSellers />} />
+              <Route path="/admin/sellers/:id" element={<ViewSeller />} />
               <Route path="/admin/products" element={<ManageProducts />} />
+              <Route path="/admin/products/:id" element={<AdminViewProduct />} />
               <Route path="/admin/reports" element={<Reports />} />
               <Route path="/admin/settings" element={<SiteSettings />} />
             </Routes>

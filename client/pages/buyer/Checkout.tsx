@@ -3,6 +3,7 @@ import { useAtomValue } from 'jotai'
 import { cartAtom } from '@/atoms/cartAtoms'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import axios from '@/lib/axios'
 
 function Checkout() {
   const cart = useAtomValue(cartAtom)
@@ -13,8 +14,17 @@ function Checkout() {
 
   const handleCheckout = async () => {
     setLoading(true)
+    setError(null)
     try {
-      setError('Checkout API not yet implemented')
+      const items = cart.map(item => ({ productId: item.product.id, quantity: item.quantity }))
+      // For demo, use a static shipping address and payment method
+      await axios.post('/api/buyer/orders', {
+        items,
+        shippingAddress: '123 Main St, City, Country',
+        paymentMethod: 'credit_card',
+      })
+      // Optionally, redirect or show success
+      window.location.hash = '/orders'
     } catch {
       setError('Failed to create order')
     } finally {

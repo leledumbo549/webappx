@@ -12,7 +12,8 @@ function Profile() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    alert('Profile updated (mock)')
+    // TODO: Implement profile update API if available
+    // For now, just show a message or leave as read-only
   }
 
   return (

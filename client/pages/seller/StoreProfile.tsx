@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-// import axios from '@/lib/axios'
+import axios from '@/lib/axios'
 import type { SellerProfile } from '@/types/Seller'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,20 +7,16 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 function StoreProfile() {
-  // const [profile, setProfile] = useState<SellerProfile | null>(null)
-  const [profile] = useState<SellerProfile | null>(null)
+  const [profile, setProfile] = useState<SellerProfile | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      // TODO: This endpoint is not defined in OpenAPI spec yet
-      // const res = await axios.get<SellerProfile>('/api/seller/profile')
-      // setProfile(res.data)
-      
-      // Placeholder data until API is defined
-      setError('Seller Profile API not yet implemented in OpenAPI spec')
+      const res = await axios.get<SellerProfile>('/api/seller/profile')
+      setProfile(res.data)
+      setError(null)
     } catch (err) {
       console.error('Failed to load profile:', err)
       setError('Failed to load profile')
@@ -35,20 +31,10 @@ function StoreProfile() {
 
     setLoading(true)
     setError(null)
-    
-    // const formData = new FormData(e.currentTarget)
-    // const updatedProfile = {
-    //   name: formData.get('name') as string,
-    //   bio: formData.get('bio') as string,
-    //   contact: formData.get('contact') as string,
-    // }
-
     try {
-      // TODO: This endpoint is not defined in OpenAPI spec yet
-      // const res = await axios.put<SellerProfile>('/api/seller/profile', updatedProfile)
-      // setProfile(res.data)
-      
-      setError('Update Profile API not yet implemented in OpenAPI spec')
+      const res = await axios.put<SellerProfile>('/api/seller/profile', profile)
+      setProfile(res.data)
+      setError(null)
     } catch (err) {
       console.error('Failed to update profile:', err)
       setError('Failed to update profile')

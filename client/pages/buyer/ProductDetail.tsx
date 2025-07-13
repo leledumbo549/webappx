@@ -23,7 +23,7 @@ function ProductDetail() {
     
     setLoading(true)
     try {
-      const res = await axios.get<Product>(`/api/buyer/product/${idval}`)
+      const res = await axios.get<Product>(`/api/buyer/products/${idval}`)
       setProduct(res.data)
     } catch (err) {
       if (isAxiosError(err)) setError(err.message)

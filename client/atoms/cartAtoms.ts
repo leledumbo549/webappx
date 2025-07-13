@@ -38,7 +38,7 @@ export const loadCartAtom = atom(
       // Fetch product details for each cart item
       const cartWithProducts: CartItemWithProduct[] = await Promise.all(
         cartItems.map(async (item) => {
-          const productRes = await axios.get<Product>(`/api/buyer/product/${item.productId}`)
+          const productRes = await axios.get<Product>(`/api/buyer/products/${item.productId}`)
           return {
             ...item,
             product: productRes.data
@@ -82,7 +82,7 @@ export const addToCartAtom = atom(
       // Fetch product details for each cart item
       const cartWithProducts: CartItemWithProduct[] = await Promise.all(
         cartItems.map(async (item) => {
-          const productRes = await axios.get<Product>(`/api/buyer/product/${item.productId}`)
+          const productRes = await axios.get<Product>(`/api/buyer/products/${item.productId}`)
           return {
             ...item,
             product: productRes.data
@@ -111,7 +111,7 @@ export const removeFromCartAtom = atom(
       // Fetch product details for each cart item
       const cartWithProducts: CartItemWithProduct[] = await Promise.all(
         cartItems.map(async (item) => {
-          const productRes = await axios.get<Product>(`/api/buyer/product/${item.productId}`)
+          const productRes = await axios.get<Product>(`/api/buyer/products/${item.productId}`)
           return {
             ...item,
             product: productRes.data
@@ -144,7 +144,7 @@ export const updateCartQuantityAtom = atom(
       // Fetch product details for each cart item
       const cartWithProducts: CartItemWithProduct[] = await Promise.all(
         cartItems.map(async (item) => {
-          const productRes = await axios.get<Product>(`/api/buyer/product/${item.productId}`)
+          const productRes = await axios.get<Product>(`/api/buyer/products/${item.productId}`)
           return {
             ...item,
             product: productRes.data
