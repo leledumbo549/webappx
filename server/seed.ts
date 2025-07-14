@@ -9,7 +9,6 @@ import {
   settings,
   orders,
   sellerPayouts,
-  cart,
 } from './schema';
 
 // --- Seed data ---
@@ -142,16 +141,6 @@ const seedOrders = [
   { id: 7, productId: 5, productName: 'Stroberi Segar Lembang', quantity: 3, items: '[{"productId":5,"quantity":3}]', total: 135000, status: 'delivered', shippingAddress: '123 Main St', paymentMethod: 'credit_card', trackingNumber: 'TRK1007', buyerId: 6, sellerId: 2, createdAt: '2024-01-13T10:25:00Z', updatedAt: '2024-01-13T10:25:00Z' },
 ];
 
-const seedCartItems = [
-  // Sari's cart (userId: 2)
-  { id: 1, userId: 2, productId: 2, quantity: 1, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Speaker Bluetooth JBL Flip 5
-  { id: 2, userId: 2, productId: 9, quantity: 2, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Mouse Gaming Razer DeathAdder V3
-  
-  // Fitri's cart (userId: 6)
-  { id: 3, userId: 6, productId: 6, quantity: 4, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Pisang Raja Premium
-  { id: 4, userId: 6, productId: 11, quantity: 1, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Selendang Sutra Batik Pesisir
-  { id: 5, userId: 6, productId: 12, quantity: 1, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, // Dompet Kulit Asli Garut
-];
 
 const seedSellerPayouts = [
   // Toko Elektronik Maju payouts (sellerId: 1)
@@ -207,11 +196,6 @@ export async function seedDb(db: ReturnType<typeof drizzle>) {
   // Seed orders
   for (const o of seedOrders) {
     await db.insert(orders).values(o).onConflictDoNothing().run();
-  }
-
-  // Seed cart items
-  for (const c of seedCartItems) {
-    await db.insert(cart).values(c).onConflictDoNothing().run();
   }
 
   // Seed seller payouts
