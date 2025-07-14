@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Plus, DollarSign, X } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
 import { formatIDR } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 
 function Payouts() {
   const [payouts, setPayouts] = useState<SellerPayout[]>([])
@@ -165,11 +166,12 @@ function Payouts() {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   Payout #{payout.id}
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(payout.status || 'pending')}`}
+                  <Badge
+                    variant="secondary"
+                    className={`rounded-full ${getStatusColor(payout.status || 'pending')}`}
                   >
                     {payout.status}
-                  </span>
+                  </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent>

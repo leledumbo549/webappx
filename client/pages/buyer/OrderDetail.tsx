@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Package, Truck, CheckCircle, Clock } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
 import { formatIDR } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 
 // Interface matching the OpenAPI specification
 interface OrderDetail {
@@ -113,11 +114,12 @@ function OrderDetail() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}
+                <Badge
+                  variant="secondary"
+                  className={`rounded-full ${getStatusColor(order.status || 'pending')}`}
                 >
                   {order.status}
-                </span>
+                </Badge>
                 <span className="text-sm text-gray-500">
                   {order.createdAt &&
                     new Date(order.createdAt).toLocaleDateString()}
