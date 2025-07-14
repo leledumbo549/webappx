@@ -940,7 +940,8 @@ export async function createSellerPayout(token: string, payoutData: {
 
   const payout = await db.insert(sellerPayouts).values({
     amount: payoutData.amount,
-    date: new Date().toISOString(),
+    bankAccount: payoutData.bankAccount,
+    processedAt: null,
     sellerId: sellerProfile[0].id,
     status: 'pending'
   }).returning().get();
@@ -975,9 +976,10 @@ export async function updateSellerOrderStatus(token: string, orderId: number, st
   }
 
   // Update order status
-  await db.update(orders).set({ 
-    status: statusData.status, 
-    updatedAt: new Date().toISOString() 
+  await db.update(orders).set({
+    status: statusData.status,
+    trackingNumber: statusData.trackingNumber,
+    updatedAt: new Date().toISOString()
   }).where(eq(orders.id, orderId)).run();
 
   // Return updated order
@@ -1018,8 +1020,11 @@ export async function createBuyerOrder(token: string, orderData: {
       productId: item.productId,
       productName: productData.name,
       quantity: item.quantity,
+      items: JSON.stringify([{ productId: item.productId, quantity: item.quantity }]),
       total: itemTotal,
       status: 'pending',
+      shippingAddress: orderData.shippingAddress,
+      paymentMethod: orderData.paymentMethod,
       buyerId: buyer.id,
       sellerId: productData.sellerId
     }).returning().get();

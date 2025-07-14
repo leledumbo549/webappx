@@ -129,17 +129,17 @@ const seedSettings = [
 
 const seedOrders = [
   // Sari's orders (buyerId: 2)
-  { id: 1, productId: 1, productName: 'Headphone Wireless Sony WH-1000XM4', quantity: 2, total: 5000000, status: 'pending', buyerId: 2, sellerId: 1, createdAt: '2024-01-15T10:30:00Z', updatedAt: '2024-01-15T10:30:00Z' },
-  { id: 2, productId: 4, productName: 'Alpukat Mentega Segar', quantity: 5, total: 125000, status: 'shipped', buyerId: 2, sellerId: 2, createdAt: '2024-01-14T09:15:00Z', updatedAt: '2024-01-14T09:15:00Z' },
-  { id: 3, productId: 7, productName: 'Laptop Stand Aluminium Premium', quantity: 1, total: 350000, status: 'delivered', buyerId: 2, sellerId: 3, createdAt: '2024-01-13T14:20:00Z', updatedAt: '2024-01-13T14:20:00Z' },
+  { id: 1, productId: 1, productName: 'Headphone Wireless Sony WH-1000XM4', quantity: 2, items: '[{"productId":1,"quantity":2}]', total: 5000000, status: 'pending', shippingAddress: '123 Main St', paymentMethod: 'credit_card', buyerId: 2, sellerId: 1, createdAt: '2024-01-15T10:30:00Z', updatedAt: '2024-01-15T10:30:00Z' },
+  { id: 2, productId: 4, productName: 'Alpukat Mentega Segar', quantity: 5, items: '[{"productId":4,"quantity":5}]', total: 125000, status: 'shipped', shippingAddress: '123 Main St', paymentMethod: 'credit_card', trackingNumber: 'TRK1002', buyerId: 2, sellerId: 2, createdAt: '2024-01-14T09:15:00Z', updatedAt: '2024-01-14T09:15:00Z' },
+  { id: 3, productId: 7, productName: 'Laptop Stand Aluminium Premium', quantity: 1, items: '[{"productId":7,"quantity":1}]', total: 350000, status: 'delivered', shippingAddress: '123 Main St', paymentMethod: 'credit_card', trackingNumber: 'TRK1003', buyerId: 2, sellerId: 3, createdAt: '2024-01-13T14:20:00Z', updatedAt: '2024-01-13T14:20:00Z' },
   
   // Fitri's orders (buyerId: 6)
-  { id: 4, productId: 10, productName: 'Tas Kulit Asli Batik', quantity: 1, total: 1800000, status: 'pending', buyerId: 6, sellerId: 4, createdAt: '2024-01-16T11:45:00Z', updatedAt: '2024-01-16T11:45:00Z' },
-  { id: 5, productId: 8, productName: 'Keyboard Mechanical RGB Logitech', quantity: 1, total: 1200000, status: 'processing', buyerId: 6, sellerId: 3, createdAt: '2024-01-15T16:30:00Z', updatedAt: '2024-01-15T16:30:00Z' },
+  { id: 4, productId: 10, productName: 'Tas Kulit Asli Batik', quantity: 1, items: '[{"productId":10,"quantity":1}]', total: 1800000, status: 'pending', shippingAddress: '123 Main St', paymentMethod: 'credit_card', buyerId: 6, sellerId: 4, createdAt: '2024-01-16T11:45:00Z', updatedAt: '2024-01-16T11:45:00Z' },
+  { id: 5, productId: 8, productName: 'Keyboard Mechanical RGB Logitech', quantity: 1, items: '[{"productId":8,"quantity":1}]', total: 1200000, status: 'processing', shippingAddress: '123 Main St', paymentMethod: 'credit_card', buyerId: 6, sellerId: 3, createdAt: '2024-01-15T16:30:00Z', updatedAt: '2024-01-15T16:30:00Z' },
   
   // Fitri's additional orders (buyerId: 6)
-  { id: 6, productId: 3, productName: 'Smartwatch Samsung Galaxy Watch 5', quantity: 1, total: 3500000, status: 'shipped', buyerId: 6, sellerId: 1, createdAt: '2024-01-14T13:10:00Z', updatedAt: '2024-01-14T13:10:00Z' },
-  { id: 7, productId: 5, productName: 'Stroberi Segar Lembang', quantity: 3, total: 135000, status: 'delivered', buyerId: 6, sellerId: 2, createdAt: '2024-01-13T10:25:00Z', updatedAt: '2024-01-13T10:25:00Z' },
+  { id: 6, productId: 3, productName: 'Smartwatch Samsung Galaxy Watch 5', quantity: 1, items: '[{"productId":3,"quantity":1}]', total: 3500000, status: 'shipped', shippingAddress: '123 Main St', paymentMethod: 'credit_card', trackingNumber: 'TRK1006', buyerId: 6, sellerId: 1, createdAt: '2024-01-14T13:10:00Z', updatedAt: '2024-01-14T13:10:00Z' },
+  { id: 7, productId: 5, productName: 'Stroberi Segar Lembang', quantity: 3, items: '[{"productId":5,"quantity":3}]', total: 135000, status: 'delivered', shippingAddress: '123 Main St', paymentMethod: 'credit_card', trackingNumber: 'TRK1007', buyerId: 6, sellerId: 2, createdAt: '2024-01-13T10:25:00Z', updatedAt: '2024-01-13T10:25:00Z' },
 ];
 
 const seedCartItems = [
@@ -155,19 +155,19 @@ const seedCartItems = [
 
 const seedSellerPayouts = [
   // Toko Elektronik Maju payouts (sellerId: 1)
-  { id: 1, amount: 8500000, date: '2024-01-15', sellerId: 1, status: 'completed', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 2, amount: 12500000, date: '2024-01-10', sellerId: 1, status: 'completed', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 1, amount: 8500000, bankAccount: '1234567890', sellerId: 1, status: 'completed', processedAt: '2024-01-15T00:00:00Z', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 2, amount: 12500000, bankAccount: '1234567890', sellerId: 1, status: 'completed', processedAt: '2024-01-10T00:00:00Z', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
   
   // Warung Buah Segar payouts (sellerId: 2)
-  { id: 3, amount: 5000000, date: '2024-01-15', sellerId: 2, status: 'completed', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 4, amount: 7500000, date: '2024-01-08', sellerId: 2, status: 'completed', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 3, amount: 5000000, bankAccount: '1234567890', sellerId: 2, status: 'completed', processedAt: '2024-01-15T00:00:00Z', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 4, amount: 7500000, bankAccount: '1234567890', sellerId: 2, status: 'completed', processedAt: '2024-01-08T00:00:00Z', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
   
   // Toko Gadget Indonesia payouts (sellerId: 3)
-  { id: 5, amount: 10000000, date: '2024-01-15', sellerId: 3, status: 'pending', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 6, amount: 6500000, date: '2024-01-12', sellerId: 3, status: 'completed', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 5, amount: 10000000, bankAccount: '1234567890', sellerId: 3, status: 'pending', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 6, amount: 6500000, bankAccount: '1234567890', sellerId: 3, status: 'completed', processedAt: '2024-01-12T00:00:00Z', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
   
   // Boutique Fashion Nusantara payouts (sellerId: 4)
-  { id: 7, amount: 13500000, date: '2024-01-15', sellerId: 4, status: 'pending', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 7, amount: 13500000, bankAccount: '1234567890', sellerId: 4, status: 'pending', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
 ];
 
 // --- Seed function ---
