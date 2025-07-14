@@ -144,10 +144,16 @@ export function DataTable<TData, TValue>({
                       }
                       className={cn(
                         canSort ? 'cursor-pointer select-none' : '',
-                        meta?.widthClass
+                        meta?.widthClass,
+                        header.column.id === 'actions' ? 'text-right' : ''
                       )}
                     >
-                      <div className="flex items-center gap-1">
+                      <div
+                        className={cn(
+                          'flex items-center gap-1',
+                          header.column.id === 'actions' ? 'justify-end' : ''
+                        )}
+                      >
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext()
