@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
+import { formatIDR } from '@/lib/utils'
 
 function ViewProduct() {
   const { id } = useParams<{ id: string }>()
@@ -68,7 +69,7 @@ function ViewProduct() {
               <h3 className="font-semibold text-sm text-muted-foreground">
                 Price
               </h3>
-              <p className="text-lg font-bold">${product.price}</p>
+              <p className="text-lg font-bold">{formatIDR(product.price)}</p>
             </div>
             <div>
               <h3 className="font-semibold text-sm text-muted-foreground">

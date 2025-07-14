@@ -6,6 +6,7 @@ import type { SellerProduct, Order } from '@/types/Seller'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
+import { formatIDR } from '@/lib/utils'
 import { sellerProductsRefreshAtom } from '@/atoms/sellerAtoms'
 
 function SellerDashboard() {
@@ -107,7 +108,7 @@ function SellerDashboard() {
                   <div>
                     <h3 className="font-semibold">{product.name}</h3>
                     <p className="text-sm text-muted-foreground">
-                      ${product.price}
+                      {formatIDR(product.price)}
                     </p>
                     {product.description && (
                       <p className="text-sm text-muted-foreground mt-1">

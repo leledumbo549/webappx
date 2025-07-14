@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Package, Truck, CheckCircle, Clock } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
+import { formatIDR } from '@/lib/utils'
 
 // Interface matching the OpenAPI specification
 interface OrderDetail {
@@ -180,7 +181,7 @@ function OrderDetail() {
               <div className="flex justify-between">
                 <span>Total Amount:</span>
                 <span className="font-bold text-lg text-green-600">
-                  ${order.total?.toFixed(2)}
+                  {formatIDR(order.total ?? 0)}
                 </span>
               </div>
               {order.paymentMethod && (
