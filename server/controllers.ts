@@ -258,10 +258,12 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     .where(eq(sellers.status, 'active'))
     .all();
 
-  const [{ count: productCount }] = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(products)
+  // Sum the total value of all orders to compute sales
+  const [{ sum: totalSalesRaw }] = await db
+    .select({ sum: sql<number>`SUM(${orders.total})` })
+    .from(orders)
     .all();
+  const totalSales = Number(totalSalesRaw ?? 0);
 
   const [{ count: openReports }] = await db
     .select({ count: sql<number>`COUNT(*)` })
@@ -272,7 +274,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   return {
     totalUsers,
     totalSellers,
-    totalSales: Number(productCount) * 10, // Demo calculation
+    totalSales,
     openReports,
   };
 }
