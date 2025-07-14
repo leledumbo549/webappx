@@ -1,31 +1,68 @@
 # AGENTS Instructions
 
-This repository hosts a small demo web app using **Vite**, **React** and **TypeScript**. The code lives in the `client/` directory while a lightweight API mock server is placed in `server/`. Formatting is handled with Prettier and linting with ESLint.
+This project is a demo web app built with **Vite**, **React**, and **TypeScript**.
+
+---
+
+## Purpose
+
+These instructions define how AI code agents and human contributors should modify the codebase consistently and safely.
+
+---
 
 ## Development
 
-- Install dependencies with `npm install`.
-- Start the dev server using `npm run dev`.
-- Create a production build with `npm run build`.
+- Install dependencies: `npm install`
+- Start the dev server: `npm run dev`
+- Create a production build: `npm run build`
 
-## Pre‑commit checklist
+---
 
-- Run `npm run format` to apply the Prettier style (semi‑colons disabled, single quotes, trailing commas where valid).
-- Run `npm run lint` and fix any reported issues.
-- Ensure `npm run build` succeeds before opening a pull request.
+## Pre-commit Checklist
 
-## Coding guidelines
+- Format code: `npm run format`
+- Lint: `npm run lint`
+- Ensure `npm run build` passes.
 
-- TypeScript is used across both client and server code.
-- Do not modify lines that include the comment `ai: dont modify this line`.
-- Dont create any new directory.
-- Dont install any new packages.
-- Dont update `README.md`.
-- Dont update `openapi.yaml` except directly ordered.
-- Ensure client/ code connect to api defined in `openapi.yaml`.
-- Ensure server/ code to implement all api defined in `openapi.yaml`.
+---
 
-## Pull requests
+## Branching & PR Workflow
 
-Describe your changes clearly and mention any new scripts or steps required to build or run the project.
- 
+- In the **pull request description and each commit message**, clearly explain:
+  - **What** the agent has changed or done.
+  - **How** it was done — list steps taken to fix or implement.
+  - **Why** it was done — the purpose or goal.
+  - Be as clear and descriptive as possible for reviewers and future reference.
+
+---
+
+## Coding Guidelines
+
+### ✅ Allowed
+
+- **Use TypeScript** for all code.
+- **State Management**
+  - Use [Jotai](https://jotai.org/) atoms for shared state.
+  - Place atoms in `client/atoms/` with descriptive names.
+- **Routing**
+  - Define routes in `App.tsx` using `HashRouter` and `Routes`.
+  - Place pages in the `pages/` directory.
+- **API Calls**
+  - Use `lib/axios` for all HTTP requests.
+  - Keep server mocks inside `server/` only.
+- **Types**
+  - Define clear TypeScript interfaces for all data models.
+- **Special Comments**
+  - Never modify any line with `ai: dont modify this line`.
+- **Scoped Changes**
+  - If ordered to work in `client` code, do not modify anything outside `/client`.
+  - If ordered to work in `server` code, do not modify anything outside `/server`.
+  - If ordered to modify the OpenAPI spec, only modify `openapi.yaml` — do not touch any other files.
+
+### 🚫 Forbidden
+
+- Do not create new directories outside `client/` and `server/`.
+- Do not install new packages without approval.
+- Do not modify `README.md` or `openapi.yaml` without direct instruction.
+
+
