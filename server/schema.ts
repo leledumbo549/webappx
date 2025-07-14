@@ -40,6 +40,8 @@ export const sellers = sqliteTable('sellers', {
   logo: text('logo'),
   bio: text('bio'),
   contact: text('contact'),
+  address: text('address'),
+  website: text('website'),
   status: text('status'), // 'active' | 'inactive' | 'pending'
   createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
@@ -68,8 +70,12 @@ export const orders = sqliteTable('orders', {
   productId: integer('productId').notNull(),
   productName: text('productName').notNull(),
   quantity: integer('quantity').notNull(),
+  items: text('items'), // JSON string of cart items
   total: real('total').notNull(),
   status: text('status'), // 'pending' | 'processing' | 'shipped' | 'delivered'
+  shippingAddress: text('shippingAddress'),
+  paymentMethod: text('paymentMethod'),
+  trackingNumber: text('trackingNumber'),
   buyerId: integer('buyerId'), // ID of the buyer who placed the order
   sellerId: integer('sellerId'), // ID of the seller who owns the product
   createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
@@ -82,7 +88,8 @@ export const orders = sqliteTable('orders', {
 export const sellerPayouts = sqliteTable('sellerPayouts', {
   id: integer('id').primaryKey(),
   amount: real('amount').notNull(),
-  date: text('date').notNull(),
+  bankAccount: text('bankAccount'),
+  processedAt: text('processedAt'),
   sellerId: integer('sellerId'),
   status: text('status'), // 'pending' | 'completed' | 'failed'
   createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
@@ -186,6 +193,8 @@ export const createTableStatements = [
     logo TEXT,
     bio TEXT,
     contact TEXT,
+    address TEXT,
+    website TEXT,
     status TEXT,
     createdAt TEXT,
     updatedAt TEXT
@@ -210,8 +219,12 @@ export const createTableStatements = [
     productId INTEGER NOT NULL,
     productName TEXT NOT NULL,
     quantity INTEGER NOT NULL,
+    items TEXT,
     total REAL NOT NULL,
     status TEXT,
+    shippingAddress TEXT,
+    paymentMethod TEXT,
+    trackingNumber TEXT,
     buyerId INTEGER,
     sellerId INTEGER,
     createdAt TEXT,
@@ -222,7 +235,8 @@ export const createTableStatements = [
   CREATE TABLE IF NOT EXISTS sellerPayouts (
     id INTEGER PRIMARY KEY,
     amount REAL NOT NULL,
-    date TEXT NOT NULL,
+    bankAccount TEXT,
+    processedAt TEXT,
     sellerId INTEGER,
     status TEXT,
     createdAt TEXT,

@@ -101,12 +101,14 @@ function Payouts() {
       meta: { widthClass: 'w-28', cellClass: 'truncate' },
     },
     {
-      accessorKey: 'date',
+      accessorKey: 'processedAt',
       header: 'Date',
       cell: ({ row }) =>
-        row.original.date
-          ? new Date(row.original.date).toLocaleDateString()
-          : 'N/A',
+        row.original.processedAt
+          ? new Date(row.original.processedAt).toLocaleDateString()
+          : row.original.createdAt
+            ? new Date(row.original.createdAt).toLocaleDateString()
+            : 'N/A',
       meta: { widthClass: 'w-28', cellClass: 'truncate' },
     },
     {
