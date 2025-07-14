@@ -1,17 +1,29 @@
 import { useEffect, useState } from 'react'
-import axios from '@/lib/axios'
-import { isAxiosError } from '@/lib/axios'
+import axios, { isAxiosError } from '@/lib/axios'
 import type { Order } from '@/types/Seller'
+import { DataTable } from '@/components/DataTable'
+import type { ColumnDef } from '@tanstack/react-table'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Spinner } from '@/components/ui/spinner'
-import { formatIDR } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
+import { formatIDR } from '@/lib/utils'
 
 function OrdersReceived() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [target, setTarget] = useState<{
+    order: Order
+    action: 'shipped' | 'delivered'
+  } | null>(null)
 
   const fetchData = async () => {
     setLoading(true)
@@ -26,16 +38,12 @@ function OrdersReceived() {
     }
   }
 
-  const handleUpdateStatus = async (order: Order, action: string) => {
-    const actionText =
-      action === 'ship'
-        ? 'mark this order as shipped'
-        : 'mark this order as delivered'
-    const confirmed = confirm(`Are you sure you want to ${actionText}?`)
-    if (!confirmed) return
-
+  const updateStatus = async (
+    order: Order,
+    status: 'shipped' | 'delivered'
+  ) => {
     try {
-      await axios.patch(`/api/seller/orders/${order.id}`, { status: action })
+      await axios.patch(`/api/seller/orders/${order.id}`, { status })
       await fetchData()
       setError(null)
     } catch (err: unknown) {
@@ -65,41 +73,94 @@ function OrdersReceived() {
     }
   }
 
-  if (loading) return <Spinner />
-  if (error) return <div className="text-red-600">{error}</div>
-  if (!orders.length) return <div>No orders yet.</div>
+  const columns: ColumnDef<Order>[] = [
+    {
+      accessorKey: 'productName',
+      header: 'Product',
+      meta: { widthClass: 'w-40', cellClass: 'truncate' },
+    },
+    {
+      accessorKey: 'quantity',
+      header: 'Qty',
+      meta: { widthClass: 'w-12' },
+    },
+    {
+      accessorKey: 'total',
+      header: 'Total',
+      cell: ({ row }) => formatIDR(row.original.total),
+      meta: { widthClass: 'w-28', cellClass: 'truncate' },
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => (
+        <Badge
+          variant="secondary"
+          className={`rounded-full ${getStatusColor(row.original.status || 'pending')}`}
+        >
+          {row.original.status}
+        </Badge>
+      ),
+      meta: { widthClass: 'w-24', cellClass: 'truncate' },
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => {
+        const o = row.original
+        return (
+          <div className="flex gap-1">
+            {o.status !== 'shipped' && o.status !== 'delivered' && (
+              <Button
+                size="sm"
+                onClick={() => setTarget({ order: o, action: 'shipped' })}
+              >
+                Ship
+              </Button>
+            )}
+            {o.status !== 'delivered' && (
+              <Button
+                size="sm"
+                onClick={() => setTarget({ order: o, action: 'delivered' })}
+              >
+                Deliver
+              </Button>
+            )}
+          </div>
+        )
+      },
+      enableSorting: false,
+      meta: { widthClass: 'w-40' },
+    },
+  ]
 
   return (
-    <div className="space-y-4">
-      {orders.map((order) => (
-        <Card key={order.id}>
-          <CardHeader>
-            <CardTitle>{order.productName}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div>Quantity: {order.quantity}</div>
-            <div>Total: {formatIDR(order.total)}</div>
-            <div className="flex items-center gap-1">
-              <span>Status:</span>
-              <Badge
-                variant="secondary"
-                className={`rounded-full ${getStatusColor(order.status || 'pending')}`}
-              >
-                {order.status}
-              </Badge>
-            </div>
-            <div className="flex gap-2 mt-2">
-              <Button onClick={() => handleUpdateStatus(order, 'ship')}>
-                Mark as Shipped
-              </Button>
-              <Button onClick={() => handleUpdateStatus(order, 'deliver')}>
-                Mark as Delivered
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+    <>
+      <DataTable columns={columns} data={orders} isLoading={loading} />
+      {error && <div className="text-red-600 mt-2">{error}</div>}
+      <AlertDialog open={!!target} onOpenChange={(o) => !o && setTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {target?.action === 'shipped'
+                ? 'Mark as shipped?'
+                : 'Mark as delivered?'}
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (target) updateStatus(target.order, target.action)
+                setTarget(null)
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }
 
