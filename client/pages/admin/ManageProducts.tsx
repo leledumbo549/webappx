@@ -3,6 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import axios from '@/lib/axios'
 import { DataTable } from '@/components/DataTable'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { AdminProduct } from '@/types/Admin'
 import { Eye } from 'lucide-react'
@@ -11,6 +20,10 @@ import { formatIDR } from '@/lib/utils'
 function ManageProducts() {
   const [data, setData] = useState<AdminProduct[]>([])
   const [loading, setLoading] = useState(false)
+  const [target, setTarget] = useState<{
+    product: AdminProduct
+    action: 'approve' | 'reject' | 'flag' | 'remove' | 'unflag'
+  } | null>(null)
   const navigate = useNavigate()
 
   const fetchData = async () => {
@@ -62,13 +75,16 @@ function ManageProducts() {
             </Button>
             {p.status === 'pending' && (
               <>
-                <Button size="sm" onClick={() => updateStatus(p, 'approve')}>
+                <Button
+                  size="sm"
+                  onClick={() => setTarget({ product: p, action: 'approve' })}
+                >
                   Approve
                 </Button>
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={() => updateStatus(p, 'reject')}
+                  onClick={() => setTarget({ product: p, action: 'reject' })}
                 >
                   Reject
                 </Button>
@@ -79,14 +95,14 @@ function ManageProducts() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => updateStatus(p, 'flag')}
+                  onClick={() => setTarget({ product: p, action: 'flag' })}
                 >
                   Flag
                 </Button>
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={() => updateStatus(p, 'remove')}
+                  onClick={() => setTarget({ product: p, action: 'remove' })}
                 >
                   Remove
                 </Button>
@@ -100,7 +116,43 @@ function ManageProducts() {
     },
   ]
 
-  return <DataTable columns={columns} data={data} isLoading={loading} />
+  return (
+    <>
+      <DataTable columns={columns} data={data} isLoading={loading} />
+      <AlertDialog open={!!target} onOpenChange={(o) => !o && setTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {(() => {
+                if (!target) return ''
+                const label =
+                  target.action === 'unflag'
+                    ? 'Unflag'
+                    : target.action.charAt(0).toUpperCase() +
+                      target.action.slice(1)
+                return `${label} this product?`
+              })()}
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (target)
+                  updateStatus(
+                    target.product,
+                    target.action === 'unflag' ? 'approve' : target.action
+                  )
+                setTarget(null)
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  )
 }
 
 export default ManageProducts

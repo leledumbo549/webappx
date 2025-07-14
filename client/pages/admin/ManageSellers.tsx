@@ -21,7 +21,7 @@ function ManageSellers() {
   const [loading, setLoading] = useState(false)
   const [target, setTarget] = useState<{
     seller: AdminSeller
-    action: 'activate' | 'deactivate'
+    action: 'activate' | 'deactivate' | 'approve' | 'reject'
   } | null>(null)
   const navigate = useNavigate()
 
@@ -68,13 +68,16 @@ function ManageSellers() {
             </Button>
             {s.status === 'pending' && (
               <>
-                <Button size="sm" onClick={() => updateStatus(s, 'approve')}>
+                <Button
+                  size="sm"
+                  onClick={() => setTarget({ seller: s, action: 'approve' })}
+                >
                   Approve
                 </Button>
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={() => updateStatus(s, 'reject')}
+                  onClick={() => setTarget({ seller: s, action: 'reject' })}
                 >
                   Reject
                 </Button>
@@ -112,8 +115,13 @@ function ManageSellers() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {target?.action === 'activate' ? 'Activate' : 'Deactivate'} this
-              seller?
+              {`${
+                target?.action
+                  ? target.action.charAt(0).toUpperCase() +
+                    target.action.slice(1)
+                  : ''
+              }`}{' '}
+              this seller?
             </AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>

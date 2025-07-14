@@ -23,7 +23,7 @@ function ViewSeller() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [targetAction, setTargetAction] = useState<
-    'activate' | 'deactivate' | null
+    'activate' | 'deactivate' | 'approve' | 'reject' | null
   >(null)
 
   const fetchSeller = useCallback(async () => {
@@ -147,14 +147,14 @@ function ViewSeller() {
                 <>
                   <Button
                     className="w-full"
-                    onClick={() => handleStatusUpdate('approve')}
+                    onClick={() => setTargetAction('approve')}
                   >
                     Approve Seller
                   </Button>
                   <Button
                     variant="destructive"
                     className="w-full"
-                    onClick={() => handleStatusUpdate('reject')}
+                    onClick={() => setTargetAction('reject')}
                   >
                     Reject Seller
                   </Button>
@@ -190,7 +190,10 @@ function ViewSeller() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {targetAction === 'activate' ? 'Activate' : 'Deactivate'} seller?
+              {targetAction
+                ? `${targetAction.charAt(0).toUpperCase()}${targetAction.slice(1)}`
+                : ''}{' '}
+              seller?
             </AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
