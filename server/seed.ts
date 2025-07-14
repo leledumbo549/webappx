@@ -27,9 +27,9 @@ const seedUsers = [
   {
     id: 2,
     name: 'Sari Dewi',
-    username: 'sari_dewi',
+    username: 'bob',
     password: 'bob',
-    role: 'bob',
+    role: 'buyer',
     status: 'active',
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
