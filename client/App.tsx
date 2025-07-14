@@ -1,6 +1,6 @@
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import { useAtom } from 'jotai'
-import { isAuthenticatedAtom, tokenAtom, userAtom } from '@/atoms/loginAtoms'
+import { tokenAtom, userAtom } from '@/atoms/loginAtoms'
 import { useEffect } from 'react'
 import axios from '@/lib/axios'
 import Loading from './pages/Loading'
@@ -35,7 +35,6 @@ import Checkout from './pages/buyer/Checkout'
 import { Toaster } from './components/ui/sonner'
 
 function App() {
-  const [isAuthenticated] = useAtom(isAuthenticatedAtom)
   const [token] = useAtom(tokenAtom)
   const [, setUser] = useAtom(userAtom)
 
@@ -61,7 +60,7 @@ function App() {
   return (
     <HashRouter>
       <div className="min-h-screen bg-background">
-        {isAuthenticated && <Navbar />}
+        <Navbar />
         <main className="flex justify-center px-4 py-6">
           <div className="w-full max-w-7xl">
             <Routes>
