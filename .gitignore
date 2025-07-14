@@ -24,7 +24,8 @@ dist-ssr
 *.sw?
 
 public/flattened-source.txt
-public/reffile.zip
+public/flattened-source.zip
+public/repo.zip
 
 backup
 webappx.code-workspace
