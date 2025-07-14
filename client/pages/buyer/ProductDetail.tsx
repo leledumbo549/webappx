@@ -10,6 +10,16 @@ import { addToCartAtom, cartAtom } from '@/atoms/cartAtoms'
 import SectionTitle from '@/components/SectionTitle'
 import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { Spinner } from '@/components/ui/spinner'
 
 function ProductDetail() {
   const { id } = useParams<{ id: string }>()
@@ -19,10 +29,11 @@ function ProductDetail() {
   const [error, setError] = useState<string | null>(null)
   const add = useSetAtom(addToCartAtom)
   const [cart] = useAtom(cartAtom)
+  const [confirmAdd, setConfirmAdd] = useState(false)
 
   const fetchData = async (idval: string | null) => {
     if (!idval) return
-    
+
     setLoading(true)
     try {
       const res = await axios.get<Product>(`/api/buyer/products/${idval}`)
@@ -45,10 +56,10 @@ function ProductDetail() {
     if (product) {
       try {
         // Check if product already exists in cart before adding
-        const existingItem = cart.find(item => item.productId === product.id)
-        
+        const existingItem = cart.find((item) => item.productId === product.id)
+
         await add(product)
-        
+
         if (existingItem) {
           toast.success(`${product.name} quantity updated in cart!`)
         } else {
@@ -60,20 +71,24 @@ function ProductDetail() {
     }
   }
 
-  if (loading) return <div>Loading...</div>
+  if (loading) return <Spinner />
   if (error) return <div className="text-red-600">{error}</div>
   if (!product) return <div>Product not found.</div>
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 mb-2">
-        <Button variant="outline" size="sm" onClick={() => navigate('/catalog')}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate('/catalog')}
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Catalog
         </Button>
         <SectionTitle>{product.name}</SectionTitle>
       </div>
-      
+
       <Card>
         <CardContent className="p-6">
           <div className="space-y-4">
@@ -81,7 +96,7 @@ function ProductDetail() {
               <h3 className="text-lg font-semibold">Description</h3>
               <p className="text-muted-foreground">{product.description}</p>
             </div>
-            
+
             <div>
               <h3 className="text-lg font-semibold">Price</h3>
               <p className="text-2xl font-bold text-green-600">
@@ -91,13 +106,34 @@ function ProductDetail() {
                 }).format(product.price)}
               </p>
             </div>
-            
-            <Button onClick={handleAddToCart} className="w-full">
+
+            <Button onClick={() => setConfirmAdd(true)} className="w-full">
               Add to Cart
             </Button>
           </div>
         </CardContent>
       </Card>
+      <AlertDialog
+        open={confirmAdd}
+        onOpenChange={(o) => !o && setConfirmAdd(false)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Add this item to cart?</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                handleAddToCart()
+                setConfirmAdd(false)
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

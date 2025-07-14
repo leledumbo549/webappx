@@ -1,7 +1,7 @@
 // server/controllers.ts
 // Controllers for all API endpoints using drizzle and db.ts
 
-import type { User, PublicUser, Product, Seller, Report, Setting, DashboardStats, CartItem, Order, SellerPayout } from './schema';
+import type { User, PublicUser, Product, Seller, Report, Setting, DashboardStats, Order, SellerPayout } from './schema';
 import { drizzleDb } from './db';
 import { users, sellers, products, reports, settings, cart, orders, sellerPayouts } from './schema';
 import { and, eq, sql } from 'drizzle-orm';
@@ -122,6 +122,13 @@ export async function loginByUsernamePassword(data: LoginRequest | unknown): Pro
   }
 
   const user = rows[0];
+
+  // Prevent banned users from logging in
+  if (user.status === 'banned') {
+    return {
+      MESSAGE: 'Your account has been banned. Please contact an admin to be unbanned'
+    };
+  }
   const token = generateToken(user.id);
   const publicUser = createPublicUser(user);
   // For demo, use current time for createdAt/updatedAt
@@ -258,10 +265,12 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     .where(eq(sellers.status, 'active'))
     .all();
 
-  const [{ count: productCount }] = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(products)
+  // Sum the total value of all orders to compute sales
+  const [{ sum: totalSalesRaw }] = await db
+    .select({ sum: sql<number>`SUM(${orders.total})` })
+    .from(orders)
     .all();
+  const totalSales = Number(totalSalesRaw ?? 0);
 
   const [{ count: openReports }] = await db
     .select({ count: sql<number>`COUNT(*)` })
@@ -272,7 +281,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   return {
     totalUsers,
     totalSellers,
-    totalSales: Number(productCount) * 10, // Demo calculation
+    totalSales,
     openReports,
   };
 }
@@ -759,93 +768,6 @@ export async function checkBuyerAccess(token: string): Promise<PublicUser | null
 }
 
 /**
- * Get buyer's cart
- */
-export async function getBuyerCart(token: string): Promise<CartItem[]> {
-  const buyer = await checkBuyerAccess(token);
-  if (!buyer) {
-    throw new Error('Access denied');
-  }
-
-  const db = await drizzleDb();
-  const cartItems = await db.select().from(cart).where(eq(cart.userId, buyer.id)).all();
-  
-  return cartItems.map(item => ({
-    id: item.id,
-    userId: item.userId,
-    productId: item.productId,
-    quantity: item.quantity
-  }));
-}
-
-/**
- * Add item to buyer's cart
- */
-export async function addToCart(token: string, cartItem: CartItem): Promise<void> {
-  const buyer = await checkBuyerAccess(token);
-  if (!buyer) {
-    throw new Error('Access denied');
-  }
-
-  const db = await drizzleDb();
-  
-  // Check if product exists
-  const product = await db.select().from(products).where(eq(products.id, cartItem.productId)).all();
-  if (product.length === 0) {
-    throw new Error('Product not found');
-  }
-
-  // Check if item already exists in user's cart
-  const existingItem = await db.select().from(cart).where(and(eq(cart.userId, buyer.id), eq(cart.productId, cartItem.productId))).all();
-  
-  if (existingItem.length > 0) {
-    // Add to existing item quantity
-    const newQuantity = existingItem[0].quantity + cartItem.quantity;
-    await db.update(cart).set({ quantity: newQuantity, updatedAt: new Date().toISOString() }).where(and(eq(cart.userId, buyer.id), eq(cart.productId, cartItem.productId))).run();
-  } else {
-    // Add new item to cart
-    await db.insert(cart).values({
-      userId: buyer.id,
-      productId: cartItem.productId,
-      quantity: cartItem.quantity
-    }).run();
-  }
-}
-
-/**
- * Update cart item quantity
- */
-export async function updateCartItem(token: string, productId: number, quantity: number): Promise<void> {
-  const buyer = await checkBuyerAccess(token);
-  if (!buyer) {
-    throw new Error('Access denied');
-  }
-
-  const db = await drizzleDb();
-  
-  if (quantity <= 0) {
-    // Remove item if quantity is 0 or negative
-    await db.delete(cart).where(and(eq(cart.userId, buyer.id), eq(cart.productId, productId))).run();
-  } else {
-    // Update quantity
-    await db.update(cart).set({ quantity, updatedAt: new Date().toISOString() }).where(and(eq(cart.userId, buyer.id), eq(cart.productId, productId))).run();
-  }
-}
-
-/**
- * Remove item from cart
- */
-export async function removeFromCart(token: string, productId: number): Promise<void> {
-  const buyer = await checkBuyerAccess(token);
-  if (!buyer) {
-    throw new Error('Access denied');
-  }
-
-  const db = await drizzleDb();
-  await db.delete(cart).where(and(eq(cart.userId, buyer.id), eq(cart.productId, productId))).run();
-}
-
-/**
  * Get all products for buyers
  */
 export async function getBuyerProducts(): Promise<Product[]> {
@@ -1018,7 +940,8 @@ export async function createSellerPayout(token: string, payoutData: {
 
   const payout = await db.insert(sellerPayouts).values({
     amount: payoutData.amount,
-    date: new Date().toISOString(),
+    bankAccount: payoutData.bankAccount,
+    processedAt: null,
     sellerId: sellerProfile[0].id,
     status: 'pending'
   }).returning().get();
@@ -1053,9 +976,10 @@ export async function updateSellerOrderStatus(token: string, orderId: number, st
   }
 
   // Update order status
-  await db.update(orders).set({ 
-    status: statusData.status, 
-    updatedAt: new Date().toISOString() 
+  await db.update(orders).set({
+    status: statusData.status,
+    trackingNumber: statusData.trackingNumber,
+    updatedAt: new Date().toISOString()
   }).where(eq(orders.id, orderId)).run();
 
   // Return updated order
@@ -1096,8 +1020,11 @@ export async function createBuyerOrder(token: string, orderData: {
       productId: item.productId,
       productName: productData.name,
       quantity: item.quantity,
+      items: JSON.stringify([{ productId: item.productId, quantity: item.quantity }]),
       total: itemTotal,
       status: 'pending',
+      shippingAddress: orderData.shippingAddress,
+      paymentMethod: orderData.paymentMethod,
       buyerId: buyer.id,
       sellerId: productData.sellerId
     }).returning().get();

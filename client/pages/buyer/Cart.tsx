@@ -1,5 +1,11 @@
 import { useAtom, useSetAtom } from 'jotai'
-import { cartAtom, removeFromCartAtom, updateCartQuantityAtom, cartTotalAtom, loadCartAtom } from '@/atoms/cartAtoms'
+import {
+  cartAtom,
+  removeFromCartAtom,
+  updateCartQuantityAtom,
+  cartTotalAtom,
+  loadCartAtom,
+} from '@/atoms/cartAtoms'
 import CartItem from '@/components/CartItem'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,7 +14,22 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { ShoppingCart, Package, AlertCircle, ArrowRight, Trash2 } from 'lucide-react'
+import {
+  ShoppingCart,
+  Package,
+  AlertCircle,
+  ArrowRight,
+  Trash2,
+} from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 function Cart() {
   const [items] = useAtom(cartAtom)
@@ -19,6 +40,8 @@ function Cart() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [targetRemoveId, setTargetRemoveId] = useState<number | null>(null)
+  const [confirmClear, setConfirmClear] = useState(false)
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -45,7 +68,7 @@ function Cart() {
   }
 
   const handleClearCart = () => {
-    items.forEach(item => remove(item.productId))
+    items.forEach((item) => remove(item.productId))
   }
 
   if (loading) {
@@ -120,11 +143,11 @@ function Cart() {
             </Badge>
           </div>
         </div>
-        
-        <Button 
-          variant="outline" 
+
+        <Button
+          variant="outline"
           size="sm"
-          onClick={handleClearCart}
+          onClick={() => setConfirmClear(true)}
           className="text-destructive hover:text-destructive"
         >
           <Trash2 className="mr-2 h-4 w-4" />
@@ -139,7 +162,7 @@ function Cart() {
             key={item.id}
             product={item.product}
             quantity={item.quantity}
-            onRemove={() => remove(item.productId)}
+            onRemove={() => setTargetRemoveId(item.productId)}
             onChange={(q) => update({ productId: item.productId, quantity: q })}
           />
         ))}
@@ -161,11 +184,13 @@ function Cart() {
           </div>
           <div className="flex justify-between items-center py-2">
             <span className="text-lg font-semibold">Total</span>
-            <span className="text-xl font-bold text-primary">{formatPrice(total)}</span>
+            <span className="text-xl font-bold text-primary">
+              {formatPrice(total)}
+            </span>
           </div>
-          
-          <Button 
-            onClick={() => navigate('/buyer/checkout')} 
+
+          <Button
+            onClick={() => navigate('/buyer/checkout')}
             className="w-full"
             size="lg"
           >
@@ -174,6 +199,48 @@ function Cart() {
           </Button>
         </CardContent>
       </Card>
+      <AlertDialog
+        open={confirmClear}
+        onOpenChange={(o) => !o && setConfirmClear(false)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear all items from cart?</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                handleClearCart()
+                setConfirmClear(false)
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog
+        open={targetRemoveId !== null}
+        onOpenChange={(o) => !o && setTargetRemoveId(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this item from cart?</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (targetRemoveId !== null) remove(targetRemoveId)
+                setTargetRemoveId(null)
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

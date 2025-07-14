@@ -3,6 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import axios from '@/lib/axios'
 import { DataTable } from '@/components/DataTable'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { AdminSeller } from '@/types/Admin'
 import { Eye } from 'lucide-react'
@@ -10,6 +19,10 @@ import { Eye } from 'lucide-react'
 function ManageSellers() {
   const [data, setData] = useState<AdminSeller[]>([])
   const [loading, setLoading] = useState(false)
+  const [target, setTarget] = useState<{
+    seller: AdminSeller
+    action: 'activate' | 'deactivate' | 'approve' | 'reject'
+  } | null>(null)
   const navigate = useNavigate()
 
   const fetchData = async () => {
@@ -45,7 +58,7 @@ function ManageSellers() {
       cell: ({ row }) => {
         const s = row.original
         return (
-          <div className="flex gap-1">
+          <div className="flex gap-1 justify-end">
             <Button
               size="sm"
               variant="outline"
@@ -55,13 +68,16 @@ function ManageSellers() {
             </Button>
             {s.status === 'pending' && (
               <>
-                <Button size="sm" onClick={() => updateStatus(s, 'approve')}>
+                <Button
+                  size="sm"
+                  onClick={() => setTarget({ seller: s, action: 'approve' })}
+                >
                   Approve
                 </Button>
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={() => updateStatus(s, 'reject')}
+                  onClick={() => setTarget({ seller: s, action: 'reject' })}
                 >
                   Reject
                 </Button>
@@ -71,13 +87,16 @@ function ManageSellers() {
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={() => updateStatus(s, 'deactivate')}
+                onClick={() => setTarget({ seller: s, action: 'deactivate' })}
               >
                 Deactivate
               </Button>
             )}
             {s.status === 'inactive' && (
-              <Button size="sm" onClick={() => updateStatus(s, 'activate')}>
+              <Button
+                size="sm"
+                onClick={() => setTarget({ seller: s, action: 'activate' })}
+              >
                 Activate
               </Button>
             )}
@@ -89,7 +108,37 @@ function ManageSellers() {
     },
   ]
 
-  return <DataTable columns={columns} data={data} isLoading={loading} />
+  return (
+    <>
+      <DataTable columns={columns} data={data} isLoading={loading} />
+      <AlertDialog open={!!target} onOpenChange={(o) => !o && setTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {`${
+                target?.action
+                  ? target.action.charAt(0).toUpperCase() +
+                    target.action.slice(1)
+                  : ''
+              }`}{' '}
+              this seller?
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (target) updateStatus(target.seller, target.action)
+                setTarget(null)
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  )
 }
 
 export default ManageSellers
