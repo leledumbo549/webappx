@@ -107,7 +107,7 @@ function ManageUsers() {
       cell: ({ row }) => {
         const u = row.original
         return (
-          <div className="flex gap-1">
+          <div className="flex gap-1 justify-end">
             <Button
               size="sm"
               variant="outline"

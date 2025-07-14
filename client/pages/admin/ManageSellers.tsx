@@ -58,7 +58,7 @@ function ManageSellers() {
       cell: ({ row }) => {
         const s = row.original
         return (
-          <div className="flex gap-1">
+          <div className="flex gap-1 justify-end">
             <Button
               size="sm"
               variant="outline"
