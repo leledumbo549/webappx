@@ -19,23 +19,24 @@ function AddProduct() {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    
+
     const formData = new FormData(e.currentTarget)
     const productData = {
       name: formData.get('name') as string,
       price: Number(formData.get('price')),
       description: formData.get('description') as string,
-      imageUrl: formData.get('imageUrl') as string || undefined,
+      imageUrl: (formData.get('imageUrl') as string) || undefined,
     }
 
     try {
       await axios.post('/api/seller/products', productData)
       // Trigger refresh of product list
       refreshProducts()
-      navigate('/seller/dashboard')
+      navigate('/seller/products')
     } catch (err: unknown) {
       console.error('Failed to create product:', err)
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create product'
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to create product'
       setError(errorMessage)
     } finally {
       setLoading(false)
@@ -55,7 +56,14 @@ function AddProduct() {
           </div>
           <div>
             <Label htmlFor="price">Price</Label>
-            <Input id="price" name="price" type="number" step="0.01" min="0" required />
+            <Input
+              id="price"
+              name="price"
+              type="number"
+              step="0.01"
+              min="0"
+              required
+            />
           </div>
           <div>
             <Label htmlFor="description">Description</Label>
@@ -70,10 +78,10 @@ function AddProduct() {
             <Button type="submit" disabled={loading}>
               {loading ? 'Creating...' : 'Create Product'}
             </Button>
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => navigate('/seller/dashboard')}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/seller/products')}
             >
               Cancel
             </Button>

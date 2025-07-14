@@ -53,7 +53,7 @@ function EditProduct() {
       await axios.put(`/api/seller/products/${id}`, productData)
       // Trigger refresh of product list
       refreshProducts()
-      navigate('/seller/dashboard')
+      navigate('/seller/products')
     } catch (err: unknown) {
       console.error('Failed to update product:', err)
       const errorMessage =
@@ -121,7 +121,7 @@ function EditProduct() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate('/seller/dashboard')}
+              onClick={() => navigate('/seller/products')}
             >
               Cancel
             </Button>
