@@ -23,29 +23,29 @@ function ManageUsers() {
   const [target, setTarget] = useState<AdminUser | null>(null)
   const navigate = useNavigate()
 
-  const getRoleBadgeVariant = (role: string) => {
+  const getRoleBadgeClass = (role: string) => {
     switch (role) {
       case 'admin':
-        return 'destructive'
+        return 'bg-purple-100 text-purple-800'
       case 'seller':
-        return 'secondary'
+        return 'bg-blue-100 text-blue-800'
       case 'buyer':
-        return 'default'
+        return 'bg-green-100 text-green-800'
       default:
-        return 'outline'
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
-  const getStatusBadgeVariant = (status: string) => {
+  const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'active':
-        return 'default'
+        return 'bg-green-100 text-green-800'
       case 'banned':
-        return 'destructive'
+        return 'bg-red-100 text-red-800'
       case 'inactive':
-        return 'secondary'
+        return 'bg-gray-100 text-gray-800'
       default:
-        return 'outline'
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
@@ -76,8 +76,10 @@ function ManageUsers() {
       header: 'Role',
       cell: ({ row }) => (
         <Badge
-          variant={getRoleBadgeVariant(row.original.role || 'buyer')}
-          className="capitalize"
+          variant="secondary"
+          className={`capitalize rounded-full ${getRoleBadgeClass(
+            row.original.role || 'buyer'
+          )}`}
         >
           {row.original.role}
         </Badge>
@@ -89,8 +91,10 @@ function ManageUsers() {
       header: 'Status',
       cell: ({ row }) => (
         <Badge
-          variant={getStatusBadgeVariant(row.original.status || 'active')}
-          className="capitalize"
+          variant="secondary"
+          className={`capitalize rounded-full ${getStatusBadgeClass(
+            row.original.status || 'active'
+          )}`}
         >
           {row.original.status}
         </Badge>
