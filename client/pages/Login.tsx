@@ -158,6 +158,12 @@ function Login() {
             </form>
           </CardContent>
         </Card>
+        <p className="text-center text-sm mt-4">
+          Don't have an account?{' '}
+          <button type="button" className="underline" onClick={() => navigate('/register')}>
+            Register
+          </button>
+        </p>
       </div>
     </div>
   )

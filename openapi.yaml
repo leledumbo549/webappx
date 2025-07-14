@@ -56,6 +56,41 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/register:
+    post:
+      summary: Register new user
+      description: Create a buyer or seller account. Sellers must provide store details.
+      tags:
+      - Authentication
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Username already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                exists:
+                  summary: Username exists
+                  value:
+                    MESSAGE: Username already exists
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/me:
     get:
       summary: Get current user profile
@@ -1380,7 +1415,34 @@ components:
           description: User's password
           example: alice
           minLength: 1
-          maxLength: 100
+      maxLength: 100
+    RegisterRequest:
+      type: object
+      required:
+      - name
+      - username
+      - password
+      - role
+      properties:
+        name:
+          type: string
+          example: John Doe
+        username:
+          type: string
+          example: johndoe
+        password:
+          type: string
+          example: secret
+        role:
+          type: string
+          enum: [buyer, seller]
+        storeName:
+          type: string
+          description: Required if role is seller
+        contact:
+          type: string
+        bio:
+          type: string
     LoginResponse:
       type: object
       required:
