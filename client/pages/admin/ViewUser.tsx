@@ -15,6 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
+import { Badge } from '@/components/ui/badge'
 
 function ViewUser() {
   const { id } = useParams<{ id: string }>()
@@ -59,7 +60,7 @@ function ViewUser() {
   if (error) return <div className="text-red-600">{error}</div>
   if (!user) return <div>User not found.</div>
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'active':
         return 'bg-green-100 text-green-800'
@@ -72,7 +73,7 @@ function ViewUser() {
     }
   }
 
-  const getRoleColor = (role: string) => {
+  const getRoleBadgeClass = (role: string) => {
     switch (role) {
       case 'admin':
         return 'bg-purple-100 text-purple-800'
@@ -106,16 +107,18 @@ function ViewUser() {
               <CardTitle className="flex items-center justify-between">
                 {user.name}
                 <div className="flex gap-2">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role || 'buyer')}`}
+                  <Badge
+                    variant="secondary"
+                    className={`rounded-full ${getRoleBadgeClass(user.role || 'buyer')}`}
                   >
                     {user.role}
-                  </span>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(user.status || 'inactive')}`}
+                  </Badge>
+                  <Badge
+                    variant="secondary"
+                    className={`rounded-full ${getStatusBadgeClass(user.status || 'inactive')}`}
                   >
                     {user.status}
-                  </span>
+                  </Badge>
                 </div>
               </CardTitle>
             </CardHeader>
@@ -132,10 +135,22 @@ function ViewUser() {
                   <span className="font-semibold">Name:</span> {user.name}
                 </div>
                 <div>
-                  <span className="font-semibold">Role:</span> {user.role}
+                  <span className="font-semibold">Role:</span>
+                  <Badge
+                    variant="secondary"
+                    className={`ml-2 rounded-full ${getRoleBadgeClass(user.role || 'buyer')}`}
+                  >
+                    {user.role}
+                  </Badge>
                 </div>
                 <div>
-                  <span className="font-semibold">Status:</span> {user.status}
+                  <span className="font-semibold">Status:</span>
+                  <Badge
+                    variant="secondary"
+                    className={`ml-2 rounded-full ${getStatusBadgeClass(user.status || 'inactive')}`}
+                  >
+                    {user.status}
+                  </Badge>
                 </div>
                 {user.createdAt && (
                   <div>
