@@ -44,6 +44,7 @@ import {
   updateSellerOrderStatus,
   createBuyerOrder,
   updateUserProfile,
+  registerUser,
 } from './controllers';
 
 // === AUTHORIZATION HELPERS ===
@@ -184,6 +185,34 @@ export const handlers = [
       console.error('Login handler error:', error);
       return res(
         ctx.status(500), 
+        ctx.json(createErrorResponse('Internal server error'))
+      );
+    }
+  }),
+
+  // POST /api/register - Create new user account
+  rest.post('/api/register', async (req, res, ctx) => {
+    try {
+      await addDelay();
+
+      const body = await req.json();
+      const result = await registerUser(body);
+
+      if ('MESSAGE' in result) {
+        if (result.MESSAGE.includes('required') || result.MESSAGE.includes('Invalid')) {
+          return res(ctx.status(400), ctx.json(result));
+        }
+        if (result.MESSAGE.includes('exists')) {
+          return res(ctx.status(409), ctx.json(result));
+        }
+        return res(ctx.status(500), ctx.json(result));
+      }
+
+      return res(ctx.status(201), ctx.json(result));
+    } catch (error) {
+      console.error('Register handler error:', error);
+      return res(
+        ctx.status(500),
         ctx.json(createErrorResponse('Internal server error'))
       );
     }

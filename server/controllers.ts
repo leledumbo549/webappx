@@ -136,6 +136,88 @@ export async function loginByUsernamePassword(data: LoginRequest | unknown): Pro
   };
 }
 
+// === REGISTRATION CONTROLLERS ===
+
+export interface RegisterRequest {
+  name: string;
+  username: string;
+  password: string;
+  role: 'buyer' | 'seller';
+  storeName?: string;
+  contact?: string;
+  bio?: string;
+}
+
+export type RegisterResponse = LoginResponse;
+export type RegisterError = LoginError;
+
+export function validateRegisterRequest(data: unknown): RegisterRequest | RegisterError {
+  if (!data || typeof data !== 'object') {
+    return { MESSAGE: 'Invalid request body' };
+  }
+
+  const { name, username, password, role, storeName } = data as RegisterRequest;
+
+  if (!name || typeof name !== 'string') {
+    return { MESSAGE: 'Name is required' };
+  }
+  if (!username || typeof username !== 'string') {
+    return { MESSAGE: 'Username is required' };
+  }
+  if (!password || typeof password !== 'string') {
+    return { MESSAGE: 'Password is required' };
+  }
+  if (role !== 'buyer' && role !== 'seller') {
+    return { MESSAGE: 'Role must be buyer or seller' };
+  }
+  if (role === 'seller' && (!storeName || typeof storeName !== 'string')) {
+    return { MESSAGE: 'Store name is required for sellers' };
+  }
+
+  return data as RegisterRequest;
+}
+
+export async function registerUser(data: RegisterRequest | unknown): Promise<RegisterResponse | RegisterError> {
+  const validation = validateRegisterRequest(data);
+  if ('MESSAGE' in validation) return validation;
+
+  const { name, username, password, role, storeName, contact, bio } = validation;
+  const db = await drizzleDb();
+
+  const existing = await db.select().from(users).where(eq(users.username, username)).all();
+  if (existing.length > 0) {
+    return { MESSAGE: 'Username already exists' };
+  }
+
+  const newUser = await db
+    .insert(users)
+    .values({ name, username, password, role, status: 'active' })
+    .returning()
+    .get();
+
+  if (role === 'seller') {
+    await db
+      .insert(sellers)
+      .values({
+        userId: newUser.id,
+        name: storeName!,
+        bio: bio || null,
+        contact: contact || null,
+        status: 'active',
+      })
+      .run();
+  }
+
+  const token = generateToken(newUser.id);
+  const publicUser = createPublicUser(newUser);
+  const now = new Date().toISOString();
+
+  return {
+    token,
+    user: { ...publicUser, createdAt: now, updatedAt: now },
+  };
+}
+
 // === SETTINGS CONTROLLERS ===
 
 /**
