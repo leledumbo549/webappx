@@ -10,6 +10,15 @@ import { addToCartAtom, cartAtom } from '@/atoms/cartAtoms'
 import SectionTitle from '@/components/SectionTitle'
 import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Spinner } from '@/components/ui/spinner'
 
 function ProductDetail() {
@@ -20,6 +29,7 @@ function ProductDetail() {
   const [error, setError] = useState<string | null>(null)
   const add = useSetAtom(addToCartAtom)
   const [cart] = useAtom(cartAtom)
+  const [confirmAdd, setConfirmAdd] = useState(false)
 
   const fetchData = async (idval: string | null) => {
     if (!idval) return
@@ -97,12 +107,33 @@ function ProductDetail() {
               </p>
             </div>
 
-            <Button onClick={handleAddToCart} className="w-full">
+            <Button onClick={() => setConfirmAdd(true)} className="w-full">
               Add to Cart
             </Button>
           </div>
         </CardContent>
       </Card>
+      <AlertDialog
+        open={confirmAdd}
+        onOpenChange={(o) => !o && setConfirmAdd(false)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Add this item to cart?</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                handleAddToCart()
+                setConfirmAdd(false)
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

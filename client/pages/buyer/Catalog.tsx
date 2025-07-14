@@ -14,6 +14,15 @@ import { addToCartAtom, cartAtom } from '@/atoms/cartAtoms'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Search, Package, AlertCircle, ShoppingCart } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 function Catalog() {
   const [products, setProducts] = useState<Product[]>([])
@@ -24,6 +33,7 @@ function Catalog() {
   const add = useSetAtom(addToCartAtom)
   const [cart] = useAtom(cartAtom)
   const navigate = useNavigate()
+  const [targetProduct, setTargetProduct] = useState<Product | null>(null)
 
   const fetchData = async () => {
     setLoading(true)
@@ -44,9 +54,11 @@ function Catalog() {
   }, [])
 
   useEffect(() => {
-    const filtered = products.filter(product =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    const filtered = products.filter(
+      (product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (product.description &&
+          product.description.toLowerCase().includes(searchTerm.toLowerCase()))
     )
     setFilteredProducts(filtered)
   }, [searchTerm, products])
@@ -54,10 +66,10 @@ function Catalog() {
   const handleAddToCart = async (product: Product) => {
     try {
       // Check if product already exists in cart before adding
-      const existingItem = cart.find(item => item.productId === product.id)
-      
+      const existingItem = cart.find((item) => item.productId === product.id)
+
       await add(product)
-      
+
       if (existingItem) {
         toast.success(`${product.name} quantity updated in cart!`)
       } else {
@@ -69,7 +81,7 @@ function Catalog() {
   }
 
   const getStatusCount = () => {
-    const activeProducts = products.filter(p => p.status === 'active')
+    const activeProducts = products.filter((p) => p.status === 'active')
     return activeProducts.length
   }
 
@@ -123,10 +135,12 @@ function Catalog() {
               <ShoppingCart className="h-4 w-4" />
               <span>{cart.length} items in cart</span>
             </div>
-            <Badge variant="secondary">{getStatusCount()} active products</Badge>
+            <Badge variant="secondary">
+              {getStatusCount()} active products
+            </Badge>
           </div>
         </div>
-        
+
         {/* Search */}
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -148,8 +162,8 @@ function Catalog() {
             <p className="text-muted-foreground text-center">
               Try adjusting your search terms or browse all products
             </p>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setSearchTerm('')}
               className="mt-4"
             >
@@ -161,7 +175,9 @@ function Catalog() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Package className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No products available</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              No products available
+            </h3>
             <p className="text-muted-foreground text-center">
               Check back later for new products
             </p>
@@ -173,12 +189,33 @@ function Catalog() {
             <ProductCard
               key={product.id}
               product={product}
-              onAdd={() => handleAddToCart(product)}
+              onAdd={() => setTargetProduct(product)}
               onView={() => navigate(`/buyer/product/${product.id}`)}
             />
           ))}
         </div>
       )}
+      <AlertDialog
+        open={!!targetProduct}
+        onOpenChange={(o) => !o && setTargetProduct(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Add this item to cart?</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (targetProduct) handleAddToCart(targetProduct)
+                setTargetProduct(null)
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
