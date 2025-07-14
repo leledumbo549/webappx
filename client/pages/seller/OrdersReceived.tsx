@@ -26,6 +26,13 @@ function OrdersReceived() {
   }
 
   const handleUpdateStatus = async (order: Order, action: string) => {
+    const actionText =
+      action === 'ship'
+        ? 'mark this order as shipped'
+        : 'mark this order as delivered'
+    const confirmed = confirm(`Are you sure you want to ${actionText}?`)
+    if (!confirmed) return
+
     try {
       await axios.patch(`/api/seller/orders/${order.id}`, { status: action })
       await fetchData()
