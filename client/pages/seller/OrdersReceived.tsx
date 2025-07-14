@@ -4,6 +4,7 @@ import { isAxiosError } from '@/lib/axios'
 import type { Order } from '@/types/Seller'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Spinner } from '@/components/ui/spinner'
 
 function OrdersReceived() {
   const [orders, setOrders] = useState<Order[]>([])
@@ -38,7 +39,7 @@ function OrdersReceived() {
     fetchData()
   }, [])
 
-  if (loading) return <div>Loading...</div>
+  if (loading) return <Spinner />
   if (error) return <div className="text-red-600">{error}</div>
   if (!orders.length) return <div>No orders yet.</div>
 
