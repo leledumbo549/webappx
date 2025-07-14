@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from '@/lib/axios'
 import { Skeleton } from '@/components/ui/skeleton'
+import { formatIDR } from '@/lib/utils'
 
 interface Stats {
   totalUsers: number
@@ -48,7 +49,7 @@ function AdminDashboard() {
       </div>
       <div className="p-4 border rounded">
         <p className="text-sm text-muted-foreground">Total Sales</p>
-        <p className="text-2xl font-bold">{stats.totalSales}</p>
+        <p className="text-2xl font-bold">{formatIDR(stats.totalSales)}</p>
       </div>
       <div className="p-4 border rounded">
         <p className="text-sm text-muted-foreground">Open Reports</p>

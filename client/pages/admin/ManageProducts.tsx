@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { AdminProduct } from '@/types/Admin'
 import { Eye } from 'lucide-react'
+import { formatIDR } from '@/lib/utils'
 
 function ManageProducts() {
   const [data, setData] = useState<AdminProduct[]>([])
@@ -37,6 +38,7 @@ function ManageProducts() {
     {
       accessorKey: 'price',
       header: 'Price',
+      cell: ({ row }) => formatIDR(row.original.price),
       meta: { widthClass: 'hidden md:table-cell w-24', cellClass: 'truncate' },
     },
     {

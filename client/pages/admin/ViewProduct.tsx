@@ -5,6 +5,7 @@ import type { Product } from '@/types/Product'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft } from 'lucide-react'
+import { formatIDR } from '@/lib/utils'
 
 function ViewProduct() {
   const { id } = useParams<{ id: string }>()
@@ -15,7 +16,7 @@ function ViewProduct() {
 
   const fetchProduct = useCallback(async () => {
     if (!id) return
-    
+
     setLoading(true)
     try {
       const res = await axios.get<Product>(`/api/admin/products/${id}`)
@@ -30,7 +31,7 @@ function ViewProduct() {
 
   const handleStatusUpdate = async (action: string) => {
     if (!product) return
-    
+
     try {
       await axios.patch(`/api/admin/products/${product.id}`, { action })
       await fetchProduct() // Refresh the product data
@@ -50,11 +51,16 @@ function ViewProduct() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'inactive': return 'bg-gray-100 text-gray-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'flagged': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'active':
+        return 'bg-green-100 text-green-800'
+      case 'inactive':
+        return 'bg-gray-100 text-gray-800'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'flagged':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
@@ -77,7 +83,9 @@ function ViewProduct() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               {product.name}
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status || 'inactive')}`}>
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status || 'inactive')}`}
+              >
                 {product.status}
               </span>
             </CardTitle>
@@ -92,18 +100,22 @@ function ViewProduct() {
                 />
               </div>
             )}
-            
+
             <div className="space-y-2">
               <div>
-                <span className="font-semibold">Price:</span> ${product.price}
+                <span className="font-semibold">Price:</span>{' '}
+                {formatIDR(product.price)}
               </div>
               <div>
-                <span className="font-semibold">Seller ID:</span> {product.sellerId}
+                <span className="font-semibold">Seller ID:</span>{' '}
+                {product.sellerId}
               </div>
               {product.description && (
                 <div>
                   <span className="font-semibold">Description:</span>
-                  <p className="mt-1 text-sm text-gray-600">{product.description}</p>
+                  <p className="mt-1 text-sm text-gray-600">
+                    {product.description}
+                  </p>
                 </div>
               )}
             </div>
@@ -132,7 +144,7 @@ function ViewProduct() {
                 </Button>
               </>
             )}
-            
+
             {product.status === 'active' && (
               <>
                 <Button
@@ -151,7 +163,7 @@ function ViewProduct() {
                 </Button>
               </>
             )}
-            
+
             {product.status === 'flagged' && (
               <>
                 <Button
@@ -176,4 +188,4 @@ function ViewProduct() {
   )
 }
 
-export default ViewProduct 
+export default ViewProduct

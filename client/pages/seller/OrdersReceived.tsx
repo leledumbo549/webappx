@@ -4,6 +4,7 @@ import { isAxiosError } from '@/lib/axios'
 import type { Order } from '@/types/Seller'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { formatIDR } from '@/lib/utils'
 
 function OrdersReceived() {
   const [orders, setOrders] = useState<Order[]>([])
@@ -51,7 +52,7 @@ function OrdersReceived() {
           </CardHeader>
           <CardContent>
             <div>Quantity: {order.quantity}</div>
-            <div>Total: {order.total}</div>
+            <div>Total: {formatIDR(order.total)}</div>
             <div>Status: {order.status}</div>
             <div className="flex gap-2 mt-2">
               <Button onClick={() => handleUpdateStatus(order, 'ship')}>

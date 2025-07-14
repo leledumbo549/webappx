@@ -4,6 +4,7 @@ import { isAxiosError } from '@/lib/axios'
 import type { SellerProduct } from '@/types/Seller'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { formatIDR } from '@/lib/utils'
 
 function MyProducts() {
   const [products, setProducts] = useState<SellerProduct[]>([])
@@ -49,7 +50,7 @@ function MyProducts() {
             <CardTitle>{product.name}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div>Price: {product.price}</div>
+            <div>Price: {formatIDR(product.price)}</div>
             <div>Status: {product.status}</div>
             <Button onClick={() => handleDelete(product)} variant="destructive">
               Delete

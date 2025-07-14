@@ -5,6 +5,7 @@ import type { SellerProduct } from '@/types/Seller'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft } from 'lucide-react'
+import { formatIDR } from '@/lib/utils'
 
 function ViewProduct() {
   const { id } = useParams<{ id: string }>()
@@ -15,7 +16,7 @@ function ViewProduct() {
 
   const fetchProduct = useCallback(async () => {
     if (!id) return
-    
+
     setLoading(true)
     try {
       const res = await axios.get<SellerProduct>(`/api/seller/products/${id}`)
@@ -41,14 +42,14 @@ function ViewProduct() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Product Details</h1>
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => navigate(`/seller/edit-product/${product.id}`)}
           >
             Edit Product
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => navigate('/seller/products')}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -64,27 +65,35 @@ function ViewProduct() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h3 className="font-semibold text-sm text-muted-foreground">Price</h3>
-              <p className="text-lg font-bold">${product.price}</p>
+              <h3 className="font-semibold text-sm text-muted-foreground">
+                Price
+              </h3>
+              <p className="text-lg font-bold">{formatIDR(product.price)}</p>
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-muted-foreground">Status</h3>
+              <h3 className="font-semibold text-sm text-muted-foreground">
+                Status
+              </h3>
               <p className="text-sm">{product.status}</p>
             </div>
           </div>
-          
+
           {product.description && (
             <div>
-              <h3 className="font-semibold text-sm text-muted-foreground">Description</h3>
+              <h3 className="font-semibold text-sm text-muted-foreground">
+                Description
+              </h3>
               <p className="text-sm">{product.description}</p>
             </div>
           )}
-          
+
           {product.imageUrl && (
             <div>
-              <h3 className="font-semibold text-sm text-muted-foreground">Image</h3>
-              <img 
-                src={product.imageUrl} 
+              <h3 className="font-semibold text-sm text-muted-foreground">
+                Image
+              </h3>
+              <img
+                src={product.imageUrl}
                 alt={product.name}
                 className="w-32 h-32 object-cover rounded-lg"
               />
@@ -96,4 +105,4 @@ function ViewProduct() {
   )
 }
 
-export default ViewProduct 
+export default ViewProduct
