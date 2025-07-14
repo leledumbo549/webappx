@@ -4,6 +4,7 @@ import axios from '@/lib/axios'
 import { DataTable } from '@/components/DataTable'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import type { AdminUser } from '@/types/Admin'
 import { Eye } from 'lucide-react'
 import {
@@ -21,6 +22,32 @@ function ManageUsers() {
   const [loading, setLoading] = useState(false)
   const [target, setTarget] = useState<AdminUser | null>(null)
   const navigate = useNavigate()
+
+  const getRoleBadgeVariant = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return 'destructive'
+      case 'seller':
+        return 'secondary'
+      case 'buyer':
+        return 'default'
+      default:
+        return 'outline'
+    }
+  }
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'default'
+      case 'banned':
+        return 'destructive'
+      case 'inactive':
+        return 'secondary'
+      default:
+        return 'outline'
+    }
+  }
 
   const fetchData = async () => {
     setLoading(true)
@@ -47,11 +74,27 @@ function ManageUsers() {
     {
       accessorKey: 'role',
       header: 'Role',
+      cell: ({ row }) => (
+        <Badge
+          variant={getRoleBadgeVariant(row.original.role || 'buyer')}
+          className="capitalize"
+        >
+          {row.original.role}
+        </Badge>
+      ),
       meta: { widthClass: 'hidden md:table-cell w-24', cellClass: 'truncate' },
     },
     {
       accessorKey: 'status',
       header: 'Status',
+      cell: ({ row }) => (
+        <Badge
+          variant={getStatusBadgeVariant(row.original.status || 'active')}
+          className="capitalize"
+        >
+          {row.original.status}
+        </Badge>
+      ),
       meta: { widthClass: 'w-24', cellClass: 'truncate' },
     },
     {
