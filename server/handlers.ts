@@ -175,6 +175,9 @@ export const handlers = [
         if (result.MESSAGE.includes('Invalid username or password')) {
           return res(ctx.status(401), ctx.json(result));
         }
+        if (result.MESSAGE.includes('banned')) {
+          return res(ctx.status(403), ctx.json(result));
+        }
         return res(ctx.status(500), ctx.json(result));
       }
       
