@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { useAtomValue } from 'jotai'
-import { cartAtom } from '@/atoms/cartAtoms'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { cartAtom, clearCartAtom } from '@/atoms/cartAtoms'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import axios from '@/lib/axios'
+import { useNavigate } from 'react-router-dom'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +17,8 @@ import {
 
 function Checkout() {
   const cart = useAtomValue(cartAtom)
+  const clearCart = useSetAtom(clearCartAtom)
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [confirmCheckout, setConfirmCheckout] = useState(false)
@@ -39,8 +42,8 @@ function Checkout() {
         shippingAddress: '123 Main St, City, Country',
         paymentMethod: 'credit_card',
       })
-      // Optionally, redirect or show success
-      window.location.hash = '/orders'
+      clearCart()
+      navigate('/orders')
     } catch {
       setError('Failed to create order')
     } finally {
