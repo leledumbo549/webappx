@@ -122,6 +122,13 @@ export async function loginByUsernamePassword(data: LoginRequest | unknown): Pro
   }
 
   const user = rows[0];
+
+  // Prevent banned users from logging in
+  if (user.status === 'banned') {
+    return {
+      MESSAGE: 'Your account has been banned. Please contact an admin to be unbanned'
+    };
+  }
   const token = generateToken(user.id);
   const publicUser = createPublicUser(user);
   // For demo, use current time for createdAt/updatedAt
