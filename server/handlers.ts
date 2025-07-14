@@ -146,10 +146,10 @@ async function requireAuth(req: { headers: { get: (name: string) => string | nul
 }
 
 /**
- * Add a 3-second delay to simulate real API latency
+ * Add a delay to simulate real API latency
  */
 async function addDelay(): Promise<void> {
-  await new Promise(resolve => setTimeout(resolve, 3000));
+  await new Promise(resolve => setTimeout(resolve, 1000));
 }
 
 // === HANDLERS ===
