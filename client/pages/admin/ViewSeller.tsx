@@ -5,6 +5,7 @@ import type { Seller } from '@/server/schema'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft } from 'lucide-react'
+import { Spinner } from '@/components/ui/spinner'
 
 function ViewSeller() {
   const { id } = useParams<{ id: string }>()
@@ -15,7 +16,7 @@ function ViewSeller() {
 
   const fetchSeller = useCallback(async () => {
     if (!id) return
-    
+
     setLoading(true)
     try {
       const res = await axios.get<Seller>(`/api/admin/sellers/${id}`)
@@ -30,7 +31,7 @@ function ViewSeller() {
 
   const handleStatusUpdate = async (action: string) => {
     if (!seller) return
-    
+
     try {
       await axios.patch(`/api/admin/sellers/${seller.id}`, { action })
       await fetchSeller() // Refresh the seller data
@@ -44,16 +45,20 @@ function ViewSeller() {
     fetchSeller()
   }, [fetchSeller])
 
-  if (loading) return <div>Loading...</div>
+  if (loading) return <Spinner />
   if (error) return <div className="text-red-600">{error}</div>
   if (!seller) return <div>Seller not found.</div>
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'inactive': return 'bg-gray-100 text-gray-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'active':
+        return 'bg-green-100 text-green-800'
+      case 'inactive':
+        return 'bg-gray-100 text-gray-800'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
@@ -76,7 +81,9 @@ function ViewSeller() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               {seller.name}
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(seller.status || 'inactive')}`}>
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(seller.status || 'inactive')}`}
+              >
                 {seller.status}
               </span>
             </CardTitle>
@@ -91,7 +98,7 @@ function ViewSeller() {
                 />
               </div>
             )}
-            
+
             <div className="space-y-2">
               <div>
                 <span className="font-semibold">Seller ID:</span> {seller.id}
@@ -137,7 +144,7 @@ function ViewSeller() {
                 </Button>
               </>
             )}
-            
+
             {seller.status === 'active' && (
               <Button
                 variant="destructive"
@@ -147,7 +154,7 @@ function ViewSeller() {
                 Deactivate Seller
               </Button>
             )}
-            
+
             {seller.status === 'inactive' && (
               <Button
                 className="w-full"
@@ -163,4 +170,4 @@ function ViewSeller() {
   )
 }
 
-export default ViewSeller 
+export default ViewSeller

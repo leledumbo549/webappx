@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Plus, DollarSign, X } from 'lucide-react'
+import { Spinner } from '@/components/ui/spinner'
 
 function Payouts() {
   const [payouts, setPayouts] = useState<SellerPayout[]>([])
@@ -42,13 +43,13 @@ function Payouts() {
     try {
       await axios.post('/api/seller/payouts', {
         amount,
-        bankAccount
+        bankAccount,
       })
-      
+
       // Refresh the payouts list
       await fetchData()
       setIsRequestModalOpen(false)
-      
+
       // Reset form
       e.currentTarget.reset()
     } catch (err) {
@@ -65,14 +66,18 @@ function Payouts() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'processed': return 'bg-green-100 text-green-800'
-      case 'failed': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'processed':
+        return 'bg-green-100 text-green-800'
+      case 'failed':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
-  if (loading) return <div>Loading...</div>
+  if (loading) return <Spinner />
   if (error) return <div className="text-red-600">{error}</div>
 
   return (
@@ -159,7 +164,9 @@ function Payouts() {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   Payout #{payout.id}
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(payout.status || 'pending')}`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(payout.status || 'pending')}`}
+                  >
                     {payout.status}
                   </span>
                 </CardTitle>
@@ -175,7 +182,9 @@ function Payouts() {
                   <div>
                     <span className="font-semibold">Date:</span>
                     <p className="text-sm text-gray-600">
-                      {payout.date ? new Date(payout.date).toLocaleDateString() : 'N/A'}
+                      {payout.date
+                        ? new Date(payout.date).toLocaleDateString()
+                        : 'N/A'}
                     </p>
                   </div>
                   {payout.createdAt && (

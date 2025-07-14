@@ -4,6 +4,7 @@ import { isAxiosError } from '@/lib/axios'
 import type { SellerProduct } from '@/types/Seller'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Spinner } from '@/components/ui/spinner'
 
 function MyProducts() {
   const [products, setProducts] = useState<SellerProduct[]>([])
@@ -37,7 +38,7 @@ function MyProducts() {
     fetchData()
   }, [])
 
-  if (loading) return <div>Loading...</div>
+  if (loading) return <Spinner />
   if (error) return <div className="text-red-600">{error}</div>
   if (!products.length) return <div>No products yet.</div>
 

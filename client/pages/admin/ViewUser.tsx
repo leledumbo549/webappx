@@ -5,6 +5,7 @@ import type { User } from '@/server/schema'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft } from 'lucide-react'
+import { Spinner } from '@/components/ui/spinner'
 
 function ViewUser() {
   const { id } = useParams<{ id: string }>()
@@ -15,7 +16,7 @@ function ViewUser() {
 
   const fetchUser = useCallback(async () => {
     if (!id) return
-    
+
     setLoading(true)
     try {
       const res = await axios.get<User>(`/api/admin/users/${id}`)
@@ -30,7 +31,7 @@ function ViewUser() {
 
   const handleToggleBan = async () => {
     if (!user) return
-    
+
     try {
       await axios.patch(`/api/admin/users/${user.id}`, { action: 'toggleBan' })
       await fetchUser() // Refresh the user data
@@ -44,25 +45,33 @@ function ViewUser() {
     fetchUser()
   }, [fetchUser])
 
-  if (loading) return <div>Loading...</div>
+  if (loading) return <Spinner />
   if (error) return <div className="text-red-600">{error}</div>
   if (!user) return <div>User not found.</div>
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'banned': return 'bg-red-100 text-red-800'
-      case 'inactive': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'active':
+        return 'bg-green-100 text-green-800'
+      case 'banned':
+        return 'bg-red-100 text-red-800'
+      case 'inactive':
+        return 'bg-gray-100 text-gray-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'admin': return 'bg-purple-100 text-purple-800'
-      case 'seller': return 'bg-blue-100 text-blue-800'
-      case 'buyer': return 'bg-green-100 text-green-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'admin':
+        return 'bg-purple-100 text-purple-800'
+      case 'seller':
+        return 'bg-blue-100 text-blue-800'
+      case 'buyer':
+        return 'bg-green-100 text-green-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
@@ -86,10 +95,14 @@ function ViewUser() {
             <CardTitle className="flex items-center justify-between">
               {user.name}
               <div className="flex gap-2">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role || 'buyer')}`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role || 'buyer')}`}
+                >
                   {user.role}
                 </span>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(user.status || 'inactive')}`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(user.status || 'inactive')}`}
+                >
                   {user.status}
                 </span>
               </div>
@@ -144,9 +157,12 @@ function ViewUser() {
             >
               {user.status === 'banned' ? 'Unban User' : 'Ban User'}
             </Button>
-            
+
             <div className="text-sm text-gray-600 mt-4">
-              <p><strong>Note:</strong> Banning a user will prevent them from accessing the platform.</p>
+              <p>
+                <strong>Note:</strong> Banning a user will prevent them from
+                accessing the platform.
+              </p>
               <p className="mt-2">Unbanning will restore their access.</p>
             </div>
           </CardContent>
@@ -156,4 +172,4 @@ function ViewUser() {
   )
 }
 
-export default ViewUser 
+export default ViewUser
