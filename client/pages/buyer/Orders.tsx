@@ -5,6 +5,7 @@ import { isAxiosError } from '@/lib/axios'
 import type { Order } from '@/server/schema'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Badge } from '@/components/ui/badge'
 import { Eye } from 'lucide-react'
 import { formatIDR } from '@/lib/utils'
 
@@ -31,6 +32,23 @@ function Orders() {
     fetchData()
   }, [])
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'processing':
+        return 'bg-blue-100 text-blue-800'
+      case 'shipped':
+        return 'bg-purple-100 text-purple-800'
+      case 'delivered':
+        return 'bg-green-100 text-green-800'
+      case 'cancelled':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
+  }
+
   if (loading) return <Skeleton className="h-20" />
   if (error) return <div className="text-red-600">{error}</div>
   if (!orders.length) return <div>No orders yet.</div>
@@ -49,21 +67,12 @@ function Orders() {
                   </div>
                   <div>
                     <span className="text-sm text-gray-600">Status: </span>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        o.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : o.status === 'processing'
-                            ? 'bg-blue-100 text-blue-800'
-                            : o.status === 'shipped'
-                              ? 'bg-purple-100 text-purple-800'
-                              : o.status === 'delivered'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-gray-100 text-gray-800'
-                      }`}
+                    <Badge
+                      variant="secondary"
+                      className={`rounded-full ${getStatusColor(o.status || 'pending')}`}
                     >
                       {o.status}
-                    </span>
+                    </Badge>
                   </div>
                 </div>
                 <div className="mt-2">

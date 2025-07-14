@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
 import { formatIDR } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 
 function ViewProduct() {
   const { id } = useParams<{ id: string }>()
@@ -33,6 +34,21 @@ function ViewProduct() {
   useEffect(() => {
     fetchProduct()
   }, [fetchProduct])
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-100 text-green-800'
+      case 'inactive':
+        return 'bg-gray-100 text-gray-800'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'flagged':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
+  }
 
   if (loading) return <Spinner />
   if (error) return <div className="text-red-600">{error}</div>
@@ -75,7 +91,12 @@ function ViewProduct() {
               <h3 className="font-semibold text-sm text-muted-foreground">
                 Status
               </h3>
-              <p className="text-sm">{product.status}</p>
+              <Badge
+                variant="secondary"
+                className={`rounded-full ${getStatusColor(product.status || 'inactive')}`}
+              >
+                {product.status}
+              </Badge>
             </div>
           </div>
 

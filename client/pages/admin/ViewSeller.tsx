@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import axios from '@/lib/axios'
 import type { Seller } from '@/server/schema'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   AlertDialog,
@@ -94,11 +95,12 @@ function ViewSeller() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 {seller.name}
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(seller.status || 'inactive')}`}
+                <Badge
+                  variant="secondary"
+                  className={`rounded-full ${getStatusColor(seller.status || 'inactive')}`}
                 >
                   {seller.status}
-                </span>
+                </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">

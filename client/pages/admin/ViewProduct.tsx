@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import axios from '@/lib/axios'
 import type { Product } from '@/types/Product'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -97,11 +98,12 @@ function ViewProduct() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 {product.name}
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status || 'inactive')}`}
+                <Badge
+                  variant="secondary"
+                  className={`rounded-full ${getStatusColor(product.status || 'inactive')}`}
                 >
                   {product.status}
-                </span>
+                </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
