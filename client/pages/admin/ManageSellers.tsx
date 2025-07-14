@@ -3,6 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import axios from '@/lib/axios'
 import { DataTable } from '@/components/DataTable'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { AdminSeller } from '@/types/Admin'
 import { Eye } from 'lucide-react'
@@ -10,6 +19,10 @@ import { Eye } from 'lucide-react'
 function ManageSellers() {
   const [data, setData] = useState<AdminSeller[]>([])
   const [loading, setLoading] = useState(false)
+  const [target, setTarget] = useState<{
+    seller: AdminSeller
+    action: 'activate' | 'deactivate'
+  } | null>(null)
   const navigate = useNavigate()
 
   const fetchData = async () => {
@@ -71,13 +84,16 @@ function ManageSellers() {
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={() => updateStatus(s, 'deactivate')}
+                onClick={() => setTarget({ seller: s, action: 'deactivate' })}
               >
                 Deactivate
               </Button>
             )}
             {s.status === 'inactive' && (
-              <Button size="sm" onClick={() => updateStatus(s, 'activate')}>
+              <Button
+                size="sm"
+                onClick={() => setTarget({ seller: s, action: 'activate' })}
+              >
                 Activate
               </Button>
             )}
@@ -89,7 +105,32 @@ function ManageSellers() {
     },
   ]
 
-  return <DataTable columns={columns} data={data} isLoading={loading} />
+  return (
+    <>
+      <DataTable columns={columns} data={data} isLoading={loading} />
+      <AlertDialog open={!!target} onOpenChange={(o) => !o && setTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {target?.action === 'activate' ? 'Activate' : 'Deactivate'} this
+              seller?
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (target) updateStatus(target.seller, target.action)
+                setTarget(null)
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  )
 }
 
 export default ManageSellers
