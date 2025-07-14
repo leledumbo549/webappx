@@ -37,6 +37,8 @@ import {
   getSellerPayouts,
   // Add new controllers
   createSellerPayout,
+  updateSellerOrderStatus,
+  createBuyerOrder,
   updateUserProfile,
   registerUser,
 } from './controllers';
@@ -878,6 +880,55 @@ export const handlers = [
       
     } catch (error) {
       console.error('Get buyer order error:', error);
+      if (error instanceof Error && error.message === 'Access denied') {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // PATCH /api/seller/orders/:id - Update order status
+  rest.patch('/api/seller/orders/:id', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      const token = auth.split(' ')[1];
+      const orderId = Number(req.params.id);
+      const body = await req.json();
+      const order = await updateSellerOrderStatus(token, orderId, body);
+      if (!order) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Order not found')));
+      }
+      return res(ctx.status(200), ctx.json(order));
+    } catch (error) {
+      console.error('Update seller order status error:', error);
+      if (error instanceof Error && error.message === 'Access denied') {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // POST /api/buyer/orders - Create new order
+  rest.post('/api/buyer/orders', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const auth = req.headers.get('authorization');
+      if (!auth || !auth.startsWith('Bearer ')) {
+        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
+      }
+      const token = auth.split(' ')[1];
+      const body = await req.json();
+      const order = await createBuyerOrder(token, body);
+      if (!order) {
+        return res(ctx.status(400), ctx.json(createErrorResponse('Invalid order request')));
+      }
+      return res(ctx.status(201), ctx.json(order));
+    } catch (error) {
+      console.error('Create buyer order error:', error);
       if (error instanceof Error && error.message === 'Access denied') {
         return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
       }
