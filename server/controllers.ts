@@ -3,7 +3,7 @@
 
 import type { User, PublicUser, Product, Seller, Report, Setting, DashboardStats, Order, SellerPayout } from './schema';
 import { drizzleDb } from './db';
-import { users, sellers, products, reports, settings, cart, orders, sellerPayouts } from './schema';
+import { users, sellers, products, reports, settings, orders, sellerPayouts } from './schema';
 import { and, eq, sql } from 'drizzle-orm';
 
 // === AUTHENTICATION CONTROLLERS ===
@@ -1032,8 +1032,6 @@ export async function createBuyerOrder(token: string, orderData: {
     createdOrders.push(order);
   }
 
-  // Clear buyer's cart after successful order creation
-  await db.delete(cart).where(eq(cart.userId, buyer.id)).run();
 
   // Return the first order (or you could return all orders)
   return createdOrders[0] || null;

@@ -122,26 +122,8 @@ export const settings = sqliteTable(
 );
 
 //
-// CART TABLE
-//
-export const cart = sqliteTable('cart', {
-  id: integer('id').primaryKey(),
-  userId: integer('userId').notNull(), // ID of the user who owns this cart item
-  productId: integer('productId').notNull(),
-  quantity: integer('quantity').notNull(),
-  createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
-});
-
-//
 // Type helpers
 //
-export interface CartItem {
-  id: number;
-  userId: number;
-  productId: number;
-  quantity: number;
-}
 
 export interface DashboardStats {
   totalUsers: number;
@@ -256,16 +238,6 @@ export const createTableStatements = [
   CREATE TABLE IF NOT EXISTS settings (
     key TEXT PRIMARY KEY,
     value TEXT
-  );
-  `,
-  `
-  CREATE TABLE IF NOT EXISTS cart (
-    id INTEGER PRIMARY KEY,
-    userId INTEGER NOT NULL,
-    productId INTEGER NOT NULL,
-    quantity INTEGER NOT NULL,
-    createdAt TEXT,
-    updatedAt TEXT
   );
   `,
 ];
