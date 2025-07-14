@@ -26,6 +26,11 @@ function MyProducts() {
   }
 
   const handleDelete = async (product: SellerProduct) => {
+    const confirmed = confirm(
+      `Are you sure you want to delete ${product.name}?`
+    )
+    if (!confirmed) return
+
     try {
       await axios.delete(`/api/seller/products/${product.id}`)
       await fetchData()
