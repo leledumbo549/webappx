@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "format": "prettier --write \"client/**/*.{js,jsx,ts,tsx,css,md}\""
+    "format": "prettier --write \"client/**/*.{js,jsx,ts,tsx,css,md}\"",
+    "lint:openapi": "speccy lint openapi.yaml"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
@@ -55,6 +56,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
+    "@stoplight/spectral": "^6.5.0",
     "@types/node": "^24.0.10",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
@@ -69,6 +71,7 @@
     "msw": "^1.3.5",
     "prettier": "^3.6.2",
     "react-router-dom": "^7.6.3",
+    "speccy": "^0.11.0",
     "tw-animate-css": "^1.3.5",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.34.1",

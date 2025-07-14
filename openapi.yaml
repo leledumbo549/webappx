@@ -51,13 +51,61 @@ paths:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_credentials:
+                  summary: Missing credentials
+                  value:
+                    MESSAGE: Username and password are required
+                invalid_format:
+                  summary: Invalid format
+                  value:
+                    MESSAGE: Invalid username or password format
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/register:
     post:
       summary: Register new user
@@ -79,7 +127,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_credentials:
+                  summary: Missing credentials
+                  value:
+                    MESSAGE: Username and password are required
+                invalid_format:
+                  summary: Invalid format
+                  value:
+                    MESSAGE: Invalid username or password format
         '409':
           description: Username already exists
           content:
@@ -92,7 +153,20 @@ paths:
                   value:
                     MESSAGE: Username already exists
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/me:
     get:
       summary: Get current user profile
@@ -110,9 +184,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/PublicUser'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
     put:
       summary: Update current user profile
       description: Update the current user's profile information
@@ -146,9 +246,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/PublicUser'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_credentials:
+                  summary: Missing credentials
+                  value:
+                    MESSAGE: Username and password are required
+                invalid_format:
+                  summary: Invalid format
+                  value:
+                    MESSAGE: Invalid username or password format
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '409':
           description: Username already exists
           content:
@@ -160,7 +286,20 @@ paths:
                     type: string
                     example: Username already exists
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/settings:
     get:
       summary: Get application settings
@@ -178,7 +317,20 @@ paths:
                 items:
                   $ref: '#/components/schemas/Setting'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/admin/dashboard:
     get:
       summary: Get admin dashboard statistics
@@ -195,11 +347,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/DashboardStats'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/admin/users:
     get:
       summary: Get all users
@@ -218,11 +405,46 @@ paths:
                 items:
                   $ref: '#/components/schemas/PublicUser'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/admin/users/{id}:
     get:
       summary: Get user details
@@ -246,13 +468,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/PublicUser'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                user_not_found:
+                  summary: User not found
+                  value:
+                    MESSAGE: User with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
     patch:
       summary: Update user status
       description: Update user status (ban/unban) - admin only
@@ -291,13 +557,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/PublicUser'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                user_not_found:
+                  summary: User not found
+                  value:
+                    MESSAGE: User with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/admin/sellers:
     get:
       summary: Get all sellers
@@ -316,11 +626,46 @@ paths:
                 items:
                   $ref: '#/components/schemas/Seller'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/admin/sellers/{id}:
     get:
       summary: Get seller details
@@ -344,13 +689,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/Seller'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                seller_not_found:
+                  summary: Seller not found
+                  value:
+                    MESSAGE: Seller with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
     patch:
       summary: Update seller status
       description: Approve, reject, activate, or deactivate a seller - admin only
@@ -399,13 +788,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/Seller'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                seller_not_found:
+                  summary: Seller not found
+                  value:
+                    MESSAGE: Seller with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/admin/products:
     get:
       summary: Get all products
@@ -424,11 +857,46 @@ paths:
                 items:
                   $ref: '#/components/schemas/Product'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/admin/products/{id}:
     get:
       summary: Get product details
@@ -452,13 +920,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                product_not_found:
+                  summary: Product not found
+                  value:
+                    MESSAGE: Product with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
     patch:
       summary: Update product status
       description: Approve, reject, flag, or remove a product - admin only
@@ -507,13 +1019,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                product_not_found:
+                  summary: Product not found
+                  value:
+                    MESSAGE: Product with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/admin/reports:
     get:
       summary: Get all reports
@@ -532,11 +1088,46 @@ paths:
                 items:
                   $ref: '#/components/schemas/Report'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/admin/reports/{id}:
     patch:
       summary: Resolve report
@@ -576,13 +1167,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/Report'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                report_not_found:
+                  summary: Report not found
+                  value:
+                    MESSAGE: Report with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/admin/settings:
     get:
       summary: Get admin settings
@@ -605,11 +1240,46 @@ paths:
                   currency: USD
                   payoutDelayDays: '7'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
     put:
       summary: Update admin settings
       description: Update admin settings (admin only)
@@ -639,41 +1309,46 @@ paths:
                 additionalProperties:
                   type: string
         '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  /api/admin/products/{id}:
-    get:
-      summary: Get product details for admin
-      description: Retrieve detailed information about a specific product for admin review and management.
-      tags:
-      - Admin
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-        description: Product ID
-      responses:
-        '200':
-          description: Product details retrieved successfully
+          description: Unauthorized - invalid or missing authentication
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/seller/products:
     get:
       summary: Get seller's products
@@ -694,11 +1369,46 @@ paths:
                 items:
                   $ref: '#/components/schemas/Product'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
     post:
       summary: Create a new product
       description: Create a new product for the authenticated seller. Products created
@@ -753,13 +1463,61 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_credentials:
+                  summary: Missing credentials
+                  value:
+                    MESSAGE: Username and password are required
+                invalid_format:
+                  summary: Invalid format
+                  value:
+                    MESSAGE: Invalid username or password format
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/seller/products/{id}:
     get:
       summary: Get seller's product details
@@ -785,13 +1543,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                product_not_found:
+                  summary: Product not found
+                  value:
+                    MESSAGE: Product with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
     put:
       summary: Update seller's product
       description: Update a product created by the authenticated seller. Products
@@ -850,15 +1652,72 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_credentials:
+                  summary: Missing credentials
+                  value:
+                    MESSAGE: Username and password are required
+                invalid_format:
+                  summary: Invalid format
+                  value:
+                    MESSAGE: Invalid username or password format
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                product_not_found:
+                  summary: Product not found
+                  value:
+                    MESSAGE: Product with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
     delete:
       summary: Delete seller's product
       description: Delete a product created by the authenticated seller. Products
@@ -879,13 +1738,57 @@ paths:
         '204':
           description: Product deleted successfully
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    MESSAGE: Access denied
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                product_not_found:
+                  summary: Product not found
+                  value:
+                    MESSAGE: Product with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/buyer/products:
     get:
       summary: Get all products for buyers
@@ -920,7 +1823,20 @@ paths:
                 items:
                   $ref: '#/components/schemas/Product'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/buyer/products/{id}:
     get:
       summary: Get product details for buyer
@@ -944,11 +1860,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                product_not_found:
+                  summary: Product not found
+                  value:
+                    MESSAGE: Product with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/buyer/orders:
     get:
       summary: Get buyer's orders
@@ -986,9 +1937,35 @@ paths:
                 items:
                   $ref: '#/components/schemas/Order'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
     post:
       summary: Create new order
       description: Create a new order from the buyer's cart items.
@@ -1043,11 +2020,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/Order'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_credentials:
+                  summary: Missing credentials
+                  value:
+                    MESSAGE: Username and password are required
+                invalid_format:
+                  summary: Invalid format
+                  value:
+                    MESSAGE: Invalid username or password format
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/buyer/orders/{id}:
     get:
       summary: Get order details
@@ -1071,11 +2087,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/Order'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                order_not_found:
+                  summary: Order not found
+                  value:
+                    MESSAGE: Order with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/seller/orders:
     get:
       summary: Get seller's orders
@@ -1113,9 +2164,35 @@ paths:
                 items:
                   $ref: '#/components/schemas/Order'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/seller/orders/{id}:
     patch:
       summary: Update order status
@@ -1158,13 +2235,61 @@ paths:
               schema:
                 $ref: '#/components/schemas/Order'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_credentials:
+                  summary: Missing credentials
+                  value:
+                    MESSAGE: Username and password are required
+                invalid_format:
+                  summary: Invalid format
+                  value:
+                    MESSAGE: Invalid username or password format
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                order_not_found:
+                  summary: Order not found
+                  value:
+                    MESSAGE: Order with ID 123 not found
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/seller/profile:
     get:
       summary: Get seller profile
@@ -1181,9 +2306,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/SellerProfile'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
     put:
       summary: Update seller profile
       description: Update the current seller's profile information.
@@ -1205,11 +2356,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/SellerProfile'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_credentials:
+                  summary: Missing credentials
+                  value:
+                    MESSAGE: Username and password are required
+                invalid_format:
+                  summary: Invalid format
+                  value:
+                    MESSAGE: Invalid username or password format
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
   /api/seller/payouts:
     get:
       summary: Get seller payouts
@@ -1247,9 +2437,35 @@ paths:
                 items:
                   $ref: '#/components/schemas/SellerPayout'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
     post:
       summary: Request payout
       description: Request a new payout for the current seller.
@@ -1285,11 +2501,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/SellerPayout'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_credentials:
+                  summary: Missing credentials
+                  value:
+                    MESSAGE: Username and password are required
+                invalid_format:
+                  summary: Invalid format
+                  value:
+                    MESSAGE: Invalid username or password format
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  summary: Invalid credentials
+                  value:
+                    MESSAGE: Invalid username or password
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    MESSAGE: Invalid authentication token
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    MESSAGE: Internal server error
+                database_error:
+                  summary: Database error
+                  value:
+                    MESSAGE: Database connection failed
 components:
   schemas:
     LoginRequest:
@@ -1522,39 +2777,6 @@ components:
           format: date-time
           description: Order creation timestamp
           example: '2024-01-15T10:30:00Z'
-    SellerPayout:
-      type: object
-      required:
-      - id
-      - amount
-      - date
-      properties:
-        id:
-          type: integer
-          description: Payout's unique identifier
-          example: 1
-        amount:
-          type: number
-          format: float
-          description: Payout amount
-          example: 500.0
-        date:
-          type: string
-          format: date
-          description: Payout date
-          example: '2024-01-15'
-        sellerId:
-          type: integer
-          description: ID of the seller
-          example: 1
-        status:
-          type: string
-          description: Payout status
-          enum:
-          - pending
-          - completed
-          - failed
-          example: pending
     Report:
       type: object
       required:
@@ -1768,78 +2990,6 @@ components:
           format: date-time
           description: Payout creation timestamp
           example: '2024-01-15T10:30:00Z'
-  responses:
-    BadRequest:
-      description: Bad request - invalid input
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          examples:
-            missing_credentials:
-              summary: Missing credentials
-              value:
-                MESSAGE: Username and password are required
-            invalid_format:
-              summary: Invalid format
-              value:
-                MESSAGE: Invalid username or password format
-    Unauthorized:
-      description: Unauthorized - invalid or missing authentication
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          examples:
-            invalid_credentials:
-              summary: Invalid credentials
-              value:
-                MESSAGE: Invalid username or password
-            invalid_token:
-              summary: Invalid token
-              value:
-                MESSAGE: Invalid authentication token
-    Forbidden:
-      description: Forbidden - insufficient permissions
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          examples:
-            access_denied:
-              summary: Access denied
-              value:
-                MESSAGE: Access denied
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          examples:
-            user_not_found:
-              summary: User not found
-              value:
-                MESSAGE: User not found
-            product_not_found:
-              summary: Product not found
-              value:
-                MESSAGE: Product not found
-    InternalServerError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          examples:
-            server_error:
-              summary: Server error
-              value:
-                MESSAGE: Internal server error
-            database_error:
-              summary: Database error
-              value:
-                MESSAGE: Database connection failed
     ErrorResponse:
       type: object
       required:

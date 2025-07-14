@@ -22,6 +22,7 @@ These instructions define how AI code agents and human contributors should modif
 
 - Format code: `npm run format`
 - Lint: `npm run lint`
+- OpenAPI lint: `npm run lint:openapi`
 - Ensure `npm run build` passes.
 
 ---
