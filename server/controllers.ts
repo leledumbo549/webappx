@@ -1,7 +1,7 @@
 // server/controllers.ts
 // Controllers for all API endpoints using drizzle and db.ts
 
-import type { User, PublicUser, Product, Seller, Report, Setting, DashboardStats, CartItem, Order, SellerPayout } from './schema';
+import type { User, PublicUser, Product, Seller, Report, Setting, DashboardStats, Order, SellerPayout } from './schema';
 import { drizzleDb } from './db';
 import { users, sellers, products, reports, settings, cart, orders, sellerPayouts } from './schema';
 import { and, eq, sql } from 'drizzle-orm';
@@ -765,93 +765,6 @@ export async function checkBuyerAccess(token: string): Promise<PublicUser | null
     return null;
   }
   return user;
-}
-
-/**
- * Get buyer's cart
- */
-export async function getBuyerCart(token: string): Promise<CartItem[]> {
-  const buyer = await checkBuyerAccess(token);
-  if (!buyer) {
-    throw new Error('Access denied');
-  }
-
-  const db = await drizzleDb();
-  const cartItems = await db.select().from(cart).where(eq(cart.userId, buyer.id)).all();
-  
-  return cartItems.map(item => ({
-    id: item.id,
-    userId: item.userId,
-    productId: item.productId,
-    quantity: item.quantity
-  }));
-}
-
-/**
- * Add item to buyer's cart
- */
-export async function addToCart(token: string, cartItem: CartItem): Promise<void> {
-  const buyer = await checkBuyerAccess(token);
-  if (!buyer) {
-    throw new Error('Access denied');
-  }
-
-  const db = await drizzleDb();
-  
-  // Check if product exists
-  const product = await db.select().from(products).where(eq(products.id, cartItem.productId)).all();
-  if (product.length === 0) {
-    throw new Error('Product not found');
-  }
-
-  // Check if item already exists in user's cart
-  const existingItem = await db.select().from(cart).where(and(eq(cart.userId, buyer.id), eq(cart.productId, cartItem.productId))).all();
-  
-  if (existingItem.length > 0) {
-    // Add to existing item quantity
-    const newQuantity = existingItem[0].quantity + cartItem.quantity;
-    await db.update(cart).set({ quantity: newQuantity, updatedAt: new Date().toISOString() }).where(and(eq(cart.userId, buyer.id), eq(cart.productId, cartItem.productId))).run();
-  } else {
-    // Add new item to cart
-    await db.insert(cart).values({
-      userId: buyer.id,
-      productId: cartItem.productId,
-      quantity: cartItem.quantity
-    }).run();
-  }
-}
-
-/**
- * Update cart item quantity
- */
-export async function updateCartItem(token: string, productId: number, quantity: number): Promise<void> {
-  const buyer = await checkBuyerAccess(token);
-  if (!buyer) {
-    throw new Error('Access denied');
-  }
-
-  const db = await drizzleDb();
-  
-  if (quantity <= 0) {
-    // Remove item if quantity is 0 or negative
-    await db.delete(cart).where(and(eq(cart.userId, buyer.id), eq(cart.productId, productId))).run();
-  } else {
-    // Update quantity
-    await db.update(cart).set({ quantity, updatedAt: new Date().toISOString() }).where(and(eq(cart.userId, buyer.id), eq(cart.productId, productId))).run();
-  }
-}
-
-/**
- * Remove item from cart
- */
-export async function removeFromCart(token: string, productId: number): Promise<void> {
-  const buyer = await checkBuyerAccess(token);
-  if (!buyer) {
-    throw new Error('Access denied');
-  }
-
-  const db = await drizzleDb();
-  await db.delete(cart).where(and(eq(cart.userId, buyer.id), eq(cart.productId, productId))).run();
 }
 
 /**

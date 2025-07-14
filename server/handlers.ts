@@ -26,10 +26,6 @@ import {
   updateSellerProduct,
   deleteSellerProduct,
   // Add buyer controllers
-  getBuyerCart,
-  addToCart,
-  updateCartItem,
-  removeFromCart,
   getBuyerProducts,
   getBuyerProduct,
   getBuyerOrders,
@@ -120,24 +116,6 @@ async function requireSeller(req: { headers: { get: (name: string) => string | n
   return { success: true, user: authResult.user };
 }
 
-/**
- * Check if user has buyer access
- */
-async function requireBuyer(req: { headers: { get: (name: string) => string | null } }): Promise<AuthResult> {
-  const authResult = await extractToken(req);
-  if (!authResult.success) {
-    return authResult;
-  }
-  
-  if (authResult.user.role !== 'buyer') {
-    return {
-      success: false,
-      error: { status: 403, message: 'Access denied' }
-    };
-  }
-  
-  return { success: true, user: authResult.user };
-}
 
 /**
  * Check if user is authenticated (any role)
@@ -830,111 +808,6 @@ export const handlers = [
 
   // === BUYER ENDPOINTS ===
   
-  // GET /api/buyer/cart - Get buyer's cart
-  rest.get('/api/buyer/cart', async (req, res, ctx) => {
-    try {
-      await addDelay();
-      const authResult = await requireBuyer(req);
-      if (!authResult.success) {
-        return res(ctx.status(authResult.error!.status), ctx.json(createErrorResponse(authResult.error!.message)));
-      }
-      
-      const cart = await getBuyerCart(authResult.user.token);
-      
-      return res(ctx.status(200), ctx.json(cart));
-      
-    } catch (error) {
-      console.error('Get cart error:', error);
-      if (error instanceof Error && error.message === 'Access denied') {
-        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
-      }
-      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
-    }
-  }),
-
-  // POST /api/buyer/cart - Add item to cart
-  rest.post('/api/buyer/cart', async (req, res, ctx) => {
-    try {
-      await addDelay();
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
-      }
-      
-      const token = auth.split(' ')[1];
-      const body = await req.json();
-      
-      await addToCart(token, body);
-      
-      return res(ctx.status(201));
-      
-    } catch (error) {
-      console.error('Add to cart error:', error);
-      if (error instanceof Error && error.message === 'Access denied') {
-        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
-      }
-      if (error instanceof Error && error.message === 'Product not found') {
-        return res(ctx.status(400), ctx.json(createErrorResponse('Product not found')));
-      }
-      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
-    }
-  }),
-
-  // PATCH /api/buyer/cart/{productId} - Update cart item quantity
-  rest.patch('/api/buyer/cart/:productId', async (req, res, ctx) => {
-    try {
-      await addDelay();
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
-      }
-      
-      const token = auth.split(' ')[1];
-      const productId = Number(req.params.productId);
-      const body = await req.json();
-      const { quantity } = body;
-      
-      if (typeof quantity !== 'number') {
-        return res(ctx.status(400), ctx.json(createErrorResponse('Quantity is required')));
-      }
-      
-      await updateCartItem(token, productId, quantity);
-      
-      return res(ctx.status(200));
-      
-    } catch (error) {
-      console.error('Update cart item error:', error);
-      if (error instanceof Error && error.message === 'Access denied') {
-        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
-      }
-      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
-    }
-  }),
-
-  // DELETE /api/buyer/cart/{productId} - Remove item from cart
-  rest.delete('/api/buyer/cart/:productId', async (req, res, ctx) => {
-    try {
-      await addDelay();
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
-        return res(ctx.status(401), ctx.json(createErrorResponse('Invalid authentication token')));
-      }
-      
-      const token = auth.split(' ')[1];
-      const productId = Number(req.params.productId);
-      
-      await removeFromCart(token, productId);
-      
-      return res(ctx.status(204));
-      
-    } catch (error) {
-      console.error('Remove from cart error:', error);
-      if (error instanceof Error && error.message === 'Access denied') {
-        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
-      }
-      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
-    }
-  }),
 
   // GET /api/buyer/products - Get all products for buyers
   rest.get('/api/buyer/products', async (_req, res, ctx) => {
