@@ -31,6 +31,7 @@ import ManageProducts from './pages/admin/ManageProducts'
 import AdminViewProduct from './pages/admin/ViewProduct'
 import Reports from './pages/admin/Reports'
 import SiteSettings from './pages/admin/SiteSettings'
+import Checkout from './pages/buyer/Checkout'
 import { Toaster } from './components/ui/sonner'
 
 function App() {
@@ -67,27 +68,34 @@ function App() {
               <Route path="/" element={<Loading />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              
+
               {/* Buyer Routes */}
               <Route path="/home" element={<Home />} />
               <Route path="/catalog" element={<Catalog />} />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/buyer/checkout" element={<Checkout />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/orders/:id" element={<OrderDetail />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/buyer/product/:id" element={<ProductDetail />} />
-              
+
               {/* Seller Routes */}
               <Route path="/seller" element={<SellerDashboard />} />
               <Route path="/seller/dashboard" element={<SellerDashboard />} />
               <Route path="/seller/products" element={<MyProducts />} />
               <Route path="/seller/add-product" element={<AddProduct />} />
-              <Route path="/seller/edit-product/:id" element={<EditProduct />} />
-              <Route path="/seller/view-product/:id" element={<ViewProduct />} />
+              <Route
+                path="/seller/edit-product/:id"
+                element={<EditProduct />}
+              />
+              <Route
+                path="/seller/view-product/:id"
+                element={<ViewProduct />}
+              />
               <Route path="/seller/orders" element={<OrdersReceived />} />
               <Route path="/seller/payouts" element={<Payouts />} />
               <Route path="/seller/profile" element={<StoreProfile />} />
-              
+
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<ManageUsers />} />
@@ -95,7 +103,10 @@ function App() {
               <Route path="/admin/sellers" element={<ManageSellers />} />
               <Route path="/admin/sellers/:id" element={<ViewSeller />} />
               <Route path="/admin/products" element={<ManageProducts />} />
-              <Route path="/admin/products/:id" element={<AdminViewProduct />} />
+              <Route
+                path="/admin/products/:id"
+                element={<AdminViewProduct />}
+              />
               <Route path="/admin/reports" element={<Reports />} />
               <Route path="/admin/settings" element={<SiteSettings />} />
             </Routes>
