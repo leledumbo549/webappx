@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Plus, DollarSign, X } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
+import { formatIDR } from '@/lib/utils'
 
 function Payouts() {
   const [payouts, setPayouts] = useState<SellerPayout[]>([])
@@ -176,7 +177,7 @@ function Payouts() {
                   <div>
                     <span className="font-semibold">Amount:</span>
                     <p className="text-lg font-bold text-green-600">
-                      ${payout.amount?.toFixed(2)}
+                      {formatIDR(payout.amount ?? 0)}
                     </p>
                   </div>
                   <div>

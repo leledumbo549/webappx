@@ -6,6 +6,7 @@ import type { Order } from '@/server/schema'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Eye } from 'lucide-react'
+import { formatIDR } from '@/lib/utils'
 
 function Orders() {
   const [orders, setOrders] = useState<Order[]>([])
@@ -48,28 +49,31 @@ function Orders() {
                   </div>
                   <div>
                     <span className="text-sm text-gray-600">Status: </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      o.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      o.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                      o.status === 'shipped' ? 'bg-purple-100 text-purple-800' :
-                      o.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        o.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : o.status === 'processing'
+                            ? 'bg-blue-100 text-blue-800'
+                            : o.status === 'shipped'
+                              ? 'bg-purple-100 text-purple-800'
+                              : o.status === 'delivered'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
                       {o.status}
                     </span>
                   </div>
                 </div>
                 <div className="mt-2">
                   <span className="text-sm text-gray-600">Total: </span>
-                  <span className="font-semibold">
-                    {new Intl.NumberFormat('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                    }).format(o.total)}
-                  </span>
+                  <span className="font-semibold">{formatIDR(o.total)}</span>
                 </div>
                 <div className="text-xs text-muted-foreground mt-1">
-                  {o.createdAt ? new Date(o.createdAt).toLocaleString('en-US') : 'N/A'}
+                  {o.createdAt
+                    ? new Date(o.createdAt).toLocaleString('en-US')
+                    : 'N/A'}
                 </div>
               </div>
               <Button
