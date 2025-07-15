@@ -59,7 +59,7 @@ export function validateLoginRequest(data: unknown): LoginRequest | LoginError {
  */
  
 export function createPublicUser(user: User): PublicUser {
-  const publicUser = { ...user }; // ai: dont modify this line
+  const publicUser = { ...user }; // ai: skip
   delete (publicUser as Record<string, unknown>).password;  
   return publicUser as PublicUser;
 }

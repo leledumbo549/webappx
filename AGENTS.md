@@ -54,7 +54,7 @@ These instructions define how AI code agents and human contributors should modif
 - **Types**
   - Define clear TypeScript interfaces for all data models.
 - **Special Comments**
-  - Never modify any line with `ai: dont modify this line`.
+  - Never modify any line with `ai: skip`.
 - **Scoped Changes**
   - If ordered to work in `client` code, do not modify anything outside `/client`.
   - If ordered to work in `server` code, do not modify anything outside `/server`.
