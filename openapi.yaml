@@ -14,6 +14,7 @@ servers:
 paths:
   /api/login:
     post:
+      operationId: loginUser
       summary: Authenticate user
       description: Authenticate a user with username and password, returning a token
         and user information. This endpoint is publicly accessible and does not require
@@ -108,6 +109,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/register:
     post:
+      operationId: registerUser
       summary: Register new user
       description: Create a buyer or seller account. Sellers must provide store details.
       tags:
@@ -169,6 +171,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/me:
     get:
+      operationId: getCurrentUser
       summary: Get current user profile
       description: Retrieve the current user's profile information using the authentication
         token
@@ -214,6 +217,7 @@ paths:
                   value:
                     MESSAGE: Database connection failed
     put:
+      operationId: updateCurrentUser
       summary: Update current user profile
       description: Update the current user's profile information
       tags:
@@ -302,6 +306,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/settings:
     get:
+      operationId: getApplicationSettings
       summary: Get application settings
       description: Retrieve all application settings
       tags:
@@ -333,6 +338,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/admin/dashboard:
     get:
+      operationId: getAdminDashboard
       summary: Get admin dashboard statistics
       description: Retrieve dashboard statistics for admin users
       tags:
@@ -389,6 +395,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/admin/users:
     get:
+      operationId: getAllUsers
       summary: Get all users
       description: Retrieve all users (admin only)
       tags:
@@ -447,6 +454,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/admin/users/{id}:
     get:
+      operationId: getUserDetails
       summary: Get user details
       description: Retrieve details of a specific user - admin only
       tags:
@@ -520,6 +528,7 @@ paths:
                   value:
                     MESSAGE: Database connection failed
     patch:
+      operationId: updateUserStatus
       summary: Update user status
       description: Update user status (ban/unban) - admin only
       tags:
@@ -610,6 +619,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/admin/sellers:
     get:
+      operationId: getAllSellers
       summary: Get all sellers
       description: Retrieve all sellers (admin only)
       tags:
@@ -668,6 +678,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/admin/sellers/{id}:
     get:
+      operationId: getSellerDetails
       summary: Get seller details
       description: Retrieve details of a specific seller - admin only
       tags:
@@ -741,6 +752,7 @@ paths:
                   value:
                     MESSAGE: Database connection failed
     patch:
+      operationId: updateSellerStatus
       summary: Update seller status
       description: Approve, reject, activate, or deactivate a seller - admin only
       tags:
@@ -841,6 +853,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/admin/products:
     get:
+      operationId: getAllProducts
       summary: Get all products
       description: Retrieve all products (admin only)
       tags:
@@ -899,6 +912,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/admin/products/{id}:
     get:
+      operationId: getProductDetails
       summary: Get product details
       description: Retrieve details of a specific product - admin only
       tags:
@@ -972,6 +986,7 @@ paths:
                   value:
                     MESSAGE: Database connection failed
     patch:
+      operationId: updateProductStatus
       summary: Update product status
       description: Approve, reject, flag, or remove a product - admin only
       tags:
@@ -1072,6 +1087,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/admin/reports:
     get:
+      operationId: getAllReports
       summary: Get all reports
       description: Retrieve all reports (admin only)
       tags:
@@ -1130,6 +1146,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/admin/reports/{id}:
     patch:
+      operationId: resolveReport
       summary: Resolve report
       description: Mark a report as resolved - admin only
       tags:
@@ -1220,6 +1237,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/admin/settings:
     get:
+      operationId: getAdminSettings
       summary: Get admin settings
       description: Retrieve admin settings (admin only)
       tags:
@@ -1281,6 +1299,7 @@ paths:
                   value:
                     MESSAGE: Database connection failed
     put:
+      operationId: updateAdminSettings
       summary: Update admin settings
       description: Update admin settings (admin only)
       tags:
@@ -1351,6 +1370,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/seller/products:
     get:
+      operationId: getSellerProducts
       summary: Get seller's products
       description: Retrieve all products created by the authenticated seller. Products
         are the same as regular products but filtered to only show those belonging
@@ -1410,6 +1430,7 @@ paths:
                   value:
                     MESSAGE: Database connection failed
     post:
+      operationId: createSellerProduct
       summary: Create a new product
       description: Create a new product for the authenticated seller. Products created
         here are the same as regular products but are automatically associated with
@@ -1520,6 +1541,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/seller/products/{id}:
     get:
+      operationId: getSellerProductDetails
       summary: Get seller's product details
       description: Retrieve details of a specific product created by the authenticated
         seller. Products are the same as regular products but filtered to only show
@@ -1595,6 +1617,7 @@ paths:
                   value:
                     MESSAGE: Database connection failed
     put:
+      operationId: updateSellerProduct
       summary: Update seller's product
       description: Update a product created by the authenticated seller. Products
         are the same as regular products but only the seller who created the product
@@ -1719,6 +1742,7 @@ paths:
                   value:
                     MESSAGE: Database connection failed
     delete:
+      operationId: deleteSellerProduct
       summary: Delete seller's product
       description: Delete a product created by the authenticated seller. Products
         are the same as regular products but only the seller who created the product
@@ -1791,6 +1815,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/buyer/products:
     get:
+      operationId: getBuyerProducts
       summary: Get all products for buyers
       description: Retrieve all available products that buyers can browse and purchase.
       tags:
@@ -1839,6 +1864,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/buyer/products/{id}:
     get:
+      operationId: getBuyerProductDetails
       summary: Get product details for buyer
       description: Retrieve detailed information about a specific product for buyers to view.
       tags:
@@ -1902,6 +1928,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/buyer/orders:
     get:
+      operationId: getBuyerOrders
       summary: Get buyer's orders
       description: Retrieve all orders for the current buyer.
       tags:
@@ -1967,6 +1994,7 @@ paths:
                   value:
                     MESSAGE: Database connection failed
     post:
+      operationId: createBuyerOrder
       summary: Create new order
       description: Create a new order from the buyer's cart items.
       tags:
@@ -2066,6 +2094,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/buyer/orders/{id}:
     get:
+      operationId: getBuyerOrderDetails
       summary: Get order details
       description: Retrieve detailed information about a specific order.
       tags:
@@ -2129,6 +2158,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/seller/orders:
     get:
+      operationId: getSellerOrders
       summary: Get seller's orders
       description: Retrieve all orders for the current seller.
       tags:
@@ -2195,6 +2225,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/seller/orders/{id}:
     patch:
+      operationId: updateSellerOrderStatus
       summary: Update order status
       description: Update the status of a specific order (seller only).
       tags:
@@ -2292,6 +2323,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/seller/profile:
     get:
+      operationId: getSellerProfile
       summary: Get seller profile
       description: Retrieve the current seller's profile information.
       tags:
@@ -2336,6 +2368,7 @@ paths:
                   value:
                     MESSAGE: Database connection failed
     put:
+      operationId: updateSellerProfile
       summary: Update seller profile
       description: Update the current seller's profile information.
       tags:
@@ -2402,6 +2435,7 @@ paths:
                     MESSAGE: Database connection failed
   /api/seller/payouts:
     get:
+      operationId: getSellerPayouts
       summary: Get seller payouts
       description: Retrieve payout history for the current seller.
       tags:
@@ -2467,6 +2501,7 @@ paths:
                   value:
                     MESSAGE: Database connection failed
     post:
+      operationId: requestSellerPayout
       summary: Request payout
       description: Request a new payout for the current seller.
       tags:
@@ -3006,13 +3041,13 @@ components:
       bearerFormat: JWT
       description: JWT token obtained from login endpoint
 tags:
-- name: Authentication
-  description: User authentication operations
-- name: Settings
-  description: Application settings management
 - name: Admin
   description: Administrative operations (admin only)
-- name: Seller
-  description: Seller operations (seller only)
+- name: Authentication
+  description: User authentication operations
 - name: Buyer
   description: Buyer operations (buyer only)
+- name: Seller
+  description: Seller operations (seller only)
+- name: Settings
+  description: Application settings management

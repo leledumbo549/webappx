@@ -22,7 +22,7 @@ These instructions define how AI code agents and human contributors should modif
 
 - Format code: `npm run format`
 - Lint: `npm run lint`
-- OpenAPI lint: `npm run lint:openapi`
+- OpenAPI lint: `npm run lint:openapi` (only if `openapi.yaml` was modified)
 - Ensure `npm run build` passes.
 
 ---
