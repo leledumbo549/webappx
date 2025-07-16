@@ -41,6 +41,7 @@ import {
   createBuyerOrder,
   updateUserProfile,
   registerUser,
+  loginWithSiwe,
 } from './controllers';
 
 // === AUTHORIZATION HELPERS ===
@@ -166,6 +167,25 @@ export const handlers = [
       console.error('Login handler error:', error);
       return res(
         ctx.status(500), 
+        ctx.json(createErrorResponse('Internal server error'))
+      );
+    }
+  }),
+
+  // POST /api/login/siwe - Authenticate via Sign-In with Ethereum
+  rest.post('/api/login/siwe', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const body = await req.json();
+      const result = await loginWithSiwe(body);
+      if ('MESSAGE' in result) {
+        return res(ctx.status(400), ctx.json(result));
+      }
+      return res(ctx.status(200), ctx.json(result));
+    } catch (error) {
+      console.error('SIWE login error:', error);
+      return res(
+        ctx.status(500),
         ctx.json(createErrorResponse('Internal server error'))
       );
     }

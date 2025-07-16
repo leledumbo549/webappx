@@ -5,6 +5,7 @@ import type { User, PublicUser, Product, Seller, Report, Setting, DashboardStats
 import { drizzleDb } from './db';
 import { users, sellers, products, reports, settings, orders, sellerPayouts } from './schema';
 import { and, eq, sql } from 'drizzle-orm';
+import { SiweMessage } from 'siwe';
 
 // === AUTHENTICATION CONTROLLERS ===
 
@@ -141,6 +142,59 @@ export async function loginByUsernamePassword(data: LoginRequest | unknown): Pro
       updatedAt: now,
     },
   };
+}
+
+export interface SiweLoginRequest {
+  message: string;
+  signature: string;
+}
+
+export async function loginWithSiwe(data: SiweLoginRequest | unknown): Promise<LoginResponse | LoginError> {
+  if (!data || typeof data !== 'object') {
+    return { MESSAGE: 'Invalid request body' };
+  }
+
+  const { message, signature } = data as SiweLoginRequest;
+  if (!message || !signature) {
+    return { MESSAGE: 'Message and signature are required' };
+  }
+
+  try {
+    const siwe = new SiweMessage(message);
+    const result = await siwe.verify({ signature, domain: siwe.domain, nonce: siwe.nonce });
+    if (!result.success) {
+      return { MESSAGE: 'Invalid SIWE signature' };
+    }
+
+    const address = siwe.address.toLowerCase();
+    const db = await drizzleDb();
+    let user: User | undefined;
+    const rows: User[] = await db
+      .select()
+      .from(users)
+      .where(eq(users.username, address))
+      .all();
+
+    if (rows.length === 0) {
+      user = await db
+        .insert(users)
+        .values({ name: address, username: address, role: 'buyer', status: 'active' })
+        .returning()
+        .get();
+    } else {
+      user = rows[0];
+    }
+
+    const token = generateToken(user.id);
+    const publicUser = createPublicUser(user);
+    const now = new Date().toISOString();
+    return {
+      token,
+      user: { ...publicUser, createdAt: now, updatedAt: now },
+    };
+  } catch {
+    return { MESSAGE: 'SIWE verification failed' };
+  }
 }
 
 // === REGISTRATION CONTROLLERS ===

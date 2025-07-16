@@ -6,6 +6,7 @@ import axios from '@/lib/axios'
 import Loading from './pages/Loading'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import LoginSIWE from './pages/LoginSIWE'
 import Navbar from './components/Navbar'
 import Home from './pages/buyer/Home'
 import Catalog from './pages/buyer/Catalog'
@@ -66,6 +67,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Loading />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/login-siwe" element={<LoginSIWE />} />
               <Route path="/register" element={<Register />} />
 
               {/* Buyer Routes */}
