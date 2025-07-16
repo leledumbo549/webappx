@@ -41,6 +41,8 @@ import {
   createBuyerOrder,
   updateUserProfile,
   registerUser,
+  generatePaymentLink,
+  handlePaymentCallback,
 } from './controllers';
 
 // === AUTHORIZATION HELPERS ===
@@ -1057,6 +1059,39 @@ export const handlers = [
       if (error instanceof Error && error.message === 'Access denied') {
         return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
       }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // POST /api/payment/link - Generate payment link
+  rest.post('/api/payment/link', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const body = await req.json();
+      const link = await generatePaymentLink(body.orderId);
+      if (!link) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Order not found')));
+      }
+      return res(ctx.status(200), ctx.json(link));
+    } catch (error) {
+      console.error('Generate payment link error:', error);
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // POST /api/payment/callback/:orderId - Payment provider callback
+  rest.post('/api/payment/callback/:orderId', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const { orderId } = req.params as { orderId: string };
+      const payload = await req.json();
+      const order = await handlePaymentCallback(Number(orderId), payload);
+      if (!order) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Order not found')));
+      }
+      return res(ctx.status(200), ctx.json(order));
+    } catch (error) {
+      console.error('Payment callback error:', error);
       return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
     }
   }),

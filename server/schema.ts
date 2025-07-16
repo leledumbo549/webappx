@@ -83,6 +83,17 @@ export const orders = sqliteTable('orders', {
 });
 
 //
+// PAYMENTS TABLE
+//
+export const payments = sqliteTable('payments', {
+  id: integer('id').primaryKey(),
+  orderId: integer('orderId').notNull(),
+  data: text('data'),
+  createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
+});
+
+//
 // SELLER PAYOUTS TABLE
 //
 export const sellerPayouts = sqliteTable('sellerPayouts', {
@@ -139,6 +150,7 @@ export type Product = InferSelectModel<typeof products>;
 export type Seller = InferSelectModel<typeof sellers>;
 export type Order = InferSelectModel<typeof orders>;
 export type SellerPayout = InferSelectModel<typeof sellerPayouts>;
+export type Payment = InferSelectModel<typeof payments>;
 export type Report = InferSelectModel<typeof reports>;
 export type Setting = InferSelectModel<typeof settings>;
 
@@ -209,6 +221,15 @@ export const createTableStatements = [
     trackingNumber TEXT,
     buyerId INTEGER,
     sellerId INTEGER,
+    createdAt TEXT,
+    updatedAt TEXT
+  );
+  `,
+  `
+  CREATE TABLE IF NOT EXISTS payments (
+    id INTEGER PRIMARY KEY,
+    orderId INTEGER NOT NULL,
+    data TEXT,
     createdAt TEXT,
     updatedAt TEXT
   );

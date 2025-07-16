@@ -3,7 +3,7 @@
 
 import type { User, PublicUser, Product, Seller, Report, Setting, DashboardStats, Order, SellerPayout } from './schema';
 import { drizzleDb } from './db';
-import { users, sellers, products, reports, settings, orders, sellerPayouts } from './schema';
+import { users, sellers, products, reports, settings, orders, sellerPayouts, payments } from './schema';
 import { and, eq, sql } from 'drizzle-orm';
 
 // === AUTHENTICATION CONTROLLERS ===
@@ -1038,3 +1038,35 @@ export async function createBuyerOrder(token: string, orderData: {
 }
 
 // === EXISTING CONTROLLERS ===
+
+/**
+ * Generate a payment link for an existing order
+ */
+export async function generatePaymentLink(orderId: number): Promise<{ url: string } | null> {
+  const db = await drizzleDb();
+  const orderRows = await db.select().from(orders).where(eq(orders.id, orderId)).all();
+  if (orderRows.length === 0) {
+    return null;
+  }
+  return { url: `https://payment.example.com/pay/${orderId}` };
+}
+
+/**
+ * Process payment callback and mark order as paid
+ */
+export async function handlePaymentCallback(orderId: number, payload: unknown): Promise<Order | null> {
+  const db = await drizzleDb();
+
+  await db.insert(payments).values({
+    orderId,
+    data: JSON.stringify(payload)
+  }).run();
+
+  await db.update(orders)
+    .set({ status: 'paid', updatedAt: new Date().toISOString() })
+    .where(eq(orders.id, orderId))
+    .run();
+
+  const updated = await db.select().from(orders).where(eq(orders.id, orderId)).all();
+  return updated[0] || null;
+}
