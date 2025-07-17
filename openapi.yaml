@@ -304,6 +304,34 @@ paths:
                   summary: Database error
                   value:
                     MESSAGE: Database connection failed
+  /api/wallet:
+    get:
+      operationId: getWallet
+      summary: Get current wallet balance
+      description: Retrieve the wallet information for the authenticated user.
+      tags:
+      - Wallet
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Wallet retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/settings:
     get:
       operationId: getApplicationSettings
@@ -1085,6 +1113,42 @@ paths:
                   summary: Database error
                   value:
                     MESSAGE: Database connection failed
+  /api/admin/wallets:
+    get:
+      operationId: getAllWallets
+      summary: Get all user wallets
+      description: Retrieve wallets for all users (admin only)
+      tags:
+      - Admin
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Wallets retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Wallet'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/admin/reports:
     get:
       operationId: getAllReports
@@ -2846,6 +2910,35 @@ components:
           type: string
           description: Setting value
           example: MyMarketplace
+    Wallet:
+      type: object
+      required:
+      - id
+      - userId
+      - balance
+      properties:
+        id:
+          type: integer
+          description: Wallet unique identifier
+          example: 1
+        userId:
+          type: integer
+          description: ID of the wallet owner
+          example: 2
+        balance:
+          type: string
+          description: Current stablecoin balance
+          example: "0"
+        createdAt:
+          type: string
+          format: date-time
+          description: Wallet creation timestamp
+          example: '2024-01-01T00:00:00Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Wallet last update timestamp
+          example: '2024-01-01T00:00:00Z'
     DashboardStats:
       type: object
       required:
@@ -3051,3 +3144,5 @@ tags:
   description: Seller operations (seller only)
 - name: Settings
   description: Application settings management
+- name: Wallet
+  description: Wallet operations
