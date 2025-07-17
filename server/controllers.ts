@@ -58,10 +58,10 @@ export function validateLoginRequest(data: unknown): LoginRequest | LoginError {
 /**
  * Creates a PublicUser object from User (removes password)
  */
- 
+
 export function createPublicUser(user: User): PublicUser {
   const publicUser = { ...user }; // ai: skip
-  delete (publicUser as Record<string, unknown>).password;  
+  delete (publicUser as Record<string, unknown>).password;
   return publicUser as PublicUser;
 }
 
@@ -81,18 +81,18 @@ export async function validateToken(token: string): Promise<PublicUser | null> {
     if (Number.isNaN(userId)) {
       return null;
     }
-    
+
     const db = await drizzleDb();
     const rows: User[] = await db
       .select()
       .from(users)
       .where(eq(users.id, userId))
       .all();
-    
+
     if (rows.length === 0) {
       return null;
     }
-    
+
     return createPublicUser(rows[0]);
   } catch {
     return null;
@@ -107,7 +107,7 @@ export async function loginByUsernamePassword(data: LoginRequest | unknown): Pro
   const validation = validateLoginRequest(data);
   if ('MESSAGE' in validation) return validation;
 
-   
+
   const { username, password } = validation;
   const db = await drizzleDb();
 
@@ -160,13 +160,13 @@ export async function loginWithSiwe(data: SiweLoginRequest | unknown): Promise<L
   }
 
   try {
-    const siwe = new SiweMessage(message);
-    const result = await siwe.verify({ signature, domain: siwe.domain, nonce: siwe.nonce });
+    const siweMsg = new SiweMessage(message);
+    const result = await siweMsg.verify({ signature });
     if (!result.success) {
       return { MESSAGE: 'Invalid SIWE signature' };
     }
 
-    const address = siwe.address.toLowerCase();
+    const address = siweMsg.address.toLowerCase();
     const db = await drizzleDb();
     let user: User | undefined;
     const rows: User[] = await db
@@ -192,7 +192,8 @@ export async function loginWithSiwe(data: SiweLoginRequest | unknown): Promise<L
       token,
       user: { ...publicUser, createdAt: now, updatedAt: now },
     };
-  } catch {
+  } catch (err) {
+    console.error(err)
     return { MESSAGE: 'SIWE verification failed' };
   }
 }
@@ -359,11 +360,11 @@ export async function getUserById(id: number): Promise<PublicUser | null> {
     .from(users)
     .where(eq(users.id, id))
     .all();
-  
+
   if (rows.length === 0) {
     return null;
   }
-  
+
   return createPublicUser(rows[0]);
 }
 
@@ -373,18 +374,18 @@ export async function getUserById(id: number): Promise<PublicUser | null> {
 export async function updateUserStatus(id: number, action: string): Promise<PublicUser | null> {
   const db = await drizzleDb();
   const user = await getUserById(id);
-  
+
   if (!user) {
     return null;
   }
-  
+
   let newStatus = user.status;
   if (action === 'toggleBan') {
     newStatus = user.status === 'banned' ? 'active' : 'banned';
   }
-  
+
   await db.update(users).set({ status: newStatus, updatedAt: new Date().toISOString() }).where(eq(users.id, id)).run();
-  
+
   return { ...user, status: newStatus };
 }
 
@@ -401,7 +402,7 @@ export async function updateUserProfile(token: string, profileData: {
   }
 
   const db = await drizzleDb();
-  
+
   // Check if username is being changed and if it already exists
   if (profileData.username && profileData.username !== user.username) {
     const existingUser = await db
@@ -409,7 +410,7 @@ export async function updateUserProfile(token: string, profileData: {
       .from(users)
       .where(eq(users.username, profileData.username))
       .all();
-    
+
     if (existingUser.length > 0) {
       throw new Error('Username already exists');
     }
@@ -429,14 +430,14 @@ export async function updateUserProfile(token: string, profileData: {
   }
 
   await db.update(users).set(updateData).where(eq(users.id, user.id)).run();
-  
+
   // Return updated user
   const updatedUser = await db
     .select()
     .from(users)
     .where(eq(users.id, user.id))
     .all();
-  
+
   if (updatedUser.length === 0) {
     return null;
   }
@@ -467,20 +468,20 @@ export async function getSellerById(id: number): Promise<Seller | null> {
 export async function updateSellerStatus(id: number, action: string): Promise<Seller | null> {
   const db = await drizzleDb();
   const seller = await getSellerById(id);
-  
+
   if (!seller) {
     return null;
   }
-  
+
   let newStatus = seller.status;
   if (action === 'approve' || action === 'activate') {
     newStatus = 'active';
   } else if (action === 'reject' || action === 'deactivate') {
     newStatus = 'inactive';
   }
-  
+
   await db.update(sellers).set({ status: newStatus, updatedAt: new Date().toISOString() }).where(eq(sellers.id, id)).run();
-  
+
   return { ...seller, status: newStatus };
 }
 
@@ -507,25 +508,25 @@ export async function getProductById(id: number): Promise<Product | null> {
 export async function updateProductStatus(id: number, action: string): Promise<Product | null> {
   const db = await drizzleDb();
   const product = await getProductById(id);
-  
+
   if (!product) {
     return null;
   }
-  
+
   let newStatus = product.status;
   if (action === 'approve') {
     newStatus = 'active';
   } else if (action === 'reject' || action === 'flag') {
     newStatus = 'flagged';
   }
-  
+
   if (action === 'remove') {
     await db.delete(products).where(eq(products.id, id)).run();
     return null;
   }
-  
+
   await db.update(products).set({ status: newStatus, updatedAt: new Date().toISOString() }).where(eq(products.id, id)).run();
-  
+
   return { ...product, status: newStatus };
 }
 
@@ -552,13 +553,13 @@ export async function getReportById(id: number): Promise<Report | null> {
 export async function resolveReport(id: number): Promise<Report | null> {
   const db = await drizzleDb();
   const report = await getReportById(id);
-  
+
   if (!report) {
     return null;
   }
-  
+
   await db.update(reports).set({ status: 'resolved', updatedAt: new Date().toISOString() }).where(eq(reports.id, id)).run();
-  
+
   return { ...report, status: 'resolved' };
 }
 
@@ -568,13 +569,13 @@ export async function resolveReport(id: number): Promise<Report | null> {
 export async function getAdminSettings(): Promise<Record<string, string>> {
   const settingsList = await getSettings();
   const settingsObj: Record<string, string> = {};
-  
+
   for (const setting of settingsList) {
     if (setting.key && setting.value) {
       settingsObj[setting.key] = setting.value;
     }
   }
-  
+
   return settingsObj;
 }
 
@@ -583,7 +584,7 @@ export async function getAdminSettings(): Promise<Record<string, string>> {
  */
 export async function updateAdminSettings(newSettings: Record<string, string>): Promise<Record<string, string>> {
   const db = await drizzleDb();
-  
+
   for (const [key, value] of Object.entries(newSettings)) {
     await db
       .insert(settings)
@@ -591,7 +592,7 @@ export async function updateAdminSettings(newSettings: Record<string, string>): 
       .onConflictDoUpdate({ target: settings.key, set: { value } })
       .run();
   }
-  
+
   return newSettings;
 }
 
@@ -625,7 +626,7 @@ export async function getSellerProducts(token: string): Promise<Product[]> {
   }
 
   const db = await drizzleDb();
-  
+
   // Find the seller profile that belongs to this user
   const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
   if (sellerProfile.length === 0) {
@@ -649,7 +650,7 @@ export async function getSellerProduct(token: string, productId: number): Promis
   }
 
   const db = await drizzleDb();
-  
+
   // Find the seller profile that belongs to this user
   const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
   if (sellerProfile.length === 0) {
@@ -693,7 +694,7 @@ export async function createSellerProduct(token: string, productData: {
   }
 
   const db = await drizzleDb();
-  
+
   // Find the seller profile that belongs to this user
   const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
   if (sellerProfile.length === 0) {
@@ -754,7 +755,7 @@ export async function updateSellerProduct(token: string, productId: number, prod
   }
 
   const db = await drizzleDb();
-  
+
   // Find the seller profile that belongs to this user
   const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
   if (sellerProfile.length === 0) {
@@ -793,7 +794,7 @@ export async function deleteSellerProduct(token: string, productId: number): Pro
   }
 
   const db = await drizzleDb();
-  
+
   // Find the seller profile that belongs to this user
   const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
   if (sellerProfile.length === 0) {
@@ -835,11 +836,11 @@ export async function getBuyerProducts(): Promise<Product[]> {
 export async function getBuyerProduct(productId: number): Promise<Product | null> {
   const db = await drizzleDb();
   const productRows = await db.select().from(products).where(and(eq(products.id, productId), eq(products.status, 'active'))).all();
-  
+
   if (productRows.length === 0) {
     return null;
   }
-  
+
   return productRows[0];
 }
 
@@ -849,11 +850,11 @@ export async function getBuyerProduct(productId: number): Promise<Product | null
 export async function getAdminProduct(productId: number): Promise<Product | null> {
   const db = await drizzleDb();
   const productRows = await db.select().from(products).where(eq(products.id, productId)).all();
-  
+
   if (productRows.length === 0) {
     return null;
   }
-  
+
   return productRows[0];
 }
 
@@ -883,11 +884,11 @@ export async function getBuyerOrder(token: string, orderId: number): Promise<Ord
 
   const db = await drizzleDb();
   const orderRows = await db.select().from(orders).where(and(eq(orders.id, orderId), eq(orders.buyerId, buyer.id))).all();
-  
+
   if (orderRows.length === 0) {
     return null;
   }
-  
+
   return orderRows[0];
 }
 
@@ -904,11 +905,11 @@ export async function getSellerProfile(token: string): Promise<Seller | null> {
 
   const db = await drizzleDb();
   const sellerRows = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
-  
+
   if (sellerRows.length === 0) {
     return null;
   }
-  
+
   return sellerRows[0];
 }
 
@@ -928,7 +929,7 @@ export async function updateSellerProfile(token: string, profileData: {
 
   const db = await drizzleDb();
   await db.update(sellers).set({ ...profileData, updatedAt: new Date().toISOString() }).where(eq(sellers.userId, seller.id)).run();
-  
+
   return await getSellerProfile(token);
 }
 
@@ -942,7 +943,7 @@ export async function getSellerOrders(token: string): Promise<Order[]> {
   }
 
   const db = await drizzleDb();
-  
+
   // Find the seller profile that belongs to this user
   const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
   if (sellerProfile.length === 0) {
@@ -962,7 +963,7 @@ export async function getSellerPayouts(token: string): Promise<SellerPayout[]> {
   }
 
   const db = await drizzleDb();
-  
+
   // Find the seller profile that belongs to this user
   const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
   if (sellerProfile.length === 0) {
@@ -985,7 +986,7 @@ export async function createSellerPayout(token: string, payoutData: {
   }
 
   const db = await drizzleDb();
-  
+
   // Find the seller profile that belongs to this user
   const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
   if (sellerProfile.length === 0) {
@@ -1016,7 +1017,7 @@ export async function updateSellerOrderStatus(token: string, orderId: number, st
   }
 
   const db = await drizzleDb();
-  
+
   // Find the seller profile that belongs to this user
   const sellerProfile = await db.select().from(sellers).where(eq(sellers.userId, seller.id)).all();
   if (sellerProfile.length === 0) {
@@ -1055,7 +1056,7 @@ export async function createBuyerOrder(token: string, orderData: {
   }
 
   const db = await drizzleDb();
-  
+
   // Calculate total and create orders for each item
   const createdOrders: Order[] = [];
 

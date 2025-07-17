@@ -12,27 +12,63 @@ import {
   createAppKit,
   useAppKit,
   useAppKitAccount,
+  useAppKitNetworkCore,
   useAppKitProvider,
 } from '@reown/appkit/react'
-import { mainnet } from 'viem/chains'
 import { SiweMessage } from 'siwe'
+import { EthersAdapter } from "@reown/appkit-adapter-ethers";
+import { arbitrum, mainnet } from "@reown/appkit/networks";
+import { BrowserProvider, JsonRpcSigner } from 'ethers'
 
 // Initialize AppKit once
+// createAppKit({
+//   projectId: '3dc8fb97b90a536ce400e5d65a3f5ff8',
+//   networks: [mainnet],
+//   defaultNetwork: mainnet,
+// features: {
+//   email: true, // default to true
+//   socials: [
+//     "google",
+//     "x",
+//     "github",
+//     "discord",
+//     "apple",
+//     "facebook",
+//     "farcaster",
+//   ],
+//   emailShowWallets: true, // default to true
+// },
+// })
+
 createAppKit({
-  projectId: 'demo',
-  networks: [mainnet],
-  defaultNetwork: mainnet,
-})
+  adapters: [new EthersAdapter()],
+  networks: [mainnet, arbitrum],
+  projectId: '3dc8fb97b90a536ce400e5d65a3f5ff8',
+  defaultAccountTypes: { eip155: "eoa" },
+  enableNetworkSwitch: false,
+  features: {
+    email: false,
+    socials: [
+      "google",
+      "facebook"
+    ],
+    emailShowWallets: false, // default to true
+  },
+});
 
 function LoginSIWE() {
   const navigate = useNavigate()
   const [, setToken] = useAtom(tokenAtom)
   const [, setUser] = useAtom(userAtom)
   const { open } = useAppKit()
-  const { address, isConnected } = useAppKitAccount({ namespace: 'eip155' })
+  const { address, isConnected } = useAppKitAccount()
   const { walletProvider } = useAppKitProvider<unknown>('eip155')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+
+  // const { address, isConnected } = useAppKitAccount();
+  const { chainId } = useAppKitNetworkCore();
+  // const { walletProvider } = useAppKitProvider('eip155');
 
   const handleConnect = () => {
     open()
@@ -42,34 +78,44 @@ function LoginSIWE() {
     if (!walletProvider || !address) return
     setIsLoading(true)
     setError(null)
+
     try {
+
       const nonce = Math.random().toString(36).substring(2, 10)
-      const siwe = new SiweMessage({
+      const cfg = {
         domain: window.location.host,
         address,
         statement: 'Sign in with Ethereum to MarketPlace',
         uri: window.location.origin,
         version: '1',
-        chainId: 1,
-        nonce,
-      })
-      const message = siwe.prepareMessage()
-      const signature = await (
-        walletProvider as unknown as {
-          request: (args: {
-            method: string
-            params: unknown[]
-          }) => Promise<string>
-        }
-      ).request({
-        method: 'personal_sign',
-        params: [message, address],
-      })
+        chainId: chainId,
+        nonce
+      }
+
+      const msg = new SiweMessage(cfg);
+      const message = msg.prepareMessage()
+      const signerProvider = new BrowserProvider(walletProvider, chainId);
+      const signer = new JsonRpcSigner(signerProvider, address);
+      const signature = await signer.signMessage(message);
+
+      // const signature = await (
+      //   walletProvider as unknown as {
+      //     request: (args: {
+      //       method: string
+      //       params: unknown[]
+      //     }) => Promise<string>
+      //   }
+      // ).request({
+      //   method: 'personal_sign',
+      //   params: [message, address],
+      // })
+
       const res = await axios.post('/api/login/siwe', { message, signature })
       setToken(res.data.token)
       setUser(res.data.user)
       navigate('/home', { replace: true })
     } catch (err) {
+      console.log('!!!')
       const msg = err instanceof Error ? err.message : 'Login failed'
       setError(msg)
     } finally {
@@ -86,6 +132,14 @@ function LoginSIWE() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <Button
+            className="w-full"
+            onClick={handleConnect}
+            disabled={isLoading}
+          >
+            Connect Wallet
+          </Button>
+
           {error && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
