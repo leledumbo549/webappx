@@ -9,6 +9,7 @@ import {
   settings,
   orders,
   sellerPayouts,
+  wallets,
 } from './schema';
 
 // --- Seed data ---
@@ -159,6 +160,14 @@ const seedSellerPayouts = [
   { id: 7, amount: 13500000, bankAccount: '1234567890', sellerId: 4, status: 'pending', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
 ];
 
+const seedWallets = seedUsers.map((u, idx) => ({
+  id: idx + 1,
+  userId: u.id,
+  balance: '0',
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: '2024-01-01T00:00:00Z',
+}));
+
 // --- Seed function ---
 export async function seedDb(db: ReturnType<typeof drizzle>) {
   const existingUsers = await db.select().from(users).all();
@@ -196,6 +205,11 @@ export async function seedDb(db: ReturnType<typeof drizzle>) {
   // Seed orders
   for (const o of seedOrders) {
     await db.insert(orders).values(o).onConflictDoNothing().run();
+  }
+
+  // Seed wallets
+  for (const w of seedWallets) {
+    await db.insert(wallets).values(w).onConflictDoNothing().run();
   }
 
   // Seed seller payouts

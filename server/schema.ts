@@ -63,6 +63,17 @@ export const products = sqliteTable('products', {
 });
 
 //
+// WALLETS TABLE
+//
+export const wallets = sqliteTable('wallets', {
+  id: integer('id').primaryKey(),
+  userId: integer('userId').notNull().unique(),
+  balance: text('balance').notNull().default('0'),
+  createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
+});
+
+//
 // ORDERS TABLE (Unified for both buyer and seller views)
 //
 export const orders = sqliteTable('orders', {
@@ -137,6 +148,7 @@ export type User = InferSelectModel<typeof users>;
 export type PublicUser = Omit<User, 'password'>;
 export type Product = InferSelectModel<typeof products>;
 export type Seller = InferSelectModel<typeof sellers>;
+export type Wallet = InferSelectModel<typeof wallets>;
 export type Order = InferSelectModel<typeof orders>;
 export type SellerPayout = InferSelectModel<typeof sellerPayouts>;
 export type Report = InferSelectModel<typeof reports>;
@@ -191,6 +203,15 @@ export const createTableStatements = [
     imageUrl TEXT,
     sellerId INTEGER,
     status TEXT,
+    createdAt TEXT,
+    updatedAt TEXT
+  );
+  `,
+  `
+  CREATE TABLE IF NOT EXISTS wallets (
+    id INTEGER PRIMARY KEY,
+    userId INTEGER NOT NULL UNIQUE,
+    balance TEXT NOT NULL DEFAULT '0',
     createdAt TEXT,
     updatedAt TEXT
   );

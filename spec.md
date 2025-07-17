@@ -84,6 +84,14 @@ export interface Setting {
   value: string | null
 }
 
+export interface Wallet {
+  id: number
+  userId: number
+  balance: string
+  createdAt: string | null
+  updatedAt: string | null
+}
+
 export interface DashboardStats {
   totalUsers: number
   totalSellers: number
@@ -112,6 +120,7 @@ _All endpoints are described in `openapi.yaml` and must conform to that file._
 |POST|`/api/register`|`RegisterRequest`|`LoginResponse`|
 |GET|`/api/me`|Bearer token|`PublicUser`|
 |PUT|`/api/me`|`{name?:string; username?:string;}`|`PublicUser`|
+|GET|`/api/wallet`|Bearer token|`Wallet`|
 
 ### Settings
 | GET | `/api/settings` | - | `Setting[]` |
@@ -129,6 +138,7 @@ _All endpoints are described in `openapi.yaml` and must conform to that file._
 |GET|`/api/admin/products`|Bearer|`Product[]`|
 |GET|`/api/admin/products/{id}`|Bearer|`Product`|
 |PATCH|`/api/admin/products/{id}`|`{action:'approve'|'reject'|'flag'|'remove'}`|`Product` or 200 empty on remove|
+|GET|`/api/admin/wallets`|Bearer|`Wallet[]`|
 |GET|`/api/admin/reports`|Bearer|`Report[]`|
 |PATCH|`/api/admin/reports/{id}`|`{action:'resolve'}`|`Report`|
 |GET|`/api/admin/settings`|Bearer|`Record<string,string>`|
