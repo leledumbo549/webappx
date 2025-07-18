@@ -308,7 +308,7 @@ paths:
     get:
       operationId: getWallet
       summary: Get current wallet balance
-      description: Retrieve the wallet information for the authenticated user.
+      description: Retrieve the stablecoin wallet information for the authenticated user.
       tags:
       - Wallet
       security:
@@ -1117,7 +1117,7 @@ paths:
     get:
       operationId: getAllWallets
       summary: Get all user wallets
-      description: Retrieve wallets for all users (admin only)
+      description: Retrieve stablecoin wallets for all users (admin only)
       tags:
       - Admin
       security:
@@ -2927,7 +2927,7 @@ components:
           example: 2
         balance:
           type: string
-          description: Current stablecoin balance
+          description: Current stablecoin balance stored as a string for precision
           example: "0"
         createdAt:
           type: string

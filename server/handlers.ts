@@ -42,6 +42,8 @@ import {
   updateUserProfile,
   registerUser,
   loginWithSiwe,
+  getWallet,
+  getAllWallets,
 } from './controllers';
 
 // === AUTHORIZATION HELPERS ===
@@ -1077,6 +1079,51 @@ export const handlers = [
       if (error instanceof Error && error.message === 'Access denied') {
         return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
       }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/wallet - Get current user's wallet
+  rest.get('/api/wallet', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const authResult = await requireAuth(req);
+      if (!authResult.success) {
+        return res(
+          ctx.status(authResult.error!.status),
+          ctx.json(createErrorResponse(authResult.error!.message))
+        );
+      }
+
+      const wallet = await getWallet(authResult.user.token);
+
+      if (!wallet) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Wallet not found')));
+      }
+
+      return res(ctx.status(200), ctx.json(wallet));
+    } catch (error) {
+      console.error('Get wallet error:', error);
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/admin/wallets - Get all wallets
+  rest.get('/api/admin/wallets', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const authResult = await requireAdmin(req);
+      if (!authResult.success) {
+        return res(
+          ctx.status(authResult.error!.status),
+          ctx.json(createErrorResponse(authResult.error!.message))
+        );
+      }
+
+      const wallets = await getAllWallets();
+      return res(ctx.status(200), ctx.json(wallets));
+    } catch (error) {
+      console.error('Get all wallets error:', error);
       return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
     }
   }),

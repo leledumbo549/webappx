@@ -87,7 +87,7 @@ export interface Setting {
 export interface Wallet {
   id: number
   userId: number
-  balance: string
+  balance: string // stablecoin balance stored as a string for precision
   createdAt: string | null
   updatedAt: string | null
 }

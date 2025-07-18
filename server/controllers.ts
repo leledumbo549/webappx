@@ -1092,4 +1092,27 @@ export async function createBuyerOrder(token: string, orderData: {
   return createdOrders[0] || null;
 }
 
+// === WALLET CONTROLLERS ===
+
+export async function getWallet(token: string): Promise<Wallet | null> {
+  const user = await validateToken(token)
+  if (!user) {
+    return null
+  }
+
+  const db = await drizzleDb()
+  const walletRows = await db
+    .select()
+    .from(wallets)
+    .where(eq(wallets.userId, user.id))
+    .all()
+
+  return walletRows[0] || null
+}
+
+export async function getAllWallets(): Promise<Wallet[]> {
+  const db = await drizzleDb()
+  return await db.select().from(wallets).all()
+}
+
 // === EXISTING CONTROLLERS ===

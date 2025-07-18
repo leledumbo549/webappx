@@ -30,6 +30,7 @@ import {
   BarChart3,
   Users,
   FileText,
+  Wallet,
   Menu,
   X,
 } from 'lucide-react'
@@ -108,6 +109,12 @@ function Navbar() {
       icon: User,
       description: 'Manage your account settings',
     },
+    {
+      label: 'Wallet',
+      path: '/wallet',
+      icon: Wallet,
+      description: 'View your wallet balance',
+    },
   ]
 
   const getSellerNavItems = () => [
@@ -134,6 +141,12 @@ function Navbar() {
       path: '/seller/payouts',
       icon: Store,
       description: 'Track your earnings and payouts',
+    },
+    {
+      label: 'Wallet',
+      path: '/wallet',
+      icon: Wallet,
+      description: 'View your wallet balance',
     },
     {
       label: 'Store Profile',
@@ -173,6 +186,12 @@ function Navbar() {
       path: '/admin/reports',
       icon: FileText,
       description: 'Handle user reports and issues',
+    },
+    {
+      label: 'Wallets',
+      path: '/admin/wallets',
+      icon: Wallet,
+      description: 'View all user wallets',
     },
     {
       label: 'Settings',
