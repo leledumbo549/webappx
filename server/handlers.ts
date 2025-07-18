@@ -42,6 +42,10 @@ import {
   updateUserProfile,
   registerUser,
   loginWithSiwe,
+  getUserWallet,
+  getWalletBalance,
+  getWalletByUserId,
+  getAllWallets,
 } from './controllers';
 
 // === AUTHORIZATION HELPERS ===
@@ -261,6 +265,79 @@ export const handlers = [
       if (error instanceof Error && error.message === 'Username already exists') {
         return res(ctx.status(409), ctx.json(createErrorResponse('Username already exists')));
       }
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/wallet - Get current user's wallet
+  rest.get('/api/wallet', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const authResult = await requireAuth(req);
+      if (!authResult.success) {
+        return res(
+          ctx.status(authResult.error!.status),
+          ctx.json(createErrorResponse(authResult.error!.message))
+        );
+      }
+
+      const wallet = await getUserWallet(authResult.user.token);
+      if (!wallet) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Wallet not found')));
+      }
+
+      return res(ctx.status(200), ctx.json(wallet));
+    } catch (error) {
+      console.error('Get wallet error:', error);
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/wallet/balance - Get wallet balance
+  rest.get('/api/wallet/balance', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const authResult = await requireAuth(req);
+      if (!authResult.success) {
+        return res(
+          ctx.status(authResult.error!.status),
+          ctx.json(createErrorResponse(authResult.error!.message))
+        );
+      }
+
+      const balance = await getWalletBalance(authResult.user.token);
+      if (balance === null) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Wallet not found')));
+      }
+
+      return res(ctx.status(200), ctx.json({ balance }));
+    } catch (error) {
+      console.error('Get wallet balance error:', error);
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/wallet/:userId - Admin get user wallet
+  rest.get('/api/wallet/:userId', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const authResult = await requireAdmin(req);
+      if (!authResult.success) {
+        return res(
+          ctx.status(authResult.error!.status),
+          ctx.json(createErrorResponse(authResult.error!.message))
+        );
+      }
+
+      const userId = Number(req.params.userId);
+      const wallet = await getWalletByUserId(authResult.user.token, userId);
+      if (!wallet) {
+        return res(ctx.status(404), ctx.json(createErrorResponse('Wallet not found')));
+      }
+
+      return res(ctx.status(200), ctx.json(wallet));
+    } catch (error) {
+      console.error('Get wallet by user error:', error);
       return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
     }
   }),
@@ -559,6 +636,30 @@ export const handlers = [
       
     } catch (error) {
       console.error('Update product error:', error);
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/admin/wallets - Get all user wallets
+  rest.get('/api/admin/wallets', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const authResult = await requireAdmin(req);
+      if (!authResult.success) {
+        return res(
+          ctx.status(authResult.error!.status),
+          ctx.json(createErrorResponse(authResult.error!.message))
+        );
+      }
+
+      const wallets = await getAllWallets(authResult.user.token);
+      if (!wallets) {
+        return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
+      }
+
+      return res(ctx.status(200), ctx.json(wallets));
+    } catch (error) {
+      console.error('Get wallets error:', error);
       return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
     }
   }),

@@ -332,6 +332,81 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /api/wallet/balance:
+    get:
+      operationId: getWalletBalance
+      summary: Get wallet balance
+      description: Retrieve only the stablecoin balance for the authenticated user.
+      tags:
+      - Wallet
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Wallet balance retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletBalance'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/wallet/{userId}:
+    get:
+      operationId: getWalletByUserId
+      summary: Get user wallet
+      description: Retrieve wallet information for a specific user (admin only).
+      tags:
+      - Admin
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: User ID
+      responses:
+        '200':
+          description: Wallet retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/settings:
     get:
       operationId: getApplicationSettings
@@ -2939,6 +3014,15 @@ components:
           format: date-time
           description: Wallet last update timestamp
           example: '2024-01-01T00:00:00Z'
+    WalletBalance:
+      type: object
+      required:
+      - balance
+      properties:
+        balance:
+          type: string
+          description: Current stablecoin balance
+          example: "0"
     DashboardStats:
       type: object
       required:

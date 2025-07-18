@@ -121,6 +121,7 @@ _All endpoints are described in `openapi.yaml` and must conform to that file._
 |GET|`/api/me`|Bearer token|`PublicUser`|
 |PUT|`/api/me`|`{name?:string; username?:string;}`|`PublicUser`|
 |GET|`/api/wallet`|Bearer token|`Wallet`|
+|GET|`/api/wallet/balance`|Bearer token|`WalletBalance`|
 
 ### Settings
 | GET | `/api/settings` | - | `Setting[]` |
@@ -139,6 +140,7 @@ _All endpoints are described in `openapi.yaml` and must conform to that file._
 |GET|`/api/admin/products/{id}`|Bearer|`Product`|
 |PATCH|`/api/admin/products/{id}`|`{action:'approve'|'reject'|'flag'|'remove'}`|`Product` or 200 empty on remove|
 |GET|`/api/admin/wallets`|Bearer|`Wallet[]`|
+|GET|`/api/wallet/{userId}`|Bearer|`Wallet`|
 |GET|`/api/admin/reports`|Bearer|`Report[]`|
 |PATCH|`/api/admin/reports/{id}`|`{action:'resolve'}`|`Report`|
 |GET|`/api/admin/settings`|Bearer|`Record<string,string>`|
