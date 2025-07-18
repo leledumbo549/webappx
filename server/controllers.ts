@@ -1037,4 +1037,3 @@ export async function createBuyerOrder(token: string, orderData: {
   return createdOrders[0] || null;
 }
 
-// === EXISTING CONTROLLERS ===
