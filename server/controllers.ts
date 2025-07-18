@@ -603,6 +603,25 @@ export function createErrorResponse(message: string): LoginError {
   return { MESSAGE: message };
 }
 
+/**
+ * Get wallet for authenticated user
+ */
+export async function getWallet(token: string): Promise<Wallet | null> {
+  const user = await validateToken(token);
+  if (!user) {
+    return null;
+  }
+
+  const db = await drizzleDb();
+  const rows = await db
+    .select()
+    .from(wallets)
+    .where(eq(wallets.userId, user.id))
+    .all();
+
+  return rows[0] || null;
+}
+
 // === SELLER CONTROLLERS ===
 
 /**

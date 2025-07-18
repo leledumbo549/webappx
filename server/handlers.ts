@@ -42,6 +42,7 @@ import {
   updateUserProfile,
   registerUser,
   loginWithSiwe,
+  getWallet,
 } from './controllers';
 
 // === AUTHORIZATION HELPERS ===
@@ -167,6 +168,37 @@ export const handlers = [
       console.error('Login handler error:', error);
       return res(
         ctx.status(500), 
+        ctx.json(createErrorResponse('Internal server error'))
+      );
+    }
+  }),
+
+  // GET /api/wallet - Get current wallet balance
+  rest.get('/api/wallet', async (req, res, ctx) => {
+    try {
+      await addDelay();
+
+      const authResult = await requireAuth(req);
+      if (!authResult.success) {
+        return res(
+          ctx.status(authResult.error!.status),
+          ctx.json(createErrorResponse(authResult.error!.message))
+        );
+      }
+
+      const wallet = await getWallet(authResult.user.token);
+      if (!wallet) {
+        return res(
+          ctx.status(404),
+          ctx.json(createErrorResponse('Wallet not found'))
+        );
+      }
+
+      return res(ctx.status(200), ctx.json(wallet));
+    } catch (error) {
+      console.error('Get wallet error:', error);
+      return res(
+        ctx.status(500),
         ctx.json(createErrorResponse('Internal server error'))
       );
     }

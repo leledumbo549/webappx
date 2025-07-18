@@ -249,6 +249,12 @@ const removeFromCartAtom = atom(null, async (get,set,id:number)=>{...})
 const updateCartQuantityAtom = atom(null, async (get,set,{productId,quantity})=>{...})
 const clearCartAtom = atom(null, async (_get,set)=>{...})
 
+// Wallet state
+const walletAtom = atom<Wallet | null>(null)
+const balanceAtom = atom(get => get(walletAtom)?.balance ?? '0')
+const loadWalletAtom = atom(null, async (_get,set)=>{...})
+const clearWalletAtom = atom(null, async (_get,set)=>{...})
+
 // Seller products refresh signal
 const sellerProductsRefreshAtom = atom(0)
 const refreshSellerProductsAtom = atom(null, (get,set)=> set(sellerProductsRefreshAtom, get(sellerProductsRefreshAtom)+1))

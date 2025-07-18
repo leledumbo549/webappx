@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { tokenAtom, userAtom } from '@/atoms/loginAtoms'
+import { loadWalletAtom } from '@/atoms/walletAtoms'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -60,6 +61,7 @@ function LoginSIWE() {
   const navigate = useNavigate()
   const [, setToken] = useAtom(tokenAtom)
   const [, setUser] = useAtom(userAtom)
+  const loadWallet = useSetAtom(loadWalletAtom)
   const { open } = useAppKit()
   const { address, isConnected } = useAppKitAccount()
   const { walletProvider } = useAppKitProvider<unknown>('eip155')
@@ -113,6 +115,7 @@ function LoginSIWE() {
       const res = await axios.post('/api/login/siwe', { message, signature })
       setToken(res.data.token)
       setUser(res.data.user)
+      await loadWallet()
       navigate('/home', { replace: true })
     } catch (err) {
       console.log('!!!')

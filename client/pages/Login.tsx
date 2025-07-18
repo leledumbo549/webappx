@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Alert, AlertDescription } from '../components/ui/alert'
 import { Badge } from '../components/ui/badge'
 import axios from '@/lib/axios'
-import { useAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { tokenAtom, userAtom } from '../atoms/loginAtoms'
+import { loadWalletAtom } from '@/atoms/walletAtoms'
 import { Store, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
 
 function Login() {
@@ -20,6 +21,7 @@ function Login() {
   const [token] = useAtom(tokenAtom)
   const [, setToken] = useAtom(tokenAtom)
   const [, setUser] = useAtom(userAtom)
+  const loadWallet = useSetAtom(loadWalletAtom)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,6 +44,7 @@ function Login() {
 
       // Set user in atoms
       setUser(user)
+      await loadWallet()
 
       if (user.role === 'admin') {
         console.log('navigate..')
