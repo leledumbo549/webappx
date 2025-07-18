@@ -1,9 +1,29 @@
 // server/controllers.ts
 // Controllers for all API endpoints using drizzle and db.ts
 
-import type { User, PublicUser, Product, Seller, Report, Setting, DashboardStats, Order, SellerPayout } from './schema';
+import type {
+  User,
+  PublicUser,
+  Product,
+  Seller,
+  Report,
+  Setting,
+  DashboardStats,
+  Order,
+  SellerPayout,
+  StabletokenBalance,
+} from './schema';
 import { drizzleDb } from './db';
-import { users, sellers, products, reports, settings, orders, sellerPayouts } from './schema';
+import {
+  users,
+  sellers,
+  products,
+  reports,
+  settings,
+  orders,
+  sellerPayouts,
+  stabletokenBalances,
+} from './schema';
 import { and, eq, sql } from 'drizzle-orm';
 
 // === AUTHENTICATION CONTROLLERS ===
@@ -1035,5 +1055,73 @@ export async function createBuyerOrder(token: string, orderData: {
 
   // Return the first order (or you could return all orders)
   return createdOrders[0] || null;
+}
+
+// === STABLETOKEN CONTROLLERS ===
+
+export async function getStabletokenBalance(userId: number): Promise<number> {
+  const db = await drizzleDb();
+  const rows: StabletokenBalance[] = await db
+    .select()
+    .from(stabletokenBalances)
+    .where(eq(stabletokenBalances.userId, userId))
+    .all();
+  return rows.length > 0 ? rows[0].balance : 0;
+}
+
+export async function mintStabletoken(
+  userId: number,
+  amount: number
+): Promise<number> {
+  const db = await drizzleDb();
+  const rows: StabletokenBalance[] = await db
+    .select()
+    .from(stabletokenBalances)
+    .where(eq(stabletokenBalances.userId, userId))
+    .all();
+
+  let newBalance = amount;
+  if (rows.length === 0) {
+    await db
+      .insert(stabletokenBalances)
+      .values({ userId, balance: newBalance })
+      .run();
+  } else {
+    newBalance = rows[0].balance + amount;
+    await db
+      .update(stabletokenBalances)
+      .set({ balance: newBalance })
+      .where(eq(stabletokenBalances.userId, userId))
+      .run();
+  }
+
+  return newBalance;
+}
+
+export async function burnStabletoken(
+  userId: number,
+  amount: number
+): Promise<number> {
+  const db = await drizzleDb();
+  const rows: StabletokenBalance[] = await db
+    .select()
+    .from(stabletokenBalances)
+    .where(eq(stabletokenBalances.userId, userId))
+    .all();
+
+  if (rows.length === 0) {
+    return 0;
+  }
+
+  let newBalance = rows[0].balance - amount;
+  if (newBalance < 0) newBalance = 0;
+
+  await db
+    .update(stabletokenBalances)
+    .set({ balance: newBalance })
+    .where(eq(stabletokenBalances.userId, userId))
+    .run();
+
+  return newBalance;
 }
 

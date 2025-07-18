@@ -38,6 +38,8 @@ import {
   // Add new controllers
   createSellerPayout,
   updateSellerOrderStatus,
+  getStabletokenBalance,
+  mintStabletoken,
   createBuyerOrder,
   updateUserProfile,
   registerUser,
@@ -1058,6 +1060,60 @@ export const handlers = [
         return res(ctx.status(403), ctx.json(createErrorResponse('Access denied')));
       }
       return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/balance - Get stabletoken balance for current user
+  rest.get('/api/balance', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const authResult = await requireAuth(req);
+      if (!authResult.success) {
+        return res(
+          ctx.status(authResult.error!.status),
+          ctx.json(createErrorResponse(authResult.error!.message))
+        );
+      }
+
+      const balance = await getStabletokenBalance(authResult.user.id);
+      return res(ctx.status(200), ctx.json({ balance }));
+    } catch (error) {
+      console.error('Get balance error:', error);
+      return res(
+        ctx.status(500),
+        ctx.json(createErrorResponse('Internal server error'))
+      );
+    }
+  }),
+
+  // POST /api/mint - Mint stabletoken (admin only)
+  rest.post('/api/mint', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const authResult = await requireAdmin(req);
+      if (!authResult.success) {
+        return res(
+          ctx.status(authResult.error!.status),
+          ctx.json(createErrorResponse(authResult.error!.message))
+        );
+      }
+
+      const body = await req.json();
+      const amount = Number(body.amount);
+      const userId = Number(body.userId ?? authResult.user.id);
+
+      if (!amount || Number.isNaN(amount) || amount <= 0) {
+        return res(ctx.status(400), ctx.json(createErrorResponse('Invalid amount')));
+      }
+
+      const balance = await mintStabletoken(userId, amount);
+      return res(ctx.status(200), ctx.json({ balance }));
+    } catch (error) {
+      console.error('Mint stabletoken error:', error);
+      return res(
+        ctx.status(500),
+        ctx.json(createErrorResponse('Internal server error'))
+      );
     }
   }),
 ];

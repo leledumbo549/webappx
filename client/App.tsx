@@ -23,6 +23,7 @@ import OrdersReceived from './pages/seller/OrdersReceived'
 import Payouts from './pages/seller/Payouts'
 import StoreProfile from './pages/seller/StoreProfile'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import Dashboard from './pages/Dashboard'
 import ManageUsers from './pages/admin/ManageUsers'
 import ViewUser from './pages/admin/ViewUser'
 import ManageSellers from './pages/admin/ManageSellers'
@@ -67,6 +68,7 @@ function App() {
               <Route path="/" element={<Loading />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/dashboard" element={<Dashboard />} />
 
               {/* Buyer Routes */}
               <Route path="/home" element={<Home />} />
