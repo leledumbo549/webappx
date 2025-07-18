@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { tokenAtom, userAtom } from '@/atoms/loginAtoms'
+import { loadWalletAtom } from '@/atoms/walletAtoms'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -16,9 +17,9 @@ import {
   useAppKitProvider,
 } from '@reown/appkit/react'
 import { SiweMessage } from 'siwe'
-import { EthersAdapter } from "@reown/appkit-adapter-ethers";
-import { arbitrum, mainnet } from "@reown/appkit/networks";
-import { BrowserProvider, JsonRpcSigner } from 'ethers'
+import { EthersAdapter } from '@reown/appkit-adapter-ethers'
+import { arbitrum, mainnet } from '@reown/appkit/networks'
+import { BrowserProvider, JsonRpcSigner, type Eip1193Provider } from 'ethers'
 
 // Initialize AppKit once
 // createAppKit({
@@ -44,22 +45,20 @@ createAppKit({
   adapters: [new EthersAdapter()],
   networks: [mainnet, arbitrum],
   projectId: '3dc8fb97b90a536ce400e5d65a3f5ff8',
-  defaultAccountTypes: { eip155: "eoa" },
+  defaultAccountTypes: { eip155: 'eoa' },
   enableNetworkSwitch: false,
   features: {
     email: false,
-    socials: [
-      "google",
-      "facebook"
-    ],
+    socials: ['google', 'facebook'],
     emailShowWallets: false, // default to true
   },
-});
+})
 
 function LoginSIWE() {
   const navigate = useNavigate()
   const [, setToken] = useAtom(tokenAtom)
   const [, setUser] = useAtom(userAtom)
+  const loadWallet = useSetAtom(loadWalletAtom)
   const { open } = useAppKit()
   const { address, isConnected } = useAppKitAccount()
   const { walletProvider } = useAppKitProvider<unknown>('eip155')
@@ -67,7 +66,7 @@ function LoginSIWE() {
   const [isLoading, setIsLoading] = useState(false)
 
   // const { address, isConnected } = useAppKitAccount();
-  const { chainId } = useAppKitNetworkCore();
+  const { chainId } = useAppKitNetworkCore()
   // const { walletProvider } = useAppKitProvider('eip155');
 
   const handleConnect = () => {
@@ -80,7 +79,6 @@ function LoginSIWE() {
     setError(null)
 
     try {
-
       const nonce = Math.random().toString(36).substring(2, 10)
       const cfg = {
         domain: window.location.host,
@@ -89,14 +87,17 @@ function LoginSIWE() {
         uri: window.location.origin,
         version: '1',
         chainId: chainId,
-        nonce
+        nonce,
       }
 
-      const msg = new SiweMessage(cfg);
+      const msg = new SiweMessage(cfg as Partial<SiweMessage>)
       const message = msg.prepareMessage()
-      const signerProvider = new BrowserProvider(walletProvider, chainId);
-      const signer = new JsonRpcSigner(signerProvider, address);
-      const signature = await signer.signMessage(message);
+      const signerProvider = new BrowserProvider(
+        walletProvider as unknown as Eip1193Provider,
+        Number(chainId)
+      )
+      const signer = new JsonRpcSigner(signerProvider, address)
+      const signature = await signer.signMessage(message)
 
       // const signature = await (
       //   walletProvider as unknown as {
@@ -113,6 +114,7 @@ function LoginSIWE() {
       const res = await axios.post('/api/login/siwe', { message, signature })
       setToken(res.data.token)
       setUser(res.data.user)
+      await loadWallet()
       navigate('/home', { replace: true })
     } catch (err) {
       console.log('!!!')

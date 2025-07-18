@@ -1,5 +1,6 @@
-import { useAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { userAtom } from '@/atoms/loginAtoms'
+import { balanceAtom, loadWalletAtom } from '@/atoms/walletAtoms'
 import { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,6 +19,8 @@ function Profile() {
   const [username, setUsername] = useState(user?.username || '')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [balance] = useAtom(balanceAtom)
+  const loadWallet = useSetAtom(loadWalletAtom)
 
   // Update form when user data changes
   useEffect(() => {
@@ -26,6 +29,10 @@ function Profile() {
       setUsername(user.username || '')
     }
   }, [user])
+
+  useEffect(() => {
+    loadWallet()
+  }, [loadWallet])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -117,11 +124,20 @@ function Profile() {
             <User className="h-5 w-5 text-primary" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight">Profile Settings</h1>
-        </div>
-        <p className="text-muted-foreground">
-          Manage your account information and preferences
-        </p>
       </div>
+      <p className="text-muted-foreground">
+        Manage your account information and preferences
+      </p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Wallet Balance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-2xl font-bold">{balance}</p>
+        </CardContent>
+      </Card>
 
       {/* Profile Form */}
       <Card>
