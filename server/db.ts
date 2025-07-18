@@ -5,7 +5,11 @@ import { createTableStatements } from './schema'
 import { seedDb } from './seed'
 let db: ReturnType<typeof drizzle> | null = null
 
-export async function initDrizzle() {
+/**
+ * Initialize the in-memory SQLite database and return a drizzle instance.
+ * The database is seeded on first initialization.
+ */
+export async function initDrizzle(): Promise<ReturnType<typeof drizzle>> {
   if (db) return db // Already initialized
 
   const SQL = await initSqlJs({
@@ -18,12 +22,10 @@ export async function initDrizzle() {
   const sqlite = new SQL.Database()
   db = drizzle(sqlite, { schema })
 
-for (const statement of createTableStatements) {
-    await db.run(statement);
+  for (const statement of createTableStatements) {
+    await db.run(statement)
   }
-  // const tables = await db.all(
-  //   "SELECT name FROM sqlite_master WHERE type='table';"
-  // )
+
   console.log('[sql.js] DB ready!')
 
   await seedDb(db)
@@ -33,6 +35,9 @@ for (const statement of createTableStatements) {
 // Always returns the same Promise if already running
 let dbPromise: Promise<ReturnType<typeof drizzle>> | null = null
 
+/**
+ * Get the drizzle database instance, initializing it if necessary.
+ */
 export function drizzleDb(): Promise<ReturnType<typeof drizzle>> {
   if (!dbPromise) {
     dbPromise = initDrizzle()
