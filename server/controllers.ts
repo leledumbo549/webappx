@@ -1,9 +1,9 @@
 // server/controllers.ts
 // Controllers for all API endpoints using drizzle and db.ts
 
-import type { User, PublicUser, Product, Seller, Report, Setting, DashboardStats, Order, SellerPayout } from './schema';
+import type { User, PublicUser, Product, Seller, Report, Setting, DashboardStats, Order, SellerPayout, Wallet } from './schema';
 import { drizzleDb } from './db';
-import { users, sellers, products, reports, settings, orders, sellerPayouts } from './schema';
+import { users, sellers, products, reports, settings, orders, sellerPayouts, wallets } from './schema';
 import { and, eq, sql } from 'drizzle-orm';
 import { SiweMessage } from 'siwe';
 
@@ -601,6 +601,25 @@ export async function updateAdminSettings(newSettings: Record<string, string>): 
  */
 export function createErrorResponse(message: string): LoginError {
   return { MESSAGE: message };
+}
+
+/**
+ * Get wallet for authenticated user
+ */
+export async function getWallet(token: string): Promise<Wallet | null> {
+  const user = await validateToken(token);
+  if (!user) {
+    return null;
+  }
+
+  const db = await drizzleDb();
+  const rows = await db
+    .select()
+    .from(wallets)
+    .where(eq(wallets.userId, user.id))
+    .all();
+
+  return rows[0] || null;
 }
 
 // === SELLER CONTROLLERS ===

@@ -1,6 +1,7 @@
 // loginAtoms.ts
 import type { User } from '@/server/schema';
 import { atom } from 'jotai';
+import { clearWalletAtom } from './walletAtoms';
 
 // Helper functions for localStorage
 const getStoredToken = (): string | null => {
@@ -64,6 +65,7 @@ export const logoutAtom = atom(
     console.log('Logout atom called');
     set(tokenAtom, null);
     set(userAtom, null);
+    set(clearWalletAtom);
     setStoredToken(null);
     setStoredUser(null);
   }
