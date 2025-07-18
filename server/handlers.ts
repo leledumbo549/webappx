@@ -43,6 +43,8 @@ import {
   createBuyerOrder,
   updateUserProfile,
   registerUser,
+  handlePaymentWebhook,
+  getTransactionsForUser,
 } from './controllers';
 
 // === AUTHORIZATION HELPERS ===
@@ -1079,6 +1081,71 @@ export const handlers = [
       return res(ctx.status(200), ctx.json({ balance }));
     } catch (error) {
       console.error('Get balance error:', error);
+      return res(
+        ctx.status(500),
+        ctx.json(createErrorResponse('Internal server error'))
+      );
+    }
+  }),
+
+  // POST /api/payments/initiate - Initiate payment via Xendit
+  rest.post('/api/payments/initiate', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const authResult = await requireAuth(req);
+      if (!authResult.success) {
+        return res(
+          ctx.status(authResult.error!.status),
+          ctx.json(createErrorResponse(authResult.error!.message))
+        );
+      }
+
+      const body = await req.json();
+      const amount = Number(body.amount);
+      if (!amount || Number.isNaN(amount) || amount <= 0) {
+        return res(ctx.status(400), ctx.json(createErrorResponse('Invalid amount')));
+      }
+
+      const paymentId = `pay_${Date.now()}`;
+      const paymentUrl = `https://checkout.xendit.co/${paymentId}`;
+      return res(ctx.status(200), ctx.json({ paymentId, paymentUrl }));
+    } catch (error) {
+      console.error('Initiate payment error:', error);
+      return res(
+        ctx.status(500),
+        ctx.json(createErrorResponse('Internal server error'))
+      );
+    }
+  }),
+
+  // POST /api/payments/webhook - Handle payment status update
+  rest.post('/api/payments/webhook', async (req, res, ctx) => {
+    try {
+      const body = await req.json();
+      await handlePaymentWebhook(body);
+      return res(ctx.status(200), ctx.json({ received: true }));
+    } catch (error) {
+      console.error('Payment webhook error:', error);
+      return res(ctx.status(500), ctx.json(createErrorResponse('Internal server error')));
+    }
+  }),
+
+  // GET /api/transactions - Get user transaction history
+  rest.get('/api/transactions', async (req, res, ctx) => {
+    try {
+      await addDelay();
+      const authResult = await requireAuth(req);
+      if (!authResult.success) {
+        return res(
+          ctx.status(authResult.error!.status),
+          ctx.json(createErrorResponse(authResult.error!.message))
+        );
+      }
+
+      const transactions = await getTransactionsForUser(authResult.user.id);
+      return res(ctx.status(200), ctx.json({ transactions }));
+    } catch (error) {
+      console.error('Get transactions error:', error);
       return res(
         ctx.status(500),
         ctx.json(createErrorResponse('Internal server error'))
