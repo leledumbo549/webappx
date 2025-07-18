@@ -9,6 +9,7 @@ import {
   settings,
   orders,
   sellerPayouts,
+  stabletokenBalances,
 } from './schema';
 
 // --- Seed data ---
@@ -79,6 +80,16 @@ const seedUsers = [
     username: 'gunawan_setiawan',
     password: 'gunawan123',
     role: 'seller',
+    status: 'active',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 8,
+    name: 'Test User',
+    username: 'test',
+    password: 'test',
+    role: 'buyer',
     status: 'active',
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
@@ -159,6 +170,10 @@ const seedSellerPayouts = [
   { id: 7, amount: 13500000, bankAccount: '1234567890', sellerId: 4, status: 'pending', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
 ];
 
+const seedStabletokenBalances = [
+  { userId: 8, balance: 0 },
+];
+
 // --- Seed function ---
 export async function seedDb(db: ReturnType<typeof drizzle>) {
   const existingUsers = await db.select().from(users).all();
@@ -201,6 +216,11 @@ export async function seedDb(db: ReturnType<typeof drizzle>) {
   // Seed seller payouts
   for (const p of seedSellerPayouts) {
     await db.insert(sellerPayouts).values(p).onConflictDoNothing().run();
+  }
+
+  // Seed stabletoken balances
+  for (const b of seedStabletokenBalances) {
+    await db.insert(stabletokenBalances).values(b).onConflictDoNothing().run();
   }
 
   console.log('[seed] DB seeded successfully.');

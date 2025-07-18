@@ -31,6 +31,14 @@ export const users = sqliteTable(
 );
 
 //
+// STABLETOKEN BALANCES TABLE
+//
+export const stabletokenBalances = sqliteTable('stabletokenBalances', {
+  userId: integer('userId').primaryKey(),
+  balance: real('balance').default(0).notNull(),
+});
+
+//
 // SELLERS TABLE
 //
 export const sellers = sqliteTable('sellers', {
@@ -141,6 +149,7 @@ export type Order = InferSelectModel<typeof orders>;
 export type SellerPayout = InferSelectModel<typeof sellerPayouts>;
 export type Report = InferSelectModel<typeof reports>;
 export type Setting = InferSelectModel<typeof settings>;
+export type StabletokenBalance = InferSelectModel<typeof stabletokenBalances>;
 
 // Type aliases for backward compatibility
 export type SellerProduct = Product;
@@ -223,6 +232,12 @@ export const createTableStatements = [
     status TEXT,
     createdAt TEXT,
     updatedAt TEXT
+  );
+  `,
+  `
+  CREATE TABLE IF NOT EXISTS stabletokenBalances (
+    userId INTEGER PRIMARY KEY,
+    balance REAL NOT NULL
   );
   `,
   `
