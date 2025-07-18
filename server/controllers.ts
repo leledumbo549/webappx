@@ -12,6 +12,7 @@ import type {
   Order,
   SellerPayout,
   StabletokenBalance,
+  StabletokenTransaction,
 } from './schema';
 import { drizzleDb } from './db';
 import {
@@ -23,6 +24,7 @@ import {
   orders,
   sellerPayouts,
   stabletokenBalances,
+  stabletokenTransactions,
 } from './schema';
 import { and, eq, sql } from 'drizzle-orm';
 
@@ -1123,5 +1125,50 @@ export async function burnStabletoken(
     .run();
 
   return newBalance;
+}
+
+// === STABLETOKEN TRANSACTION CONTROLLERS ===
+
+export async function createStabletokenTransaction(
+  userId: number,
+  amount: number,
+  type: string,
+  reference?: string | null
+): Promise<StabletokenTransaction> {
+  const db = await drizzleDb();
+  const tx = await db
+    .insert(stabletokenTransactions)
+    .values({ userId, amount, type, reference })
+    .returning()
+    .get();
+  return tx;
+}
+
+export async function getTransactionsForUser(
+  userId: number
+): Promise<StabletokenTransaction[]> {
+  const db = await drizzleDb();
+  return await db
+    .select()
+    .from(stabletokenTransactions)
+    .where(eq(stabletokenTransactions.userId, userId))
+    .all();
+}
+
+export async function handlePaymentWebhook(data: {
+  paymentId: string;
+  userId: number;
+  amount: number;
+  status: string;
+}): Promise<void> {
+  if (data.status === 'success') {
+    await createStabletokenTransaction(
+      data.userId,
+      data.amount,
+      'payment',
+      data.paymentId
+    );
+    await mintStabletoken(data.userId, data.amount);
+  }
 }
 
