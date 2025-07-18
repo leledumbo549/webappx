@@ -1092,4 +1092,65 @@ export async function createBuyerOrder(token: string, orderData: {
   return createdOrders[0] || null;
 }
 
+// === WALLET CONTROLLERS ===
+
+/**
+ * Get wallet for current user
+ */
+export async function getUserWallet(token: string): Promise<Wallet | null> {
+  const user = await validateToken(token);
+  if (!user) {
+    return null;
+  }
+
+  const db = await drizzleDb();
+  const walletRows = await db
+    .select()
+    .from(wallets)
+    .where(eq(wallets.userId, user.id))
+    .all();
+
+  return walletRows[0] || null;
+}
+
+/**
+ * Get wallet balance for current user
+ */
+export async function getWalletBalance(token: string): Promise<string | null> {
+  const wallet = await getUserWallet(token);
+  return wallet ? wallet.balance : null;
+}
+
+/**
+ * Admin: get wallet for any user
+ */
+export async function getWalletByUserId(token: string, userId: number): Promise<Wallet | null> {
+  const admin = await checkAdminAccess(token);
+  if (!admin) {
+    return null;
+  }
+
+  const db = await drizzleDb();
+  const walletRows = await db
+    .select()
+    .from(wallets)
+    .where(eq(wallets.userId, userId))
+    .all();
+
+  return walletRows[0] || null;
+}
+
+/**
+ * Admin: get all wallets
+ */
+export async function getAllWallets(token: string): Promise<Wallet[] | null> {
+  const admin = await checkAdminAccess(token);
+  if (!admin) {
+    return null;
+  }
+
+  const db = await drizzleDb();
+  return await db.select().from(wallets).all();
+}
+
 // === EXISTING CONTROLLERS ===
