@@ -15,6 +15,7 @@ beforeAll(async () => {
   try {
     await fs.access('/webappx/sql-wasm.wasm');
   } catch {
+    await fs.mkdir('/webappx', { recursive: true });
     await fs.copyFile(
       path.join(process.cwd(), 'node_modules/sql.js/dist/sql-wasm.wasm'),
       '/webappx/sql-wasm.wasm',

@@ -1,6 +1,5 @@
 import { rest } from 'msw';
 import {
-  loginByUsernamePassword,
   validateToken,
   getSettings,
   checkAdminAccess,
@@ -144,40 +143,13 @@ async function addDelay(): Promise<void> {
 export const handlers = [
   // === AUTHENTICATION ===
   
-  // POST /api/login - Authenticate user
-  rest.post('/api/login', async (req, res, ctx) => {
-    try {
-      await addDelay();
-      
-      const body = await req.json();
-      
-      // Use controller to handle login
-      const result = await loginByUsernamePassword(body);
-      
-      // If error, return appropriate status
-      if ('MESSAGE' in result) {
-        if (result.MESSAGE.includes('required') || result.MESSAGE.includes('Invalid request')) {
-          return res(ctx.status(400), ctx.json(result));
-        }
-        if (result.MESSAGE.includes('Invalid username or password')) {
-          return res(ctx.status(401), ctx.json(result));
-        }
-        if (result.MESSAGE.includes('banned')) {
-          return res(ctx.status(403), ctx.json(result));
-        }
-        return res(ctx.status(500), ctx.json(result));
-      }
-      
-      // Success response
-      return res(ctx.status(200), ctx.json(result));
-      
-    } catch (error) {
-      console.error('Login handler error:', error);
-      return res(
-        ctx.status(500), 
-        ctx.json(createErrorResponse('Internal server error'))
-      );
-    }
+  // POST /api/login - Authenticate user (disabled)
+  rest.post('/api/login', async (_req, res, ctx) => {
+    await addDelay();
+    return res(
+      ctx.status(400),
+      ctx.json(createErrorResponse('Password login disabled')),
+    );
   }),
 
   // POST /api/login/siwe - Authenticate via Sign-In with Ethereum
