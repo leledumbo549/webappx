@@ -325,10 +325,14 @@ export async function updateUserStatus(id: number, action: string): Promise<Publ
 /**
  * Update user profile
  */
-export async function updateUserProfile(token: string, profileData: {
-  name?: string;
-  username?: string;
-}): Promise<PublicUser | null> {
+export async function updateUserProfile(
+  token: string,
+  profileData: {
+    name?: string;
+    username?: string;
+    role?: 'buyer' | 'seller';
+  },
+): Promise<PublicUser | null> {
   const user = await validateToken(token);
   if (!user) {
     return null;
@@ -362,7 +366,29 @@ export async function updateUserProfile(token: string, profileData: {
     updateData.username = profileData.username;
   }
 
+  if (profileData.role !== undefined) {
+    updateData.role = profileData.role;
+  }
+
   await db.update(users).set(updateData).where(eq(users.id, user.id)).run();
+
+  if (profileData.role === 'seller') {
+    const existing = await db
+      .select()
+      .from(sellers)
+      .where(eq(sellers.userId, user.id))
+      .all();
+    if (existing.length === 0) {
+      await db
+        .insert(sellers)
+        .values({
+          userId: user.id,
+          name: profileData.name || user.name || user.username,
+          status: 'active',
+        })
+        .run();
+    }
+  }
 
   // Return updated user
   const updatedUser = await db

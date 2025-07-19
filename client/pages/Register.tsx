@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAtom, useSetAtom } from 'jotai';
+import { tokenAtom, userAtom } from '@/atoms/loginAtoms';
+import { loadWalletAtom } from '@/atoms/walletAtoms';
 import {
   Card,
   CardContent,
@@ -13,39 +16,120 @@ import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
 import { Textarea } from '../components/ui/textarea';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import axios from '@/lib/axios';
+import {
+  createAppKit,
+  useAppKit,
+  useAppKitAccount,
+  useAppKitNetworkCore,
+  useAppKitProvider,
+} from '@reown/appkit/react';
+import { EthersAdapter } from '@reown/appkit-adapter-ethers';
+import { arbitrum, mainnet } from '@reown/appkit/networks';
+import { BrowserProvider, JsonRpcSigner, type Eip1193Provider } from 'ethers';
+import { SiweMessage } from 'siwe';
 import { Store, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import WalletTutorial from '@/components/WalletTutorial';
+
+createAppKit({
+  adapters: [new EthersAdapter()],
+  networks: [mainnet, arbitrum],
+  projectId: '3dc8fb97b90a536ce400e5d65a3f5ff8',
+  defaultAccountTypes: { eip155: 'eoa' },
+  enableNetworkSwitch: false,
+  features: {
+    email: false,
+    socials: ['google', 'facebook'],
+    emailShowWallets: false,
+  },
+});
 
 function Register() {
   const navigate = useNavigate();
+  const [, setToken] = useAtom(tokenAtom);
+  const [, setUser] = useAtom(userAtom);
+  const loadWallet = useSetAtom(loadWalletAtom);
+  const { open } = useAppKit();
+  const { address, isConnected } = useAppKitAccount();
+  const { walletProvider } = useAppKitProvider<unknown>('eip155');
+  const { chainId } = useAppKitNetworkCore();
   const [role, setRole] = useState<'buyer' | 'seller'>('buyer');
   const [isLoading, setIsLoading] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  const handleConnect = async () => {
+    setError(null);
+    setIsConnecting(true);
+    try {
+      await Promise.resolve(open());
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : 'Wallet connection failed';
+      setError(msg);
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!walletProvider || !address) {
+      await handleConnect();
+      if (!walletProvider || !address) return;
+    }
     setError(null);
     setSuccess(false);
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const payload: Record<string, unknown> = {
-      name: formData.get('name'),
-      username: formData.get('username'),
-      password: formData.get('password'),
-      role,
-    };
-
-    if (role === 'seller') {
-      payload.storeName = formData.get('storeName');
-      payload.contact = formData.get('contact');
-      payload.bio = formData.get('bio');
-    }
 
     try {
-      await axios.post('/api/register', payload);
+      const nonce = Math.random().toString(36).substring(2, 10);
+      const msg = new SiweMessage({
+        domain: window.location.host,
+        address,
+        statement: 'Sign in with Ethereum to MarketPlace',
+        uri: window.location.origin,
+        version: '1',
+        chainId,
+        nonce,
+      } as Partial<SiweMessage>);
+      const message = msg.prepareMessage();
+      const signerProvider = new BrowserProvider(
+        walletProvider as unknown as Eip1193Provider,
+        Number(chainId)
+      );
+      const signer = new JsonRpcSigner(signerProvider, address);
+      const signature = await signer.signMessage(message);
+      const res = await axios.post('/api/login/siwe', { message, signature });
+      setToken(res.data.token);
+      setUser(res.data.user);
+
+      const profile: Record<string, unknown> = {
+        name: formData.get('name'),
+        username: formData.get('username'),
+        role,
+      };
+      await axios.put('/api/me', profile, {
+        headers: { Authorization: `Bearer ${res.data.token}` },
+      });
+
+      if (role === 'seller') {
+        await axios.put(
+          '/api/seller/profile',
+          {
+            name: formData.get('storeName'),
+            contact: formData.get('contact'),
+            bio: formData.get('bio'),
+          },
+          { headers: { Authorization: `Bearer ${res.data.token}` } }
+        );
+      }
+
+      await loadWallet();
       setSuccess(true);
-      setTimeout(() => navigate('/login'), 1000);
+      setTimeout(() => navigate('/home', { replace: true }), 500);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to register';
       setError(message);
@@ -87,18 +171,6 @@ function Register() {
                 <Input
                   id="username"
                   name="username"
-                  required
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium">
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
                   required
                   disabled={isLoading}
                 />
@@ -164,20 +236,44 @@ function Register() {
                   </AlertDescription>
                 </Alert>
               )}
-              <Button
-                type="submit"
-                className="w-full h-10"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Registering...
-                  </>
-                ) : (
-                  'Register'
-                )}
-              </Button>
+              {isConnected ? (
+                <div className="space-y-4">
+                  <Input readOnly value={address} />
+                  <Button
+                    type="submit"
+                    className="w-full h-10"
+                    disabled={isLoading || isConnecting}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+                        Registering...
+                      </>
+                    ) : (
+                      'Register'
+                    )}
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  className="w-full"
+                  onClick={handleConnect}
+                  disabled={isConnecting || isLoading}
+                >
+                  {isConnecting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+                      Connecting...
+                    </>
+                  ) : (
+                    'Connect Wallet'
+                  )}
+                </Button>
+              )}
+              <div className="text-center">
+                <WalletTutorial />
+              </div>
             </form>
           </CardContent>
         </Card>
