@@ -23,6 +23,7 @@ These instructions define how AI code agents and human contributors should modif
 - Format code: `npm run format`
 - Lint: `npm run lint`
 - OpenAPI lint: `npm run lint:openapi` (only if `openapi.yaml` was modified)
+- Run tests: `npm run test`
 - Ensure `npm run lint`, `npm run lint:openapi`, `npm run build` passes.
 
 ---
@@ -54,7 +55,8 @@ These instructions define how AI code agents and human contributors should modif
 - **Types**
   - Define clear TypeScript interfaces for all data models.
 - **Testing**
-  - Write unit tests using Jest in the `/tests` folder.
+  - Use **Jest** as the unit test framework.
+  - Write unit tests in the `/tests` folder.
   - Use descriptive test file names that match the component/function being tested.
   - Follow the pattern: `ComponentName.test.tsx` for React components and `functionName.test.ts` for functions.
   - Test both success and error scenarios.
