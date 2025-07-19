@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import WalletTutorial from '@/components/WalletTutorial';
 import axios from '@/lib/axios';
 import {
   createAppKit,
@@ -64,13 +66,24 @@ function Login() {
   const { walletProvider } = useAppKitProvider<unknown>('eip155');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   // const { address, isConnected } = useAppKitAccount();
   const { chainId } = useAppKitNetworkCore();
   // const { walletProvider } = useAppKitProvider('eip155');
 
-  const handleConnect = () => {
-    open();
+  const handleConnect = async () => {
+    setError(null);
+    setIsConnecting(true);
+    try {
+      await Promise.resolve(open());
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : 'Wallet connection failed';
+      setError(msg);
+    } finally {
+      setIsConnecting(false);
+    }
   };
 
   const handleSignIn = async () => {
@@ -134,13 +147,12 @@ function Login() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Button
-            className="w-full"
-            onClick={handleConnect}
-            disabled={isLoading}
-          >
-            Connect Wallet
-          </Button>
+          <p className="text-center text-sm">
+            Wallet Status:{' '}
+            <Badge variant={isConnected ? 'default' : 'secondary'}>
+              {isConnected ? 'Connected' : 'Not Connected'}
+            </Badge>
+          </p>
 
           {error && (
             <Alert variant="destructive">
@@ -148,13 +160,14 @@ function Login() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
+
           {isConnected ? (
             <div className="space-y-4">
               <Input readOnly value={address} />
               <Button
                 className="w-full"
                 onClick={handleSignIn}
-                disabled={isLoading}
+                disabled={isLoading || isConnecting}
               >
                 {isLoading ? (
                   <>
@@ -170,11 +183,21 @@ function Login() {
             <Button
               className="w-full"
               onClick={handleConnect}
-              disabled={isLoading}
+              disabled={isConnecting || isLoading}
             >
-              Connect Wallet
+              {isConnecting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+                  Connecting...
+                </>
+              ) : (
+                'Connect Wallet'
+              )}
             </Button>
           )}
+          <div className="text-center">
+            <WalletTutorial />
+          </div>
         </CardContent>
       </Card>
     </div>
