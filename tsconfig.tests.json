@@ -3,7 +3,9 @@
   "compilerOptions": {
     "outDir": "./dist-tests",
     "noEmit": false,
-    "allowImportingTsExtensions": false
+    "allowImportingTsExtensions": false,
+    "verbatimModuleSyntax": false,
+    "esModuleInterop": true
   },
-  "include": ["server/tests/**/*.ts"]
+  "include": ["tests/**/*.ts"]
 }
