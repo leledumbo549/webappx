@@ -4,4 +4,4 @@ export type {
   SellerProfile,
   Order,
   SellerPayout,
-} from '@/server/schema'
+} from '@/server/schema';

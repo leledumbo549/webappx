@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from '@/lib/axios'
-import { DataTable } from '@/components/DataTable'
-import type { ColumnDef } from '@tanstack/react-table'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import type { AdminUser } from '@/types/Admin'
-import { Eye } from 'lucide-react'
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from '@/lib/axios';
+import { DataTable } from '@/components/DataTable';
+import type { ColumnDef } from '@tanstack/react-table';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import type { AdminUser } from '@/types/Admin';
+import { Eye } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,55 +15,55 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from '@/components/ui/alert-dialog';
 
 function ManageUsers() {
-  const [data, setData] = useState<AdminUser[]>([])
-  const [loading, setLoading] = useState(false)
-  const [target, setTarget] = useState<AdminUser | null>(null)
-  const navigate = useNavigate()
+  const [data, setData] = useState<AdminUser[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [target, setTarget] = useState<AdminUser | null>(null);
+  const navigate = useNavigate();
 
   const getRoleBadgeClass = (role: string) => {
     switch (role) {
       case 'admin':
-        return 'bg-purple-100 text-purple-800'
+        return 'bg-purple-100 text-purple-800';
       case 'seller':
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-blue-100 text-blue-800';
       case 'buyer':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       case 'banned':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800';
       case 'inactive':
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   const fetchData = async () => {
-    setLoading(true)
-    const res = await axios.get<AdminUser[]>('/api/admin/users')
-    setData(res.data)
-    setLoading(false)
-  }
+    setLoading(true);
+    const res = await axios.get<AdminUser[]>('/api/admin/users');
+    setData(res.data);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const toggleBan = async (user: AdminUser) => {
-    await axios.patch(`/api/admin/users/${user.id}`, { action: 'toggleBan' })
-    fetchData()
-  }
+    await axios.patch(`/api/admin/users/${user.id}`, { action: 'toggleBan' });
+    fetchData();
+  };
 
   const columns: ColumnDef<AdminUser>[] = [
     {
@@ -105,7 +105,7 @@ function ManageUsers() {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
-        const u = row.original
+        const u = row.original;
         return (
           <div className="flex gap-1 justify-end">
             <Button
@@ -123,12 +123,12 @@ function ManageUsers() {
               {u.status === 'banned' ? 'Unban' : 'Ban'}
             </Button>
           </div>
-        )
+        );
       },
       enableSorting: false,
       meta: { widthClass: 'w-24' },
     },
-  ]
+  ];
 
   return (
     <>
@@ -144,8 +144,8 @@ function ManageUsers() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (target) toggleBan(target)
-                setTarget(null)
+                if (target) toggleBan(target);
+                setTarget(null);
               }}
             >
               Confirm
@@ -154,7 +154,7 @@ function ManageUsers() {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }
 
-export default ManageUsers
+export default ManageUsers;

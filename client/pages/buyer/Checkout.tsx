@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { cartAtom, clearCartAtom } from '@/atoms/cartAtoms'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import axios from '@/lib/axios'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { cartAtom, clearCartAtom } from '@/atoms/cartAtoms';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import axios from '@/lib/axios';
+import { useNavigate } from 'react-router-dom';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,46 +13,46 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from '@/components/ui/alert-dialog';
 
 function Checkout() {
-  const cart = useAtomValue(cartAtom)
-  const clearCart = useSetAtom(clearCartAtom)
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [confirmCheckout, setConfirmCheckout] = useState(false)
+  const cart = useAtomValue(cartAtom);
+  const clearCart = useSetAtom(clearCartAtom);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmCheckout, setConfirmCheckout] = useState(false);
 
   const total = cart.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
-  )
+  );
 
   const handleCheckout = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
       const items = cart.map((item) => ({
         productId: item.product.id,
         quantity: item.quantity,
-      }))
+      }));
       // For demo, use a static shipping address and payment method
       await axios.post('/api/buyer/orders', {
         items,
         shippingAddress: '123 Main St, City, Country',
         paymentMethod: 'credit_card',
-      })
-      clearCart()
-      navigate('/orders')
+      });
+      clearCart();
+      navigate('/orders');
     } catch {
-      setError('Failed to create order')
+      setError('Failed to create order');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (!cart.length) {
-    return <div>Your cart is empty.</div>
+    return <div>Your cart is empty.</div>;
   }
 
   return (
@@ -108,8 +108,8 @@ function Checkout() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                handleCheckout()
-                setConfirmCheckout(false)
+                handleCheckout();
+                setConfirmCheckout(false);
               }}
             >
               Confirm
@@ -118,7 +118,7 @@ function Checkout() {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }
 
-export default Checkout
+export default Checkout;

@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from '@/lib/axios'
-import { DataTable } from '@/components/DataTable'
-import { Button } from '@/components/ui/button'
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from '@/lib/axios';
+import { DataTable } from '@/components/DataTable';
+import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,36 +11,36 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import type { ColumnDef } from '@tanstack/react-table'
-import type { AdminProduct } from '@/types/Admin'
-import { Eye } from 'lucide-react'
-import { formatIDR } from '@/lib/utils'
+} from '@/components/ui/alert-dialog';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { AdminProduct } from '@/types/Admin';
+import { Eye } from 'lucide-react';
+import { formatIDR } from '@/lib/utils';
 
 function ManageProducts() {
-  const [data, setData] = useState<AdminProduct[]>([])
-  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState<AdminProduct[]>([]);
+  const [loading, setLoading] = useState(false);
   const [target, setTarget] = useState<{
-    product: AdminProduct
-    action: 'approve' | 'reject' | 'flag' | 'remove' | 'unflag'
-  } | null>(null)
-  const navigate = useNavigate()
+    product: AdminProduct;
+    action: 'approve' | 'reject' | 'flag' | 'remove' | 'unflag';
+  } | null>(null);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
-    setLoading(true)
-    const res = await axios.get<AdminProduct[]>('/api/admin/products')
-    setData(res.data)
-    setLoading(false)
-  }
+    setLoading(true);
+    const res = await axios.get<AdminProduct[]>('/api/admin/products');
+    setData(res.data);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const updateStatus = async (p: AdminProduct, action: string) => {
-    await axios.patch(`/api/admin/products/${p.id}`, { action })
-    fetchData()
-  }
+    await axios.patch(`/api/admin/products/${p.id}`, { action });
+    fetchData();
+  };
 
   const columns: ColumnDef<AdminProduct>[] = [
     {
@@ -63,7 +63,7 @@ function ManageProducts() {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
-        const p = row.original
+        const p = row.original;
         return (
           <div className="flex gap-1 justify-end">
             <Button
@@ -109,12 +109,12 @@ function ManageProducts() {
               </>
             )}
           </div>
-        )
+        );
       },
       enableSorting: false,
       meta: { widthClass: 'w-40' },
     },
-  ]
+  ];
 
   return (
     <>
@@ -124,13 +124,13 @@ function ManageProducts() {
           <AlertDialogHeader>
             <AlertDialogTitle>
               {(() => {
-                if (!target) return ''
+                if (!target) return '';
                 const label =
                   target.action === 'unflag'
                     ? 'Unflag'
                     : target.action.charAt(0).toUpperCase() +
-                      target.action.slice(1)
-                return `${label} this product?`
+                      target.action.slice(1);
+                return `${label} this product?`;
               })()}
             </AlertDialogTitle>
           </AlertDialogHeader>
@@ -142,8 +142,8 @@ function ManageProducts() {
                   updateStatus(
                     target.product,
                     target.action === 'unflag' ? 'approve' : target.action
-                  )
-                setTarget(null)
+                  );
+                setTarget(null);
               }}
             >
               Confirm
@@ -152,7 +152,7 @@ function ManageProducts() {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }
 
-export default ManageProducts
+export default ManageProducts;

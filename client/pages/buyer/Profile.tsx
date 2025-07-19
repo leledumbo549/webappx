@@ -1,105 +1,107 @@
-import { useAtom, useSetAtom } from 'jotai'
-import { userAtom } from '@/atoms/loginAtoms'
-import { balanceAtom, loadWalletAtom } from '@/atoms/walletAtoms'
-import { useState, useEffect } from 'react'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
-import { toast } from 'sonner'
-import axios from '@/lib/axios'
-import { User, Save, AlertCircle, Loader2, UserCheck } from 'lucide-react'
+import { useAtom, useSetAtom } from 'jotai';
+import { userAtom } from '@/atoms/loginAtoms';
+import { balanceAtom, loadWalletAtom } from '@/atoms/walletAtoms';
+import { useState, useEffect } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
+import axios from '@/lib/axios';
+import { User, Save, AlertCircle, Loader2, UserCheck } from 'lucide-react';
 
 function Profile() {
-  const [user, setUser] = useAtom(userAtom)
-  const [name, setName] = useState(user?.name || '')
-  const [username, setUsername] = useState(user?.username || '')
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [balance] = useAtom(balanceAtom)
-  const loadWallet = useSetAtom(loadWalletAtom)
+  const [user, setUser] = useAtom(userAtom);
+  const [name, setName] = useState(user?.name || '');
+  const [username, setUsername] = useState(user?.username || '');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [balance] = useAtom(balanceAtom);
+  const loadWallet = useSetAtom(loadWalletAtom);
 
   // Update form when user data changes
   useEffect(() => {
     if (user) {
-      setName(user.name || '')
-      setUsername(user.username || '')
+      setName(user.name || '');
+      setUsername(user.username || '');
     }
-  }, [user])
+  }, [user]);
 
   useEffect(() => {
-    loadWallet()
-  }, [loadWallet])
+    loadWallet();
+  }, [loadWallet]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!user) {
-      toast.error('User data not available')
-      return
+      toast.error('User data not available');
+      return;
     }
 
-    setSaving(true)
-    setError(null)
+    setSaving(true);
+    setError(null);
 
     try {
       const res = await axios.put('/api/me', {
         name: name.trim(),
         username: username.trim(),
-      })
+      });
 
       // Update the user atom with new data
-      setUser(res.data)
+      setUser(res.data);
 
-      toast.success('Profile updated successfully!')
+      toast.success('Profile updated successfully!');
     } catch (err: unknown) {
-      console.error('Failed to update profile:', err)
+      console.error('Failed to update profile:', err);
 
-      const axiosError = err as { response?: { status?: number } }
+      const axiosError = err as { response?: { status?: number } };
 
       if (axiosError.response?.status === 409) {
-        setError('Username already exists. Please choose a different username.')
-        toast.error('Username already exists')
+        setError(
+          'Username already exists. Please choose a different username.'
+        );
+        toast.error('Username already exists');
       } else if (axiosError.response?.status === 400) {
-        setError('Invalid data provided. Please check your input.')
-        toast.error('Invalid data provided')
+        setError('Invalid data provided. Please check your input.');
+        toast.error('Invalid data provided');
       } else {
-        setError('Failed to update profile. Please try again.')
-        toast.error('Failed to update profile')
+        setError('Failed to update profile. Please try again.');
+        toast.error('Failed to update profile');
       }
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
       case 'admin':
-        return 'destructive'
+        return 'destructive';
       case 'seller':
-        return 'secondary'
+        return 'secondary';
       case 'buyer':
-        return 'default'
+        return 'default';
       default:
-        return 'outline'
+        return 'outline';
     }
-  }
+  };
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case 'active':
-        return 'default'
+        return 'default';
       case 'banned':
-        return 'destructive'
+        return 'destructive';
       case 'inactive':
-        return 'secondary'
+        return 'secondary';
       default:
-        return 'outline'
+        return 'outline';
     }
-  }
+  };
 
   if (!user) {
     return (
@@ -120,7 +122,7 @@ function Profile() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -247,7 +249,7 @@ function Profile() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
-export default Profile
+export default Profile;

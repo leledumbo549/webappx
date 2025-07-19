@@ -1,53 +1,58 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { Input } from '../components/ui/input'
-import { Label } from '../components/ui/label'
-import { Button } from '../components/ui/button'
-import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group'
-import { Textarea } from '../components/ui/textarea'
-import { Alert, AlertDescription } from '../components/ui/alert'
-import axios from '@/lib/axios'
-import { Store, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Button } from '../components/ui/button';
+import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
+import { Textarea } from '../components/ui/textarea';
+import { Alert, AlertDescription } from '../components/ui/alert';
+import axios from '@/lib/axios';
+import { Store, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 
 function Register() {
-  const navigate = useNavigate()
-  const [role, setRole] = useState<'buyer' | 'seller'>('buyer')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  const navigate = useNavigate();
+  const [role, setRole] = useState<'buyer' | 'seller'>('buyer');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setError(null)
-    setSuccess(false)
-    setIsLoading(true)
+    e.preventDefault();
+    setError(null);
+    setSuccess(false);
+    setIsLoading(true);
 
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData(e.currentTarget);
     const payload: Record<string, unknown> = {
       name: formData.get('name'),
       username: formData.get('username'),
       password: formData.get('password'),
       role,
-    }
+    };
 
     if (role === 'seller') {
-      payload.storeName = formData.get('storeName')
-      payload.contact = formData.get('contact')
-      payload.bio = formData.get('bio')
+      payload.storeName = formData.get('storeName');
+      payload.contact = formData.get('contact');
+      payload.bio = formData.get('bio');
     }
 
     try {
-      await axios.post('/api/register', payload)
-      setSuccess(true)
-      setTimeout(() => navigate('/login'), 1000)
+      await axios.post('/api/register', payload);
+      setSuccess(true);
+      setTimeout(() => navigate('/login'), 1000);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to register'
-      setError(message)
+      const message = err instanceof Error ? err.message : 'Failed to register';
+      setError(message);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center p-4 bg-gradient-to-br from-background to-muted/20">
@@ -188,7 +193,7 @@ function Register() {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
-export default Register
+export default Register;

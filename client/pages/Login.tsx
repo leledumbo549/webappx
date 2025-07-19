@@ -1,69 +1,74 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Input } from '../components/ui/input'
-import { Label } from '../components/ui/label'
-import { Button } from '../components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { Alert, AlertDescription } from '../components/ui/alert'
-import { Badge } from '../components/ui/badge'
-import axios from '@/lib/axios'
-import { useAtom, useSetAtom } from 'jotai'
-import { tokenAtom, userAtom } from '../atoms/loginAtoms'
-import { loadWalletAtom } from '@/atoms/walletAtoms'
-import { Store, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Button } from '../components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card';
+import { Alert, AlertDescription } from '../components/ui/alert';
+import { Badge } from '../components/ui/badge';
+import axios from '@/lib/axios';
+import { useAtom, useSetAtom } from 'jotai';
+import { tokenAtom, userAtom } from '../atoms/loginAtoms';
+import { loadWalletAtom } from '@/atoms/walletAtoms';
+import { Store, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 
 function Login() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
-  const [token] = useAtom(tokenAtom)
-  const [, setToken] = useAtom(tokenAtom)
-  const [, setUser] = useAtom(userAtom)
-  const loadWallet = useSetAtom(loadWalletAtom)
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const [token] = useAtom(tokenAtom);
+  const [, setToken] = useAtom(tokenAtom);
+  const [, setUser] = useAtom(userAtom);
+  const loadWallet = useSetAtom(loadWalletAtom);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setIsLoading(true)
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
 
     try {
-      let res = await axios.get('/api/settings')
-      console.log(res.data)
-      res = await axios.post('/api/login', { username, password })
-      console.log(res.data)
-      const token = res.data.token
+      let res = await axios.get('/api/settings');
+      console.log(res.data);
+      res = await axios.post('/api/login', { username, password });
+      console.log(res.data);
+      const token = res.data.token;
 
       // Set token in atoms first so axios interceptor can use it
-      setToken(token)
+      setToken(token);
 
-      res = await axios.get('/api/me')
-      console.log(res.data)
-      const user = res.data
+      res = await axios.get('/api/me');
+      console.log(res.data);
+      const user = res.data;
 
       // Set user in atoms
-      setUser(user)
-      await loadWallet()
+      setUser(user);
+      await loadWallet();
 
       if (user.role === 'admin') {
-        console.log('navigate..')
-        navigate('/admin', { replace: true })
+        console.log('navigate..');
+        navigate('/admin', { replace: true });
       } else if (user.role === 'buyer') {
-        navigate('/home', { replace: true })
+        navigate('/home', { replace: true });
       } else if (user.role === 'seller') {
-        navigate('/seller', { replace: true })
+        navigate('/seller', { replace: true });
       }
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message)
+        setError(err.message);
       } else {
-        setError('Failed to login')
+        setError('Failed to login');
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center p-4 bg-gradient-to-br from-background to-muted/20">
@@ -171,7 +176,7 @@ function Login() {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;

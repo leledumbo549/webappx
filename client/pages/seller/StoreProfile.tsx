@@ -1,73 +1,76 @@
-import { useEffect, useState } from 'react'
-import axios from '@/lib/axios'
-import type { SellerProfile } from '@/types/Seller'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
-import { toast } from 'sonner'
-import { Store, Save, AlertCircle, Loader2 } from 'lucide-react'
+import { useEffect, useState } from 'react';
+import axios from '@/lib/axios';
+import type { SellerProfile } from '@/types/Seller';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
+import { Store, Save, AlertCircle, Loader2 } from 'lucide-react';
 
 function StoreProfile() {
-  const [profile, setProfile] = useState<SellerProfile | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [profile, setProfile] = useState<SellerProfile | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const res = await axios.get<SellerProfile>('/api/seller/profile')
-      setProfile(res.data)
+      const res = await axios.get<SellerProfile>('/api/seller/profile');
+      setProfile(res.data);
     } catch (err) {
-      console.error('Failed to load profile:', err)
-      setError('Failed to load profile. Please try again.')
-      toast.error('Failed to load profile')
+      console.error('Failed to load profile:', err);
+      setError('Failed to load profile. Please try again.');
+      toast.error('Failed to load profile');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!profile) return
+    e.preventDefault();
+    if (!profile) return;
 
-    setSaving(true)
-    setError(null)
+    setSaving(true);
+    setError(null);
 
     try {
-      const res = await axios.put<SellerProfile>('/api/seller/profile', profile)
-      setProfile(res.data)
-      toast.success('Store profile updated successfully!')
+      const res = await axios.put<SellerProfile>(
+        '/api/seller/profile',
+        profile
+      );
+      setProfile(res.data);
+      toast.success('Store profile updated successfully!');
     } catch (err) {
-      console.error('Failed to update profile:', err)
-      setError('Failed to update profile. Please try again.')
-      toast.error('Failed to update profile')
+      console.error('Failed to update profile:', err);
+      setError('Failed to update profile. Please try again.');
+      toast.error('Failed to update profile');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case 'active':
-        return 'default'
+        return 'default';
       case 'inactive':
-        return 'secondary'
+        return 'secondary';
       case 'pending':
-        return 'outline'
+        return 'outline';
       default:
-        return 'outline'
+        return 'outline';
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -88,7 +91,7 @@ function StoreProfile() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (error && !profile) {
@@ -97,7 +100,7 @@ function StoreProfile() {
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>{error}</AlertDescription>
       </Alert>
-    )
+    );
   }
 
   if (!profile) {
@@ -106,7 +109,7 @@ function StoreProfile() {
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>No store profile data available</AlertDescription>
       </Alert>
-    )
+    );
   }
 
   return (
@@ -227,7 +230,7 @@ function StoreProfile() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
-export default StoreProfile
+export default StoreProfile;

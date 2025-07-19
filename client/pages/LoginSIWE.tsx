@@ -1,25 +1,25 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAtom, useSetAtom } from 'jotai'
-import { tokenAtom, userAtom } from '@/atoms/loginAtoms'
-import { loadWalletAtom } from '@/atoms/walletAtoms'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertCircle, Loader2 } from 'lucide-react'
-import axios from '@/lib/axios'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAtom, useSetAtom } from 'jotai';
+import { tokenAtom, userAtom } from '@/atoms/loginAtoms';
+import { loadWalletAtom } from '@/atoms/walletAtoms';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, Loader2 } from 'lucide-react';
+import axios from '@/lib/axios';
 import {
   createAppKit,
   useAppKit,
   useAppKitAccount,
   useAppKitNetworkCore,
   useAppKitProvider,
-} from '@reown/appkit/react'
-import { SiweMessage } from 'siwe'
-import { EthersAdapter } from '@reown/appkit-adapter-ethers'
-import { arbitrum, mainnet } from '@reown/appkit/networks'
-import { BrowserProvider, JsonRpcSigner, type Eip1193Provider } from 'ethers'
+} from '@reown/appkit/react';
+import { SiweMessage } from 'siwe';
+import { EthersAdapter } from '@reown/appkit-adapter-ethers';
+import { arbitrum, mainnet } from '@reown/appkit/networks';
+import { BrowserProvider, JsonRpcSigner, type Eip1193Provider } from 'ethers';
 
 // Initialize AppKit once
 // createAppKit({
@@ -52,34 +52,34 @@ createAppKit({
     socials: ['google', 'facebook'],
     emailShowWallets: false, // default to true
   },
-})
+});
 
 function LoginSIWE() {
-  const navigate = useNavigate()
-  const [, setToken] = useAtom(tokenAtom)
-  const [, setUser] = useAtom(userAtom)
-  const loadWallet = useSetAtom(loadWalletAtom)
-  const { open } = useAppKit()
-  const { address, isConnected } = useAppKitAccount()
-  const { walletProvider } = useAppKitProvider<unknown>('eip155')
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate();
+  const [, setToken] = useAtom(tokenAtom);
+  const [, setUser] = useAtom(userAtom);
+  const loadWallet = useSetAtom(loadWalletAtom);
+  const { open } = useAppKit();
+  const { address, isConnected } = useAppKitAccount();
+  const { walletProvider } = useAppKitProvider<unknown>('eip155');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // const { address, isConnected } = useAppKitAccount();
-  const { chainId } = useAppKitNetworkCore()
+  const { chainId } = useAppKitNetworkCore();
   // const { walletProvider } = useAppKitProvider('eip155');
 
   const handleConnect = () => {
-    open()
-  }
+    open();
+  };
 
   const handleSignIn = async () => {
-    if (!walletProvider || !address) return
-    setIsLoading(true)
-    setError(null)
+    if (!walletProvider || !address) return;
+    setIsLoading(true);
+    setError(null);
 
     try {
-      const nonce = Math.random().toString(36).substring(2, 10)
+      const nonce = Math.random().toString(36).substring(2, 10);
       const cfg = {
         domain: window.location.host,
         address,
@@ -88,16 +88,16 @@ function LoginSIWE() {
         version: '1',
         chainId: chainId,
         nonce,
-      }
+      };
 
-      const msg = new SiweMessage(cfg as Partial<SiweMessage>)
-      const message = msg.prepareMessage()
+      const msg = new SiweMessage(cfg as Partial<SiweMessage>);
+      const message = msg.prepareMessage();
       const signerProvider = new BrowserProvider(
         walletProvider as unknown as Eip1193Provider,
         Number(chainId)
-      )
-      const signer = new JsonRpcSigner(signerProvider, address)
-      const signature = await signer.signMessage(message)
+      );
+      const signer = new JsonRpcSigner(signerProvider, address);
+      const signature = await signer.signMessage(message);
 
       // const signature = await (
       //   walletProvider as unknown as {
@@ -111,19 +111,19 @@ function LoginSIWE() {
       //   params: [message, address],
       // })
 
-      const res = await axios.post('/api/login/siwe', { message, signature })
-      setToken(res.data.token)
-      setUser(res.data.user)
-      await loadWallet()
-      navigate('/home', { replace: true })
+      const res = await axios.post('/api/login/siwe', { message, signature });
+      setToken(res.data.token);
+      setUser(res.data.user);
+      await loadWallet();
+      navigate('/home', { replace: true });
     } catch (err) {
-      console.log('!!!')
-      const msg = err instanceof Error ? err.message : 'Login failed'
-      setError(msg)
+      console.log('!!!');
+      const msg = err instanceof Error ? err.message : 'Login failed';
+      setError(msg);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center p-4 bg-gradient-to-br from-background to-muted/20">
@@ -178,7 +178,7 @@ function LoginSIWE() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
-export default LoginSIWE
+export default LoginSIWE;

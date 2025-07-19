@@ -1,1 +1,1 @@
-export type { StabletokenTransaction } from '@/server/schema'
+export type { StabletokenTransaction } from '@/server/schema';

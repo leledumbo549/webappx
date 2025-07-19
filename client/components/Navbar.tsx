@@ -1,9 +1,9 @@
-import { useAtom } from 'jotai'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { userAtom, logoutAtom } from '@/atoms/loginAtoms'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { useAtom } from 'jotai';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { userAtom, logoutAtom } from '@/atoms/loginAtoms';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,14 +11,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/ui/dropdown-menu';
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu'
+} from '@/components/ui/navigation-menu';
 import {
   ShoppingCart,
   Store,
@@ -32,23 +32,23 @@ import {
   FileText,
   Menu,
   X,
-} from 'lucide-react'
-import { useState } from 'react'
-import { cn } from '@/lib/utils'
+} from 'lucide-react';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 function Navbar() {
-  const [user] = useAtom(userAtom)
-  const [, logout] = useAtom(logoutAtom)
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [user] = useAtom(userAtom);
+  const [, logout] = useAtom(logoutAtom);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+    logout();
+    navigate('/login');
+  };
 
-  const isActive = (path: string) => location.pathname === path
+  const isActive = (path: string) => location.pathname === path;
 
   const getGuestNavItems = () => [
     {
@@ -75,7 +75,7 @@ function Navbar() {
       icon: User,
       description: 'Sign in to your account',
     },
-  ]
+  ];
 
   const getBuyerNavItems = () => [
     {
@@ -108,7 +108,7 @@ function Navbar() {
       icon: User,
       description: 'Manage your account settings',
     },
-  ]
+  ];
 
   const getSellerNavItems = () => [
     {
@@ -141,7 +141,7 @@ function Navbar() {
       icon: User,
       description: 'Update your store information',
     },
-  ]
+  ];
 
   const getAdminNavItems = () => [
     {
@@ -180,44 +180,44 @@ function Navbar() {
       icon: Settings,
       description: 'Configure platform settings',
     },
-  ]
+  ];
 
   const getNavItems = () => {
-    if (!user) return getGuestNavItems()
+    if (!user) return getGuestNavItems();
     switch (user.role) {
       case 'buyer':
-        return getBuyerNavItems()
+        return getBuyerNavItems();
       case 'seller':
-        return getSellerNavItems()
+        return getSellerNavItems();
       case 'admin':
-        return getAdminNavItems()
+        return getAdminNavItems();
       default:
-        return []
+        return [];
     }
-  }
+  };
 
-  const navItems = getNavItems()
+  const navItems = getNavItems();
 
   const getInitials = (name: string) => {
     return name
       .split(' ')
       .map((n) => n[0])
       .join('')
-      .toUpperCase()
-  }
+      .toUpperCase();
+  };
 
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
       case 'admin':
-        return 'destructive'
+        return 'destructive';
       case 'seller':
-        return 'secondary'
+        return 'secondary';
       case 'buyer':
-        return 'default'
+        return 'default';
       default:
-        return 'outline'
+        return 'outline';
     }
-  }
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -242,7 +242,7 @@ function Navbar() {
             <NavigationMenu>
               <NavigationMenuList>
                 {navItems.map((item) => {
-                  const Icon = item.icon
+                  const Icon = item.icon;
                   return (
                     <NavigationMenuItem key={item.path}>
                       <NavigationMenuLink
@@ -263,7 +263,7 @@ function Navbar() {
                         </Button>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
-                  )
+                  );
                 })}
               </NavigationMenuList>
             </NavigationMenu>
@@ -346,14 +346,14 @@ function Navbar() {
           <div className="lg:hidden py-4 border-t">
             <div className="flex flex-col space-y-2">
               {navItems.map((item) => {
-                const Icon = item.icon
+                const Icon = item.icon;
                 return (
                   <Button
                     key={item.path}
                     variant={isActive(item.path) ? 'default' : 'ghost'}
                     onClick={() => {
-                      navigate(item.path)
-                      setIsMobileMenuOpen(false)
+                      navigate(item.path);
+                      setIsMobileMenuOpen(false);
                     }}
                     className="justify-start h-auto py-3"
                   >
@@ -365,14 +365,14 @@ function Navbar() {
                       </span>
                     </div>
                   </Button>
-                )
+                );
               })}
             </div>
           </div>
         )}
       </div>
     </nav>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;

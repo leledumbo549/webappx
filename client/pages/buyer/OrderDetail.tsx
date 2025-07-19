@@ -1,96 +1,96 @@
-import { useEffect, useState, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import axios from '@/lib/axios'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, Package, Truck, CheckCircle, Clock } from 'lucide-react'
-import { Spinner } from '@/components/ui/spinner'
-import { formatIDR } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from '@/lib/axios';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, Package, Truck, CheckCircle, Clock } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
+import { formatIDR } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 // Interface matching the OpenAPI specification
 interface OrderDetail {
-  id: number
-  items: string // JSON string of cart items
-  total: number
-  status: string
-  createdAt: string
-  shippingAddress?: string
-  paymentMethod?: string
-  trackingNumber?: string
+  id: number;
+  items: string; // JSON string of cart items
+  total: number;
+  status: string;
+  createdAt: string;
+  shippingAddress?: string;
+  paymentMethod?: string;
+  trackingNumber?: string;
 }
 
 interface OrderItem {
-  productId: number
-  quantity: number
+  productId: number;
+  quantity: number;
 }
 
 function OrderDetail() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [order, setOrder] = useState<OrderDetail | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [order, setOrder] = useState<OrderDetail | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchOrder = useCallback(async () => {
-    if (!id) return
+    if (!id) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get<OrderDetail>(`/api/buyer/orders/${id}`)
-      setOrder(res.data)
+      const res = await axios.get<OrderDetail>(`/api/buyer/orders/${id}`);
+      setOrder(res.data);
     } catch (err) {
-      console.error('Failed to load order:', err)
-      setError('Failed to load order details')
+      console.error('Failed to load order:', err);
+      setError('Failed to load order details');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [id])
+  }, [id]);
 
   useEffect(() => {
-    fetchOrder()
-  }, [fetchOrder])
+    fetchOrder();
+  }, [fetchOrder]);
 
-  if (loading) return <Spinner />
-  if (error) return <div className="text-red-600">{error}</div>
-  if (!order) return <div>Order not found.</div>
+  if (loading) return <Spinner />;
+  if (error) return <div className="text-red-600">{error}</div>;
+  if (!order) return <div>Order not found.</div>;
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-yellow-100 text-yellow-800';
       case 'processing':
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-blue-100 text-blue-800';
       case 'shipped':
-        return 'bg-purple-100 text-purple-800'
+        return 'bg-purple-100 text-purple-800';
       case 'delivered':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       case 'cancelled':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Clock className="h-4 w-4" />
+        return <Clock className="h-4 w-4" />;
       case 'processing':
-        return <Package className="h-4 w-4" />
+        return <Package className="h-4 w-4" />;
       case 'shipped':
-        return <Truck className="h-4 w-4" />
+        return <Truck className="h-4 w-4" />;
       case 'delivered':
-        return <CheckCircle className="h-4 w-4" />
+        return <CheckCircle className="h-4 w-4" />;
       case 'cancelled':
-        return <Clock className="h-4 w-4" />
+        return <Clock className="h-4 w-4" />;
       default:
-        return <Clock className="h-4 w-4" />
+        return <Clock className="h-4 w-4" />;
     }
-  }
+  };
 
   // Parse items from JSON string
-  const orderItems: OrderItem[] = order.items ? JSON.parse(order.items) : []
+  const orderItems: OrderItem[] = order.items ? JSON.parse(order.items) : [];
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -261,7 +261,7 @@ function OrderDetail() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default OrderDetail
+export default OrderDetail;

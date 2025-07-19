@@ -1,11 +1,11 @@
-import * as React from 'react'
+import * as React from 'react';
 import type {
   ColumnDef,
   SortingState,
   ColumnFiltersState,
   PaginationState,
   Row,
-} from '@tanstack/react-table'
+} from '@tanstack/react-table';
 import {
   flexRender,
   getCoreRowModel,
@@ -13,7 +13,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table'
+} from '@tanstack/react-table';
 import {
   Table,
   TableBody,
@@ -21,34 +21,34 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from './ui/table'
-import { Input } from './ui/input'
-import { Button } from './ui/button'
+} from './ui/table';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select'
-import { Skeleton } from './ui/skeleton'
-import { Card, CardContent } from './ui/card'
-import { cn } from '@/lib/utils'
+} from './ui/select';
+import { Skeleton } from './ui/skeleton';
+import { Card, CardContent } from './ui/card';
+import { cn } from '@/lib/utils';
 import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
-} from 'lucide-react'
+} from 'lucide-react';
 
 export interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  isLoading?: boolean
-  filterColumnId?: string
-  filterOptions?: string[]
-  onRowClick?: (row: Row<TData>) => void
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  isLoading?: boolean;
+  filterColumnId?: string;
+  filterOptions?: string[];
+  onRowClick?: (row: Row<TData>) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -59,15 +59,15 @@ export function DataTable<TData, TValue>({
   filterOptions = [],
   onRowClick,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [globalFilter, setGlobalFilter] = React.useState('')
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = React.useState('');
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
+  );
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
-  })
+  });
 
   const table = useReactTable({
     data,
@@ -81,7 +81,7 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-  })
+  });
 
   return (
     <div className="space-y-4">
@@ -101,9 +101,9 @@ export function DataTable<TData, TValue>({
             }
             onValueChange={(value) => {
               if (value === '__all__') {
-                table.getColumn(filterColumnId)?.setFilterValue(undefined)
+                table.getColumn(filterColumnId)?.setFilterValue(undefined);
               } else {
-                table.getColumn(filterColumnId)?.setFilterValue(value)
+                table.getColumn(filterColumnId)?.setFilterValue(value);
               }
             }}
           >
@@ -129,11 +129,11 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  const canSort = header.column.getCanSort()
-                  const sorted = header.column.getIsSorted()
+                  const canSort = header.column.getCanSort();
+                  const sorted = header.column.getIsSorted();
                   const meta = header.column.columnDef.meta as
                     | { widthClass?: string }
-                    | undefined
+                    | undefined;
                   return (
                     <TableHead
                       key={header.id}
@@ -168,7 +168,7 @@ export function DataTable<TData, TValue>({
                           ))}
                       </div>
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -194,7 +194,7 @@ export function DataTable<TData, TValue>({
                   {row.getVisibleCells().map((cell) => {
                     const meta = cell.column.columnDef.meta as
                       | { widthClass?: string; cellClass?: string }
-                      | undefined
+                      | undefined;
                     return (
                       <TableCell
                         key={cell.id}
@@ -210,7 +210,7 @@ export function DataTable<TData, TValue>({
                           cell.getContext()
                         )}
                       </TableCell>
-                    )
+                    );
                   })}
                 </TableRow>
               ))
@@ -254,10 +254,10 @@ export function DataTable<TData, TValue>({
               <CardContent className="p-4">
                 <div className="space-y-3">
                   {row.getVisibleCells().map((cell) => {
-                    const header = cell.column.columnDef.header
+                    const header = cell.column.columnDef.header;
                     const headerText =
-                      typeof header === 'string' ? header : cell.column.id
-                    const isActions = cell.column.id === 'actions'
+                      typeof header === 'string' ? header : cell.column.id;
+                    const isActions = cell.column.id === 'actions';
 
                     // Skip rendering actions column as a separate field in mobile view
                     if (isActions) {
@@ -271,7 +271,7 @@ export function DataTable<TData, TValue>({
                             cell.getContext()
                           )}
                         </div>
-                      )
+                      );
                     }
 
                     return (
@@ -286,7 +286,7 @@ export function DataTable<TData, TValue>({
                           )}
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </CardContent>
@@ -342,5 +342,5 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
     </div>
-  )
+  );
 }

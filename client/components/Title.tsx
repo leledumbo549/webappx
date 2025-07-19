@@ -1,9 +1,9 @@
 interface TitleProps {
-  onClick?: () => void
-  className?: string
+  onClick?: () => void;
+  className?: string;
 }
 
-import { Button } from './ui/button'
+import { Button } from './ui/button';
 
 const Title = ({ onClick, className = '' }: TitleProps) => (
   <Button
@@ -17,6 +17,6 @@ const Title = ({ onClick, className = '' }: TitleProps) => (
       WEB<span className="text-blue-900">X</span>
     </span>
   </Button>
-)
+);
 
-export default Title
+export default Title;

@@ -1,9 +1,9 @@
-import { useEffect, useState, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import axios from '@/lib/axios'
-import type { Product } from '@/types/Product'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from '@/lib/axios';
+import type { Product } from '@/types/Product';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,71 +12,71 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft } from 'lucide-react'
-import { Spinner } from '@/components/ui/spinner'
-import { formatIDR } from '@/lib/utils'
+} from '@/components/ui/alert-dialog';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
+import { formatIDR } from '@/lib/utils';
 
 function ViewProduct() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [product, setProduct] = useState<Product | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [targetAction, setTargetAction] = useState<
     'approve' | 'reject' | 'flag' | 'remove' | 'unflag' | null
-  >(null)
+  >(null);
 
   const fetchProduct = useCallback(async () => {
-    if (!id) return
+    if (!id) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get<Product>(`/api/admin/products/${id}`)
-      setProduct(res.data)
+      const res = await axios.get<Product>(`/api/admin/products/${id}`);
+      setProduct(res.data);
     } catch (err) {
-      console.error('Failed to load product:', err)
-      setError('Failed to load product details')
+      console.error('Failed to load product:', err);
+      setError('Failed to load product details');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [id])
+  }, [id]);
 
   const handleStatusUpdate = async (action: string) => {
-    if (!product) return
+    if (!product) return;
 
     try {
-      await axios.patch(`/api/admin/products/${product.id}`, { action })
-      await fetchProduct() // Refresh the product data
+      await axios.patch(`/api/admin/products/${product.id}`, { action });
+      await fetchProduct(); // Refresh the product data
     } catch (err) {
-      console.error('Failed to update product status:', err)
-      setError('Failed to update product status')
+      console.error('Failed to update product status:', err);
+      setError('Failed to update product status');
     }
-  }
+  };
 
   useEffect(() => {
-    fetchProduct()
-  }, [fetchProduct])
+    fetchProduct();
+  }, [fetchProduct]);
 
-  if (loading) return <Spinner />
-  if (error) return <div className="text-red-600">{error}</div>
-  if (!product) return <div>Product not found.</div>
+  if (loading) return <Spinner />;
+  if (error) return <div className="text-red-600">{error}</div>;
+  if (!product) return <div>Product not found.</div>;
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       case 'inactive':
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-yellow-100 text-yellow-800';
       case 'flagged':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   return (
     <>
@@ -209,13 +209,13 @@ function ViewProduct() {
           <AlertDialogHeader>
             <AlertDialogTitle>
               {(() => {
-                if (!targetAction) return ''
+                if (!targetAction) return '';
                 const label =
                   targetAction === 'unflag'
                     ? 'Unflag'
                     : targetAction.charAt(0).toUpperCase() +
-                      targetAction.slice(1)
-                return `${label} product?`
+                      targetAction.slice(1);
+                return `${label} product?`;
               })()}
             </AlertDialogTitle>
           </AlertDialogHeader>
@@ -226,8 +226,8 @@ function ViewProduct() {
                 if (targetAction)
                   handleStatusUpdate(
                     targetAction === 'unflag' ? 'approve' : targetAction
-                  )
-                setTargetAction(null)
+                  );
+                setTargetAction(null);
               }}
             >
               Confirm
@@ -236,7 +236,7 @@ function ViewProduct() {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }
 
-export default ViewProduct
+export default ViewProduct;

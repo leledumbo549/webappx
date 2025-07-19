@@ -1,58 +1,58 @@
-import { useEffect, useState, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import axios from '@/lib/axios'
-import type { SellerProduct } from '@/types/Seller'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft } from 'lucide-react'
-import { Spinner } from '@/components/ui/spinner'
-import { formatIDR } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from '@/lib/axios';
+import type { SellerProduct } from '@/types/Seller';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
+import { formatIDR } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 function ViewProduct() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [product, setProduct] = useState<SellerProduct | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [product, setProduct] = useState<SellerProduct | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchProduct = useCallback(async () => {
-    if (!id) return
+    if (!id) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get<SellerProduct>(`/api/seller/products/${id}`)
-      setProduct(res.data)
+      const res = await axios.get<SellerProduct>(`/api/seller/products/${id}`);
+      setProduct(res.data);
     } catch (err) {
-      console.error('Failed to load product:', err)
-      setError('Failed to load product details')
+      console.error('Failed to load product:', err);
+      setError('Failed to load product details');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [id])
+  }, [id]);
 
   useEffect(() => {
-    fetchProduct()
-  }, [fetchProduct])
+    fetchProduct();
+  }, [fetchProduct]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       case 'inactive':
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-yellow-100 text-yellow-800';
       case 'flagged':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
-  if (loading) return <Spinner />
-  if (error) return <div className="text-red-600">{error}</div>
-  if (!product) return <div>Product not found.</div>
+  if (loading) return <Spinner />;
+  if (error) return <div className="text-red-600">{error}</div>;
+  if (!product) return <div>Product not found.</div>;
 
   return (
     <div className="space-y-6">
@@ -124,7 +124,7 @@ function ViewProduct() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
-export default ViewProduct
+export default ViewProduct;

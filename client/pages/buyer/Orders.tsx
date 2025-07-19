@@ -1,57 +1,57 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from '@/lib/axios'
-import { isAxiosError } from '@/lib/axios'
-import type { Order } from '@/server/schema'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Badge } from '@/components/ui/badge'
-import { Eye } from 'lucide-react'
-import { formatIDR } from '@/lib/utils'
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from '@/lib/axios';
+import { isAxiosError } from '@/lib/axios';
+import type { Order } from '@/server/schema';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import { Eye } from 'lucide-react';
+import { formatIDR } from '@/lib/utils';
 
 function Orders() {
-  const [orders, setOrders] = useState<Order[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const navigate = useNavigate()
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get<Order[]>('/api/buyer/orders')
-      setOrders(res.data)
+      const res = await axios.get<Order[]>('/api/buyer/orders');
+      setOrders(res.data);
     } catch (err: unknown) {
-      if (isAxiosError(err)) setError(err.message)
-      else setError('Failed to load orders')
+      if (isAxiosError(err)) setError(err.message);
+      else setError('Failed to load orders');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-yellow-100 text-yellow-800';
       case 'processing':
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-blue-100 text-blue-800';
       case 'shipped':
-        return 'bg-purple-100 text-purple-800'
+        return 'bg-purple-100 text-purple-800';
       case 'delivered':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       case 'cancelled':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
-  if (loading) return <Skeleton className="h-20" />
-  if (error) return <div className="text-red-600">{error}</div>
-  if (!orders.length) return <div>No orders yet.</div>
+  if (loading) return <Skeleton className="h-20" />;
+  if (error) return <div className="text-red-600">{error}</div>;
+  if (!orders.length) return <div>No orders yet.</div>;
 
   return (
     <div className="space-y-4">
@@ -98,7 +98,7 @@ function Orders() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
-export default Orders
+export default Orders;

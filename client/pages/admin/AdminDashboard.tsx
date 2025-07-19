@@ -1,31 +1,31 @@
-import { useEffect, useState } from 'react'
-import axios from '@/lib/axios'
-import { Skeleton } from '@/components/ui/skeleton'
-import { formatIDR } from '@/lib/utils'
+import { useEffect, useState } from 'react';
+import axios from '@/lib/axios';
+import { Skeleton } from '@/components/ui/skeleton';
+import { formatIDR } from '@/lib/utils';
 
 interface Stats {
-  totalUsers: number
-  totalSellers: number
-  totalSales: number
-  openReports: number
+  totalUsers: number;
+  totalSellers: number;
+  totalSales: number;
+  openReports: number;
 }
 
 function AdminDashboard() {
-  const [stats, setStats] = useState<Stats | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const res = await axios.get<Stats>('/api/admin/dashboard')
-        setStats(res.data)
+        const res = await axios.get<Stats>('/api/admin/dashboard');
+        setStats(res.data);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchStats()
-  }, [])
+    };
+    fetchStats();
+  }, []);
 
   if (loading || !stats) {
     return (
@@ -34,7 +34,7 @@ function AdminDashboard() {
           <Skeleton key={i} className="h-24" />
         ))}
       </div>
-    )
+    );
   }
 
   return (
@@ -56,7 +56,7 @@ function AdminDashboard() {
         <p className="text-2xl font-bold">{stats.openReports}</p>
       </div>
     </div>
-  )
+  );
 }
 
-export default AdminDashboard
+export default AdminDashboard;

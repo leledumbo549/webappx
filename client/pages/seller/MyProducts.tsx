@@ -1,52 +1,52 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAtom } from 'jotai'
-import axios, { isAxiosError } from '@/lib/axios'
-import type { SellerProduct } from '@/types/Seller'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Spinner } from '@/components/ui/spinner'
-import { formatIDR } from '@/lib/utils'
-import { sellerProductsRefreshAtom } from '@/atoms/sellerAtoms'
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAtom } from 'jotai';
+import axios, { isAxiosError } from '@/lib/axios';
+import type { SellerProduct } from '@/types/Seller';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
+import { formatIDR } from '@/lib/utils';
+import { sellerProductsRefreshAtom } from '@/atoms/sellerAtoms';
 
 function MyProducts() {
-  const navigate = useNavigate()
-  const [products, setProducts] = useState<SellerProduct[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [refreshCounter] = useAtom(sellerProductsRefreshAtom)
+  const navigate = useNavigate();
+  const [products, setProducts] = useState<SellerProduct[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [refreshCounter] = useAtom(sellerProductsRefreshAtom);
 
   const fetchData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get<SellerProduct[]>('/api/seller/products')
-      setProducts(res.data)
+      const res = await axios.get<SellerProduct[]>('/api/seller/products');
+      setProducts(res.data);
     } catch (err: unknown) {
-      if (isAxiosError(err)) setError(err.message)
-      else setError('Failed to load products')
+      if (isAxiosError(err)) setError(err.message);
+      else setError('Failed to load products');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDelete = async (productId: number) => {
-    if (!confirm('Are you sure you want to delete this product?')) return
+    if (!confirm('Are you sure you want to delete this product?')) return;
 
     try {
-      await axios.delete(`/api/seller/products/${productId}`)
-      await fetchData()
+      await axios.delete(`/api/seller/products/${productId}`);
+      await fetchData();
     } catch (err: unknown) {
-      if (isAxiosError(err)) setError(err.message)
-      else setError('Failed to delete product')
+      if (isAxiosError(err)) setError(err.message);
+      else setError('Failed to delete product');
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [refreshCounter])
+    fetchData();
+  }, [refreshCounter]);
 
-  if (loading) return <Spinner />
-  if (error) return <div className="text-red-600">{error}</div>
+  if (loading) return <Spinner />;
+  if (error) return <div className="text-red-600">{error}</div>;
 
   return (
     <Card>
@@ -112,7 +112,7 @@ function MyProducts() {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
-export default MyProducts
+export default MyProducts;

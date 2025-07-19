@@ -1,26 +1,26 @@
-import { useAtom, useSetAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai';
 import {
   cartAtom,
   removeFromCartAtom,
   updateCartQuantityAtom,
   cartTotalAtom,
   loadCartAtom,
-} from '@/atoms/cartAtoms'
-import CartItem from '@/components/CartItem'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+} from '@/atoms/cartAtoms';
+import CartItem from '@/components/CartItem';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import {
   ShoppingCart,
   Package,
   AlertCircle,
   ArrowRight,
   Trash2,
-} from 'lucide-react'
+} from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,47 +29,47 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from '@/components/ui/alert-dialog';
 
 function Cart() {
-  const [items] = useAtom(cartAtom)
-  const total = useAtom(cartTotalAtom)[0]
-  const remove = useSetAtom(removeFromCartAtom)
-  const update = useSetAtom(updateCartQuantityAtom)
-  const loadCart = useSetAtom(loadCartAtom)
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [targetRemoveId, setTargetRemoveId] = useState<number | null>(null)
-  const [confirmClear, setConfirmClear] = useState(false)
+  const [items] = useAtom(cartAtom);
+  const total = useAtom(cartTotalAtom)[0];
+  const remove = useSetAtom(removeFromCartAtom);
+  const update = useSetAtom(updateCartQuantityAtom);
+  const loadCart = useSetAtom(loadCartAtom);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [targetRemoveId, setTargetRemoveId] = useState<number | null>(null);
+  const [confirmClear, setConfirmClear] = useState(false);
 
   useEffect(() => {
     const fetchCart = async () => {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
       try {
-        await loadCart()
+        await loadCart();
       } catch (error) {
-        console.error('Failed to load cart:', error)
-        setError('Failed to load your cart. Please try again.')
+        console.error('Failed to load cart:', error);
+        setError('Failed to load your cart. Please try again.');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchCart()
-  }, [loadCart])
+    fetchCart();
+  }, [loadCart]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-    }).format(price)
-  }
+    }).format(price);
+  };
 
   const handleClearCart = () => {
-    items.forEach((item) => remove(item.productId))
-  }
+    items.forEach((item) => remove(item.productId));
+  };
 
   if (loading) {
     return (
@@ -95,7 +95,7 @@ function Cart() {
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -104,7 +104,7 @@ function Cart() {
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>{error}</AlertDescription>
       </Alert>
-    )
+    );
   }
 
   if (!items.length) {
@@ -124,7 +124,7 @@ function Cart() {
           Browse Products
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -211,8 +211,8 @@ function Cart() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                handleClearCart()
-                setConfirmClear(false)
+                handleClearCart();
+                setConfirmClear(false);
               }}
             >
               Confirm
@@ -232,8 +232,8 @@ function Cart() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (targetRemoveId !== null) remove(targetRemoveId)
-                setTargetRemoveId(null)
+                if (targetRemoveId !== null) remove(targetRemoveId);
+                setTargetRemoveId(null);
               }}
             >
               Confirm
@@ -242,7 +242,7 @@ function Cart() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }
 
-export default Cart
+export default Cart;

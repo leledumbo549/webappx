@@ -1,78 +1,78 @@
-import { useEffect, useState } from 'react'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import axios from '@/lib/axios'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { DataTable } from '@/components/DataTable'
-import type { ColumnDef } from '@tanstack/react-table'
-import type { StabletokenTransaction } from '@/types/Transaction'
+import { useEffect, useState } from 'react';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import axios from '@/lib/axios';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/DataTable';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { StabletokenTransaction } from '@/types/Transaction';
 import {
   stabletokenBalanceAtom,
   transactionsAtom,
   refreshBalanceAtom,
   refreshTransactionsAtom,
-} from '@/atoms/stabletokenAtoms'
+} from '@/atoms/stabletokenAtoms';
 
 function Dashboard() {
-  const [amount, setAmount] = useState('')
-  const [fiatAmount, setFiatAmount] = useState('')
-  const [pending, setPending] = useState<{ id: string; amount: number }[]>([])
+  const [amount, setAmount] = useState('');
+  const [fiatAmount, setFiatAmount] = useState('');
+  const [pending, setPending] = useState<{ id: string; amount: number }[]>([]);
 
-  const [balance] = useAtom(stabletokenBalanceAtom)
-  const transactions = useAtomValue(transactionsAtom)
-  const refreshBalance = useSetAtom(refreshBalanceAtom)
-  const refreshTransactions = useSetAtom(refreshTransactionsAtom)
-
-  useEffect(() => {
-    refreshBalance()
-    refreshTransactions()
-  }, [refreshBalance, refreshTransactions])
+  const [balance] = useAtom(stabletokenBalanceAtom);
+  const transactions = useAtomValue(transactionsAtom);
+  const refreshBalance = useSetAtom(refreshBalanceAtom);
+  const refreshTransactions = useSetAtom(refreshTransactionsAtom);
 
   useEffect(() => {
-    if (!pending.length) return
+    refreshBalance();
+    refreshTransactions();
+  }, [refreshBalance, refreshTransactions]);
+
+  useEffect(() => {
+    if (!pending.length) return;
     const interval = setInterval(() => {
-      refreshTransactions()
-      refreshBalance()
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [pending, refreshTransactions, refreshBalance])
+      refreshTransactions();
+      refreshBalance();
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [pending, refreshTransactions, refreshBalance]);
 
   useEffect(() => {
-    if (!pending.length) return
+    if (!pending.length) return;
     setPending((p) =>
       p.filter((pp) => !transactions.find((t) => t.reference === pp.id))
-    )
-  }, [transactions, pending])
+    );
+  }, [transactions, pending]);
 
   const handleMint = async () => {
     try {
-      await axios.post('/api/mint', { amount: Number(amount) })
-      setAmount('')
-      refreshBalance()
-      refreshTransactions()
+      await axios.post('/api/mint', { amount: Number(amount) });
+      setAmount('');
+      refreshBalance();
+      refreshTransactions();
     } catch (err) {
-      console.error('Mint failed:', err)
+      console.error('Mint failed:', err);
     }
-  }
+  };
 
   const handleFiatMint = async () => {
     try {
       const res = await axios.post('/api/payments/initiate', {
         amount: Number(fiatAmount),
-      })
-      window.open(res.data.paymentUrl, '_blank')
+      });
+      window.open(res.data.paymentUrl, '_blank');
       setPending((p) => [
         ...p,
         { id: res.data.paymentId, amount: Number(fiatAmount) },
-      ])
-      setFiatAmount('')
+      ]);
+      setFiatAmount('');
     } catch (err) {
-      console.error('Payment initiate failed:', err)
+      console.error('Payment initiate failed:', err);
     }
-  }
+  };
 
   interface TxRow extends StabletokenTransaction {
-    status?: string
+    status?: string;
   }
 
   const columns: ColumnDef<TxRow>[] = [
@@ -89,7 +89,7 @@ function Dashboard() {
       header: 'Date',
       meta: { widthClass: 'w-36' },
     },
-  ]
+  ];
 
   const tableData: TxRow[] = [
     ...pending.map((p, idx) => ({
@@ -102,7 +102,7 @@ function Dashboard() {
       status: 'pending',
     })),
     ...transactions.map((t) => ({ ...t, status: 'completed' })),
-  ]
+  ];
 
   return (
     <div className="space-y-6">
@@ -140,7 +140,7 @@ function Dashboard() {
         <DataTable columns={columns} data={tableData} isLoading={false} />
       </div>
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;

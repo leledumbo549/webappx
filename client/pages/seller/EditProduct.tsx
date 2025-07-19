@@ -1,76 +1,76 @@
-import { useEffect, useState, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { useSetAtom } from 'jotai'
-import axios from '@/lib/axios'
-import type { SellerProduct } from '@/types/Seller'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Textarea } from '@/components/ui/textarea'
-import { Spinner } from '@/components/ui/spinner'
-import { refreshSellerProductsAtom } from '@/atoms/sellerAtoms'
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useSetAtom } from 'jotai';
+import axios from '@/lib/axios';
+import type { SellerProduct } from '@/types/Seller';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import { Spinner } from '@/components/ui/spinner';
+import { refreshSellerProductsAtom } from '@/atoms/sellerAtoms';
 
 function EditProduct() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const refreshProducts = useSetAtom(refreshSellerProductsAtom)
-  const [product, setProduct] = useState<SellerProduct | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const refreshProducts = useSetAtom(refreshSellerProductsAtom);
+  const [product, setProduct] = useState<SellerProduct | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchProduct = useCallback(async () => {
-    if (!id) return
+    if (!id) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get<SellerProduct>(`/api/seller/products/${id}`)
-      setProduct(res.data)
+      const res = await axios.get<SellerProduct>(`/api/seller/products/${id}`);
+      setProduct(res.data);
     } catch (err) {
-      console.error('Failed to load product:', err)
-      setError('Failed to load product details')
+      console.error('Failed to load product:', err);
+      setError('Failed to load product details');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [id])
+  }, [id]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!product) return
+    e.preventDefault();
+    if (!product) return;
 
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData(e.currentTarget);
     const productData = {
       name: formData.get('name') as string,
       price: Number(formData.get('price')),
       description: formData.get('description') as string,
       imageUrl: (formData.get('imageUrl') as string) || undefined,
-    }
+    };
 
     try {
-      await axios.put(`/api/seller/products/${id}`, productData)
+      await axios.put(`/api/seller/products/${id}`, productData);
       // Trigger refresh of product list
-      refreshProducts()
-      navigate('/seller/products')
+      refreshProducts();
+      navigate('/seller/products');
     } catch (err: unknown) {
-      console.error('Failed to update product:', err)
+      console.error('Failed to update product:', err);
       const errorMessage =
-        err instanceof Error ? err.message : 'Failed to update product'
-      setError(errorMessage)
+        err instanceof Error ? err.message : 'Failed to update product';
+      setError(errorMessage);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchProduct()
-  }, [fetchProduct])
+    fetchProduct();
+  }, [fetchProduct]);
 
-  if (loading && !product) return <Spinner />
-  if (error && !product) return <div className="text-red-600">{error}</div>
-  if (!product) return <div>Product not found.</div>
+  if (loading && !product) return <Spinner />;
+  if (error && !product) return <div className="text-red-600">{error}</div>;
+  if (!product) return <div>Product not found.</div>;
 
   return (
     <Card>
@@ -129,7 +129,7 @@ function EditProduct() {
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-export default EditProduct
+export default EditProduct;

@@ -1,13 +1,19 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
-import { Button } from './ui/button'
-import { Badge } from './ui/badge'
-import type { Product } from '@/types/Product'
-import { Package, Eye, ShoppingCart } from 'lucide-react'
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import type { Product } from '@/types/Product';
+import { Package, Eye, ShoppingCart } from 'lucide-react';
 
 interface Props {
-  product: Product
-  onAdd?: () => void
-  onView?: () => void
+  product: Product;
+  onAdd?: () => void;
+  onView?: () => void;
 }
 
 function ProductCard({ product, onAdd, onView }: Props) {
@@ -15,23 +21,23 @@ function ProductCard({ product, onAdd, onView }: Props) {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-    }).format(price)
-  }
+    }).format(price);
+  };
 
   const getStatusBadgeVariant = (status: string | null) => {
     switch (status) {
       case 'active':
-        return 'default'
+        return 'default';
       case 'inactive':
-        return 'secondary'
+        return 'secondary';
       case 'pending':
-        return 'outline'
+        return 'outline';
       case 'flagged':
-        return 'destructive'
+        return 'destructive';
       default:
-        return 'outline'
+        return 'outline';
     }
-  }
+  };
 
   return (
     <Card className="group overflow-hidden transition-all duration-200 hover:shadow-lg hover:scale-[1.02]">
@@ -108,7 +114,7 @@ function ProductCard({ product, onAdd, onView }: Props) {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }
 
-export default ProductCard
+export default ProductCard;

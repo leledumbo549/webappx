@@ -1,12 +1,12 @@
-import { useAtom } from 'jotai'
-import { userAtom } from '@/atoms/loginAtoms'
-import SectionTitle from '@/components/SectionTitle'
-import { Button } from '@/components/ui/button'
-import { ShoppingCart, Store, ShieldCheck, Users } from 'lucide-react'
+import { useAtom } from 'jotai';
+import { userAtom } from '@/atoms/loginAtoms';
+import SectionTitle from '@/components/SectionTitle';
+import { Button } from '@/components/ui/button';
+import { ShoppingCart, Store, ShieldCheck, Users } from 'lucide-react';
 
 function BuyerHome() {
-  const [user] = useAtom(userAtom)
-  const greeting = user ? `Welcome, ${user.name}` : 'Welcome to MarketPlace'
+  const [user] = useAtom(userAtom);
+  const greeting = user ? `Welcome, ${user.name}` : 'Welcome to MarketPlace';
 
   const features = [
     {
@@ -31,7 +31,7 @@ function BuyerHome() {
       title: 'Community Support',
       description: 'Join a vibrant network of buyers and sellers.',
     },
-  ]
+  ];
 
   return (
     <div className="space-y-12">
@@ -71,7 +71,7 @@ function BuyerHome() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
-export default BuyerHome
+export default BuyerHome;

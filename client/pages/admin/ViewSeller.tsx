@@ -1,10 +1,10 @@
-import { useEffect, useState, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import axios from '@/lib/axios'
-import type { Seller } from '@/server/schema'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from '@/lib/axios';
+import type { Seller } from '@/server/schema';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,67 +13,67 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { ArrowLeft } from 'lucide-react'
-import { Spinner } from '@/components/ui/spinner'
+} from '@/components/ui/alert-dialog';
+import { ArrowLeft } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 function ViewSeller() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [seller, setSeller] = useState<Seller | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [seller, setSeller] = useState<Seller | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [targetAction, setTargetAction] = useState<
     'activate' | 'deactivate' | 'approve' | 'reject' | null
-  >(null)
+  >(null);
 
   const fetchSeller = useCallback(async () => {
-    if (!id) return
+    if (!id) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get<Seller>(`/api/admin/sellers/${id}`)
-      setSeller(res.data)
+      const res = await axios.get<Seller>(`/api/admin/sellers/${id}`);
+      setSeller(res.data);
     } catch (err) {
-      console.error('Failed to load seller:', err)
-      setError('Failed to load seller details')
+      console.error('Failed to load seller:', err);
+      setError('Failed to load seller details');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [id])
+  }, [id]);
 
   const handleStatusUpdate = async (action: string) => {
-    if (!seller) return
+    if (!seller) return;
 
     try {
-      await axios.patch(`/api/admin/sellers/${seller.id}`, { action })
-      await fetchSeller() // Refresh the seller data
+      await axios.patch(`/api/admin/sellers/${seller.id}`, { action });
+      await fetchSeller(); // Refresh the seller data
     } catch (err) {
-      console.error('Failed to update seller status:', err)
-      setError('Failed to update seller status')
+      console.error('Failed to update seller status:', err);
+      setError('Failed to update seller status');
     }
-  }
+  };
 
   useEffect(() => {
-    fetchSeller()
-  }, [fetchSeller])
+    fetchSeller();
+  }, [fetchSeller]);
 
-  if (loading) return <Spinner />
-  if (error) return <div className="text-red-600">{error}</div>
-  if (!seller) return <div>Seller not found.</div>
+  if (loading) return <Spinner />;
+  if (error) return <div className="text-red-600">{error}</div>;
+  if (!seller) return <div>Seller not found.</div>;
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       case 'inactive':
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-yellow-100 text-yellow-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   return (
     <>
@@ -202,8 +202,8 @@ function ViewSeller() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (targetAction) handleStatusUpdate(targetAction)
-                setTargetAction(null)
+                if (targetAction) handleStatusUpdate(targetAction);
+                setTargetAction(null);
               }}
             >
               Confirm
@@ -212,7 +212,7 @@ function ViewSeller() {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }
 
-export default ViewSeller
+export default ViewSeller;

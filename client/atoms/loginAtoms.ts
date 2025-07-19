@@ -1,73 +1,73 @@
 // loginAtoms.ts
-import type { User } from '@/server/schema'
-import { atom } from 'jotai'
-import { clearWalletAtom } from './walletAtoms'
+import type { User } from '@/server/schema';
+import { atom } from 'jotai';
+import { clearWalletAtom } from './walletAtoms';
 
 // Helper functions for localStorage
 const getStoredToken = (): string | null => {
   try {
-    return localStorage.getItem('auth_token')
+    return localStorage.getItem('auth_token');
   } catch {
-    return null
+    return null;
   }
-}
+};
 
 const getStoredUser = (): User | null => {
   try {
-    const userStr = localStorage.getItem('auth_user')
-    return userStr ? JSON.parse(userStr) : null
+    const userStr = localStorage.getItem('auth_user');
+    return userStr ? JSON.parse(userStr) : null;
   } catch {
-    return null
+    return null;
   }
-}
+};
 
 const setStoredToken = (token: string | null) => {
   try {
     if (token) {
-      localStorage.setItem('auth_token', token)
+      localStorage.setItem('auth_token', token);
     } else {
-      localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_token');
     }
   } catch {
     // Ignore localStorage errors
   }
-}
+};
 
 const setStoredUser = (user: User | null) => {
   try {
     if (user) {
-      localStorage.setItem('auth_user', JSON.stringify(user))
+      localStorage.setItem('auth_user', JSON.stringify(user));
     } else {
-      localStorage.removeItem('auth_user')
+      localStorage.removeItem('auth_user');
     }
   } catch {
     // Ignore localStorage errors
   }
-}
+};
 
-export const tokenAtom = atom<string | null>(getStoredToken())
-export const userAtom = atom<User | null>(getStoredUser())
+export const tokenAtom = atom<string | null>(getStoredToken());
+export const userAtom = atom<User | null>(getStoredUser());
 
 export const loginAtom = atom(
   null,
   (_get, set, { token, user }: { token: string; user: User }) => {
-    console.log('Login atom called with:', { token, user })
-    set(tokenAtom, token)
-    set(userAtom, user)
-    setStoredToken(token)
-    setStoredUser(user)
+    console.log('Login atom called with:', { token, user });
+    set(tokenAtom, token);
+    set(userAtom, user);
+    setStoredToken(token);
+    setStoredUser(user);
   }
-)
+);
 
 export const logoutAtom = atom(null, (_get, set) => {
-  console.log('Logout atom called')
-  set(tokenAtom, null)
-  set(userAtom, null)
-  set(clearWalletAtom)
-  setStoredToken(null)
-  setStoredUser(null)
-})
+  console.log('Logout atom called');
+  set(tokenAtom, null);
+  set(userAtom, null);
+  set(clearWalletAtom);
+  setStoredToken(null);
+  setStoredUser(null);
+});
 
 export const isAuthenticatedAtom = atom(
   (get) => !!get(tokenAtom) && !!get(userAtom)
-)
+);

@@ -1,15 +1,15 @@
-import { Button } from './ui/button'
-import { Input } from './ui/input'
-import { Card, CardContent } from './ui/card'
-import { Badge } from './ui/badge'
-import type { Product } from '@/types/Product'
-import { Package, Minus, Plus, Trash2 } from 'lucide-react'
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Card, CardContent } from './ui/card';
+import { Badge } from './ui/badge';
+import type { Product } from '@/types/Product';
+import { Package, Minus, Plus, Trash2 } from 'lucide-react';
 
 interface Props {
-  product: Product
-  quantity: number
-  onRemove?: () => void
-  onChange?: (qty: number) => void
+  product: Product;
+  quantity: number;
+  onRemove?: () => void;
+  onChange?: (qty: number) => void;
 }
 
 function CartItem({ product, quantity, onRemove, onChange }: Props) {
@@ -17,16 +17,16 @@ function CartItem({ product, quantity, onRemove, onChange }: Props) {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-    }).format(price)
-  }
+    }).format(price);
+  };
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity >= 1 && newQuantity <= 99) {
-      onChange?.(newQuantity)
+      onChange?.(newQuantity);
     }
-  }
+  };
 
-  const totalPrice = product.price * quantity
+  const totalPrice = product.price * quantity;
 
   return (
     <Card>
@@ -124,7 +124,7 @@ function CartItem({ product, quantity, onRemove, onChange }: Props) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-export default CartItem
+export default CartItem;

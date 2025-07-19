@@ -1,10 +1,10 @@
-import { atom } from 'jotai'
+import { atom } from 'jotai';
 
 // Refresh counter for seller products list
-export const sellerProductsRefreshAtom = atom(0)
+export const sellerProductsRefreshAtom = atom(0);
 
 // Function to trigger refresh
 export const refreshSellerProductsAtom = atom(null, (get, set) => {
-  const current = get(sellerProductsRefreshAtom)
-  set(sellerProductsRefreshAtom, current + 1)
-})
+  const current = get(sellerProductsRefreshAtom);
+  set(sellerProductsRefreshAtom, current + 1);
+});

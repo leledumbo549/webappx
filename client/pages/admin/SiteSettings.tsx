@@ -1,59 +1,59 @@
-import { useEffect, useState } from 'react'
-import axios from '@/lib/axios'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Skeleton } from '@/components/ui/skeleton'
-import { toast } from 'sonner'
-import type { AdminSettings } from '@/types/Admin'
-import { Settings, Save, AlertCircle, Loader2 } from 'lucide-react'
+import { useEffect, useState } from 'react';
+import axios from '@/lib/axios';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
+import type { AdminSettings } from '@/types/Admin';
+import { Settings, Save, AlertCircle, Loader2 } from 'lucide-react';
 
 function SiteSettings() {
-  const [data, setData] = useState<AdminSettings | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [data, setData] = useState<AdminSettings | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const res = await axios.get<AdminSettings>('/api/admin/settings')
-      setData(res.data)
+      const res = await axios.get<AdminSettings>('/api/admin/settings');
+      setData(res.data);
     } catch (err) {
-      console.error('Failed to load settings:', err)
-      setError('Failed to load settings. Please try again.')
-      toast.error('Failed to load settings')
+      console.error('Failed to load settings:', err);
+      setError('Failed to load settings. Please try again.');
+      toast.error('Failed to load settings');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!data) return
+    e.preventDefault();
+    if (!data) return;
 
-    setSaving(true)
-    setError(null)
+    setSaving(true);
+    setError(null);
 
     try {
-      const res = await axios.put<AdminSettings>('/api/admin/settings', data)
-      setData(res.data)
-      toast.success('Settings saved successfully!')
+      const res = await axios.put<AdminSettings>('/api/admin/settings', data);
+      setData(res.data);
+      toast.success('Settings saved successfully!');
     } catch (err) {
-      console.error('Failed to save settings:', err)
-      setError('Failed to save settings. Please try again.')
-      toast.error('Failed to save settings')
+      console.error('Failed to save settings:', err);
+      setError('Failed to save settings. Please try again.');
+      toast.error('Failed to save settings');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -74,7 +74,7 @@ function SiteSettings() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -83,7 +83,7 @@ function SiteSettings() {
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>{error}</AlertDescription>
       </Alert>
-    )
+    );
   }
 
   if (!data) {
@@ -92,7 +92,7 @@ function SiteSettings() {
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>No settings data available</AlertDescription>
       </Alert>
-    )
+    );
   }
 
   return (
@@ -191,7 +191,7 @@ function SiteSettings() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
-export default SiteSettings
+export default SiteSettings;

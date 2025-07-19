@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from '@/lib/axios'
-import { DataTable } from '@/components/DataTable'
-import { Button } from '@/components/ui/button'
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from '@/lib/axios';
+import { DataTable } from '@/components/DataTable';
+import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,35 +11,35 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import type { ColumnDef } from '@tanstack/react-table'
-import type { AdminSeller } from '@/types/Admin'
-import { Eye } from 'lucide-react'
+} from '@/components/ui/alert-dialog';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { AdminSeller } from '@/types/Admin';
+import { Eye } from 'lucide-react';
 
 function ManageSellers() {
-  const [data, setData] = useState<AdminSeller[]>([])
-  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState<AdminSeller[]>([]);
+  const [loading, setLoading] = useState(false);
   const [target, setTarget] = useState<{
-    seller: AdminSeller
-    action: 'activate' | 'deactivate' | 'approve' | 'reject'
-  } | null>(null)
-  const navigate = useNavigate()
+    seller: AdminSeller;
+    action: 'activate' | 'deactivate' | 'approve' | 'reject';
+  } | null>(null);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
-    setLoading(true)
-    const res = await axios.get<AdminSeller[]>('/api/admin/sellers')
-    setData(res.data)
-    setLoading(false)
-  }
+    setLoading(true);
+    const res = await axios.get<AdminSeller[]>('/api/admin/sellers');
+    setData(res.data);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const updateStatus = async (s: AdminSeller, action: string) => {
-    await axios.patch(`/api/admin/sellers/${s.id}`, { action })
-    fetchData()
-  }
+    await axios.patch(`/api/admin/sellers/${s.id}`, { action });
+    fetchData();
+  };
 
   const columns: ColumnDef<AdminSeller>[] = [
     {
@@ -56,7 +56,7 @@ function ManageSellers() {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
-        const s = row.original
+        const s = row.original;
         return (
           <div className="flex gap-1 justify-end">
             <Button
@@ -101,12 +101,12 @@ function ManageSellers() {
               </Button>
             )}
           </div>
-        )
+        );
       },
       enableSorting: false,
       meta: { widthClass: 'w-40' },
     },
-  ]
+  ];
 
   return (
     <>
@@ -128,8 +128,8 @@ function ManageSellers() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (target) updateStatus(target.seller, target.action)
-                setTarget(null)
+                if (target) updateStatus(target.seller, target.action);
+                setTarget(null);
               }}
             >
               Confirm
@@ -138,7 +138,7 @@ function ManageSellers() {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }
 
-export default ManageSellers
+export default ManageSellers;

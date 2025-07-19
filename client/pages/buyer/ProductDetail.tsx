@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import axios from '@/lib/axios'
-import { isAxiosError } from '@/lib/axios'
-import type { Product } from '@/types/Product'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { useSetAtom, useAtom } from 'jotai'
-import { addToCartAtom, cartAtom } from '@/atoms/cartAtoms'
-import SectionTitle from '@/components/SectionTitle'
-import { toast } from 'sonner'
-import { ArrowLeft } from 'lucide-react'
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from '@/lib/axios';
+import { isAxiosError } from '@/lib/axios';
+import type { Product } from '@/types/Product';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { useSetAtom, useAtom } from 'jotai';
+import { addToCartAtom, cartAtom } from '@/atoms/cartAtoms';
+import SectionTitle from '@/components/SectionTitle';
+import { toast } from 'sonner';
+import { ArrowLeft } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,62 +18,62 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Spinner } from '@/components/ui/spinner'
+} from '@/components/ui/alert-dialog';
+import { Spinner } from '@/components/ui/spinner';
 
 function ProductDetail() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [product, setProduct] = useState<Product | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const add = useSetAtom(addToCartAtom)
-  const [cart] = useAtom(cartAtom)
-  const [confirmAdd, setConfirmAdd] = useState(false)
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const add = useSetAtom(addToCartAtom);
+  const [cart] = useAtom(cartAtom);
+  const [confirmAdd, setConfirmAdd] = useState(false);
 
   const fetchData = async (idval: string | null) => {
-    if (!idval) return
+    if (!idval) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get<Product>(`/api/buyer/products/${idval}`)
-      setProduct(res.data)
+      const res = await axios.get<Product>(`/api/buyer/products/${idval}`);
+      setProduct(res.data);
     } catch (err) {
-      if (isAxiosError(err)) setError(err.message)
-      else setError('Failed to load product')
+      if (isAxiosError(err)) setError(err.message);
+      else setError('Failed to load product');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (id) {
-      fetchData(id)
+      fetchData(id);
     }
-  }, [id])
+  }, [id]);
 
   const handleAddToCart = async () => {
     if (product) {
       try {
         // Check if product already exists in cart before adding
-        const existingItem = cart.find((item) => item.productId === product.id)
+        const existingItem = cart.find((item) => item.productId === product.id);
 
-        await add(product)
+        await add(product);
 
         if (existingItem) {
-          toast.success(`${product.name} quantity updated in cart!`)
+          toast.success(`${product.name} quantity updated in cart!`);
         } else {
-          toast.success(`${product.name} added to cart!`)
+          toast.success(`${product.name} added to cart!`);
         }
       } catch {
-        toast.error('Failed to add item to cart')
+        toast.error('Failed to add item to cart');
       }
     }
-  }
+  };
 
-  if (loading) return <Spinner />
-  if (error) return <div className="text-red-600">{error}</div>
-  if (!product) return <div>Product not found.</div>
+  if (loading) return <Spinner />;
+  if (error) return <div className="text-red-600">{error}</div>;
+  if (!product) return <div>Product not found.</div>;
 
   return (
     <div className="space-y-6">
@@ -125,8 +125,8 @@ function ProductDetail() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                handleAddToCart()
-                setConfirmAdd(false)
+                handleAddToCart();
+                setConfirmAdd(false);
               }}
             >
               Confirm
@@ -135,7 +135,7 @@ function ProductDetail() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }
 
-export default ProductDetail
+export default ProductDetail;

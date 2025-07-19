@@ -5,7 +5,7 @@ function Footer() {
         commit {__COMMIT_HASH__}: {__COMMIT_MSG__}
       </small>
     </footer>
-  )
+  );
 }
 
-export default Footer
+export default Footer;

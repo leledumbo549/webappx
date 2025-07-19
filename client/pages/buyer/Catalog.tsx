@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react'
-import axios from '@/lib/axios'
-import { isAxiosError } from '@/lib/axios'
-import type { Product } from '@/types/Product'
-import ProductCard from '@/components/ProductCard'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Card, CardContent } from '@/components/ui/card'
-import { useSetAtom, useAtom } from 'jotai'
-import { addToCartAtom, cartAtom } from '@/atoms/cartAtoms'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
-import { Search, Package, AlertCircle, ShoppingCart } from 'lucide-react'
+import { useEffect, useState } from 'react';
+import axios from '@/lib/axios';
+import { isAxiosError } from '@/lib/axios';
+import type { Product } from '@/types/Product';
+import ProductCard from '@/components/ProductCard';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent } from '@/components/ui/card';
+import { useSetAtom, useAtom } from 'jotai';
+import { addToCartAtom, cartAtom } from '@/atoms/cartAtoms';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { Search, Package, AlertCircle, ShoppingCart } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,36 +22,36 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from '@/components/ui/alert-dialog';
 
 function Catalog() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const add = useSetAtom(addToCartAtom)
-  const [cart] = useAtom(cartAtom)
-  const navigate = useNavigate()
-  const [targetProduct, setTargetProduct] = useState<Product | null>(null)
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const add = useSetAtom(addToCartAtom);
+  const [cart] = useAtom(cartAtom);
+  const navigate = useNavigate();
+  const [targetProduct, setTargetProduct] = useState<Product | null>(null);
 
   const fetchData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get<Product[]>('/api/buyer/products')
-      setProducts(res.data)
-      setFilteredProducts(res.data)
+      const res = await axios.get<Product[]>('/api/buyer/products');
+      setProducts(res.data);
+      setFilteredProducts(res.data);
     } catch (err: unknown) {
-      if (isAxiosError(err)) setError(err.message)
-      else setError('Failed to load products')
+      if (isAxiosError(err)) setError(err.message);
+      else setError('Failed to load products');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const filtered = products.filter(
@@ -59,31 +59,31 @@ function Catalog() {
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (product.description &&
           product.description.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
-    setFilteredProducts(filtered)
-  }, [searchTerm, products])
+    );
+    setFilteredProducts(filtered);
+  }, [searchTerm, products]);
 
   const handleAddToCart = async (product: Product) => {
     try {
       // Check if product already exists in cart before adding
-      const existingItem = cart.find((item) => item.productId === product.id)
+      const existingItem = cart.find((item) => item.productId === product.id);
 
-      await add(product)
+      await add(product);
 
       if (existingItem) {
-        toast.success(`${product.name} quantity updated in cart!`)
+        toast.success(`${product.name} quantity updated in cart!`);
       } else {
-        toast.success(`${product.name} added to cart!`)
+        toast.success(`${product.name} added to cart!`);
       }
     } catch {
-      toast.error('Failed to add item to cart')
+      toast.error('Failed to add item to cart');
     }
-  }
+  };
 
   const getStatusCount = () => {
-    const activeProducts = products.filter((p) => p.status === 'active')
-    return activeProducts.length
-  }
+    const activeProducts = products.filter((p) => p.status === 'active');
+    return activeProducts.length;
+  };
 
   if (loading) {
     return (
@@ -108,7 +108,7 @@ function Catalog() {
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -117,7 +117,7 @@ function Catalog() {
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>{error}</AlertDescription>
       </Alert>
-    )
+    );
   }
 
   return (
@@ -207,8 +207,8 @@ function Catalog() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (targetProduct) handleAddToCart(targetProduct)
-                setTargetProduct(null)
+                if (targetProduct) handleAddToCart(targetProduct);
+                setTargetProduct(null);
               }}
             >
               Confirm
@@ -217,7 +217,7 @@ function Catalog() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }
 
-export default Catalog
+export default Catalog;

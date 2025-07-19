@@ -1,8 +1,8 @@
-import { useEffect, useState, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import axios from '@/lib/axios'
-import type { User } from '@/server/schema'
-import { Button } from '@/components/ui/button'
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from '@/lib/axios';
+import type { User } from '@/server/schema';
+import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,80 +11,80 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft } from 'lucide-react'
-import { Spinner } from '@/components/ui/spinner'
-import { Badge } from '@/components/ui/badge'
+} from '@/components/ui/alert-dialog';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
+import { Badge } from '@/components/ui/badge';
 
 function ViewUser() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [confirm, setConfirm] = useState(false)
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState(false);
 
   const fetchUser = useCallback(async () => {
-    if (!id) return
+    if (!id) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get<User>(`/api/admin/users/${id}`)
-      setUser(res.data)
+      const res = await axios.get<User>(`/api/admin/users/${id}`);
+      setUser(res.data);
     } catch (err) {
-      console.error('Failed to load user:', err)
-      setError('Failed to load user details')
+      console.error('Failed to load user:', err);
+      setError('Failed to load user details');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [id])
+  }, [id]);
 
   const handleToggleBan = async () => {
-    if (!user) return
+    if (!user) return;
 
     try {
-      await axios.patch(`/api/admin/users/${user.id}`, { action: 'toggleBan' })
-      await fetchUser() // Refresh the user data
+      await axios.patch(`/api/admin/users/${user.id}`, { action: 'toggleBan' });
+      await fetchUser(); // Refresh the user data
     } catch (err) {
-      console.error('Failed to toggle user ban status:', err)
-      setError('Failed to update user status')
+      console.error('Failed to toggle user ban status:', err);
+      setError('Failed to update user status');
     }
-  }
+  };
 
   useEffect(() => {
-    fetchUser()
-  }, [fetchUser])
+    fetchUser();
+  }, [fetchUser]);
 
-  if (loading) return <Spinner />
-  if (error) return <div className="text-red-600">{error}</div>
-  if (!user) return <div>User not found.</div>
+  if (loading) return <Spinner />;
+  if (error) return <div className="text-red-600">{error}</div>;
+  if (!user) return <div>User not found.</div>;
 
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       case 'banned':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800';
       case 'inactive':
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   const getRoleBadgeClass = (role: string) => {
     switch (role) {
       case 'admin':
-        return 'bg-purple-100 text-purple-800'
+        return 'bg-purple-100 text-purple-800';
       case 'seller':
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-blue-100 text-blue-800';
       case 'buyer':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   return (
     <>
@@ -207,8 +207,8 @@ function ViewUser() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                handleToggleBan()
-                setConfirm(false)
+                handleToggleBan();
+                setConfirm(false);
               }}
             >
               Confirm
@@ -217,7 +217,7 @@ function ViewUser() {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }
 
-export default ViewUser
+export default ViewUser;

@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
-import axios from '@/lib/axios'
-import type { SellerPayout } from '@/types/Seller'
-import { DataTable } from '@/components/DataTable'
-import type { ColumnDef } from '@tanstack/react-table'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { useEffect, useState } from 'react';
+import axios from '@/lib/axios';
+import type { SellerPayout } from '@/types/Seller';
+import { DataTable } from '@/components/DataTable';
+import type { ColumnDef } from '@tanstack/react-table';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogClose,
@@ -15,78 +15,78 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
-import { Plus } from 'lucide-react'
-import { formatIDR } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
+} from '@/components/ui/dialog';
+import { Plus } from 'lucide-react';
+import { formatIDR } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 function Payouts() {
-  const [payouts, setPayouts] = useState<SellerPayout[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [requestLoading, setRequestLoading] = useState(false)
-  const [requestError, setRequestError] = useState<string | null>(null)
+  const [payouts, setPayouts] = useState<SellerPayout[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [requestLoading, setRequestLoading] = useState(false);
+  const [requestError, setRequestError] = useState<string | null>(null);
 
   const fetchData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get<SellerPayout[]>('/api/seller/payouts')
-      setPayouts(res.data)
-      setError(null)
+      const res = await axios.get<SellerPayout[]>('/api/seller/payouts');
+      setPayouts(res.data);
+      setError(null);
     } catch (err) {
-      console.error('Failed to load payouts:', err)
-      setError('Failed to load payouts')
+      console.error('Failed to load payouts:', err);
+      setError('Failed to load payouts');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleRequestPayout = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setRequestLoading(true)
-    setRequestError(null)
+    e.preventDefault();
+    setRequestLoading(true);
+    setRequestError(null);
 
-    const formData = new FormData(e.currentTarget)
-    const amount = Number(formData.get('amount'))
-    const bankAccount = formData.get('bankAccount') as string
+    const formData = new FormData(e.currentTarget);
+    const amount = Number(formData.get('amount'));
+    const bankAccount = formData.get('bankAccount') as string;
 
     try {
       await axios.post('/api/seller/payouts', {
         amount,
         bankAccount,
-      })
+      });
 
       // Refresh the payouts list
-      await fetchData()
-      setIsDialogOpen(false)
+      await fetchData();
+      setIsDialogOpen(false);
 
       // Reset form
-      e.currentTarget.reset()
+      e.currentTarget.reset();
     } catch (err) {
-      console.error('Failed to request payout:', err)
-      setRequestError('Failed to request payout')
+      console.error('Failed to request payout:', err);
+      setRequestError('Failed to request payout');
     } finally {
-      setRequestLoading(false)
+      setRequestLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-yellow-100 text-yellow-800';
       case 'processed':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       case 'failed':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   const columns: ColumnDef<SellerPayout>[] = [
     {
@@ -124,9 +124,9 @@ function Payouts() {
       ),
       meta: { widthClass: 'w-28', cellClass: 'truncate' },
     },
-  ]
+  ];
 
-  if (error) return <div className="text-red-600">{error}</div>
+  if (error) return <div className="text-red-600">{error}</div>;
 
   return (
     <div className="space-y-6">
@@ -191,7 +191,7 @@ function Payouts() {
 
       <DataTable columns={columns} data={payouts} isLoading={loading} />
     </div>
-  )
+  );
 }
 
-export default Payouts
+export default Payouts;

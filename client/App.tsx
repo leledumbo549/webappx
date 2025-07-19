@@ -1,63 +1,63 @@
-import { HashRouter, Routes, Route } from 'react-router-dom'
-import { useAtom } from 'jotai'
-import { tokenAtom, userAtom } from '@/atoms/loginAtoms'
-import { useEffect } from 'react'
-import axios from '@/lib/axios'
-import Loading from './pages/Loading'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import LoginSIWE from './pages/LoginSIWE'
-import Navbar from './components/Navbar'
-import Home from './pages/buyer/Home'
-import Catalog from './pages/buyer/Catalog'
-import Cart from './pages/buyer/Cart'
-import Orders from './pages/buyer/Orders'
-import OrderDetail from './pages/buyer/OrderDetail'
-import Profile from './pages/buyer/Profile'
-import ProductDetail from './pages/buyer/ProductDetail'
-import SellerDashboard from './pages/seller/SellerDashboard'
-import AddProduct from './pages/seller/AddProduct'
-import EditProduct from './pages/seller/EditProduct'
-import ViewProduct from './pages/seller/ViewProduct'
-import MyProducts from './pages/seller/MyProducts'
-import OrdersReceived from './pages/seller/OrdersReceived'
-import Payouts from './pages/seller/Payouts'
-import StoreProfile from './pages/seller/StoreProfile'
-import AdminDashboard from './pages/admin/AdminDashboard'
-import Dashboard from './pages/Dashboard'
-import ManageUsers from './pages/admin/ManageUsers'
-import ViewUser from './pages/admin/ViewUser'
-import ManageSellers from './pages/admin/ManageSellers'
-import ViewSeller from './pages/admin/ViewSeller'
-import ManageProducts from './pages/admin/ManageProducts'
-import AdminViewProduct from './pages/admin/ViewProduct'
-import Reports from './pages/admin/Reports'
-import SiteSettings from './pages/admin/SiteSettings'
-import Checkout from './pages/buyer/Checkout'
-import { Toaster } from './components/ui/sonner'
+import { HashRouter, Routes, Route } from 'react-router-dom';
+import { useAtom } from 'jotai';
+import { tokenAtom, userAtom } from '@/atoms/loginAtoms';
+import { useEffect } from 'react';
+import axios from '@/lib/axios';
+import Loading from './pages/Loading';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import LoginSIWE from './pages/LoginSIWE';
+import Navbar from './components/Navbar';
+import Home from './pages/buyer/Home';
+import Catalog from './pages/buyer/Catalog';
+import Cart from './pages/buyer/Cart';
+import Orders from './pages/buyer/Orders';
+import OrderDetail from './pages/buyer/OrderDetail';
+import Profile from './pages/buyer/Profile';
+import ProductDetail from './pages/buyer/ProductDetail';
+import SellerDashboard from './pages/seller/SellerDashboard';
+import AddProduct from './pages/seller/AddProduct';
+import EditProduct from './pages/seller/EditProduct';
+import ViewProduct from './pages/seller/ViewProduct';
+import MyProducts from './pages/seller/MyProducts';
+import OrdersReceived from './pages/seller/OrdersReceived';
+import Payouts from './pages/seller/Payouts';
+import StoreProfile from './pages/seller/StoreProfile';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import Dashboard from './pages/Dashboard';
+import ManageUsers from './pages/admin/ManageUsers';
+import ViewUser from './pages/admin/ViewUser';
+import ManageSellers from './pages/admin/ManageSellers';
+import ViewSeller from './pages/admin/ViewSeller';
+import ManageProducts from './pages/admin/ManageProducts';
+import AdminViewProduct from './pages/admin/ViewProduct';
+import Reports from './pages/admin/Reports';
+import SiteSettings from './pages/admin/SiteSettings';
+import Checkout from './pages/buyer/Checkout';
+import { Toaster } from './components/ui/sonner';
 
 function App() {
-  const [token] = useAtom(tokenAtom)
-  const [, setUser] = useAtom(userAtom)
+  const [token] = useAtom(tokenAtom);
+  const [, setUser] = useAtom(userAtom);
 
   // Validate stored token on app startup
   useEffect(() => {
     const validateStoredToken = async () => {
       if (token) {
         try {
-          const res = await axios.get('/api/me')
-          setUser(res.data)
+          const res = await axios.get('/api/me');
+          setUser(res.data);
         } catch {
           // Token is invalid, clear it
-          localStorage.removeItem('auth_token')
-          localStorage.removeItem('auth_user')
-          window.location.hash = '/login'
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_user');
+          window.location.hash = '/login';
         }
       }
-    }
+    };
 
-    validateStoredToken()
-  }, [token, setUser])
+    validateStoredToken();
+  }, [token, setUser]);
 
   return (
     <HashRouter>
@@ -118,7 +118,7 @@ function App() {
       </div>
       <Toaster />
     </HashRouter>
-  )
+  );
 }
 
-export default App
+export default App;
