@@ -187,7 +187,9 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   onClick={() => onRowClick?.(row)}
-                  className={onRowClick ? 'cursor-pointer hover:bg-muted/50' : ''}
+                  className={
+                    onRowClick ? 'cursor-pointer hover:bg-muted/50' : ''
+                  }
                 >
                   {row.getVisibleCells().map((cell) => {
                     const meta = cell.column.columnDef.meta as
@@ -243,7 +245,9 @@ export function DataTable<TData, TValue>({
               key={row.id}
               onClick={() => onRowClick?.(row)}
               className={cn(
-                onRowClick ? 'cursor-pointer hover:bg-muted/50 transition-colors' : '',
+                onRowClick
+                  ? 'cursor-pointer hover:bg-muted/50 transition-colors'
+                  : '',
                 'border-border'
               )}
             >
@@ -251,13 +255,17 @@ export function DataTable<TData, TValue>({
                 <div className="space-y-3">
                   {row.getVisibleCells().map((cell) => {
                     const header = cell.column.columnDef.header
-                    const headerText = typeof header === 'string' ? header : cell.column.id
+                    const headerText =
+                      typeof header === 'string' ? header : cell.column.id
                     const isActions = cell.column.id === 'actions'
-                    
+
                     // Skip rendering actions column as a separate field in mobile view
                     if (isActions) {
                       return (
-                        <div key={cell.id} className="flex justify-end pt-2 border-t">
+                        <div
+                          key={cell.id}
+                          className="flex justify-end pt-2 border-t"
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()

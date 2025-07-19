@@ -20,11 +20,16 @@ function ProductCard({ product, onAdd, onView }: Props) {
 
   const getStatusBadgeVariant = (status: string | null) => {
     switch (status) {
-      case 'active': return 'default'
-      case 'inactive': return 'secondary'
-      case 'pending': return 'outline'
-      case 'flagged': return 'destructive'
-      default: return 'outline'
+      case 'active':
+        return 'default'
+      case 'inactive':
+        return 'secondary'
+      case 'pending':
+        return 'outline'
+      case 'flagged':
+        return 'destructive'
+      default:
+        return 'outline'
     }
   }
 
@@ -43,10 +48,13 @@ function ProductCard({ product, onAdd, onView }: Props) {
             <Package className="h-12 w-12 text-muted-foreground" />
           </div>
         )}
-        
+
         {/* Status Badge */}
         <div className="absolute top-2 right-2">
-          <Badge variant={getStatusBadgeVariant(product.status)} className="text-xs">
+          <Badge
+            variant={getStatusBadgeVariant(product.status)}
+            className="text-xs"
+          >
             {product.status || 'unknown'}
           </Badge>
         </div>
@@ -81,9 +89,9 @@ function ProductCard({ product, onAdd, onView }: Props) {
         {/* Action Buttons */}
         <div className="flex w-full gap-2">
           {onView && (
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={onView}
               className="flex-1"
             >
@@ -92,11 +100,7 @@ function ProductCard({ product, onAdd, onView }: Props) {
             </Button>
           )}
           {onAdd && (
-            <Button 
-              size="sm" 
-              onClick={onAdd}
-              className="flex-1"
-            >
+            <Button size="sm" onClick={onAdd} className="flex-1">
               <ShoppingCart className="mr-2 h-4 w-4" />
               Add to Cart
             </Button>

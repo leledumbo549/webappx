@@ -1,5 +1,6 @@
-import { useAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { userAtom } from '@/atoms/loginAtoms'
+import { balanceAtom, loadWalletAtom } from '@/atoms/walletAtoms'
 import { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,6 +19,8 @@ function Profile() {
   const [username, setUsername] = useState(user?.username || '')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [balance] = useAtom(balanceAtom)
+  const loadWallet = useSetAtom(loadWalletAtom)
 
   // Update form when user data changes
   useEffect(() => {
@@ -27,9 +30,13 @@ function Profile() {
     }
   }, [user])
 
+  useEffect(() => {
+    loadWallet()
+  }, [loadWallet])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!user) {
       toast.error('User data not available')
       return
@@ -37,22 +44,22 @@ function Profile() {
 
     setSaving(true)
     setError(null)
-    
+
     try {
       const res = await axios.put('/api/me', {
         name: name.trim(),
-        username: username.trim()
+        username: username.trim(),
       })
-      
+
       // Update the user atom with new data
       setUser(res.data)
-      
+
       toast.success('Profile updated successfully!')
     } catch (err: unknown) {
       console.error('Failed to update profile:', err)
-      
+
       const axiosError = err as { response?: { status?: number } }
-      
+
       if (axiosError.response?.status === 409) {
         setError('Username already exists. Please choose a different username.')
         toast.error('Username already exists')
@@ -70,19 +77,27 @@ function Profile() {
 
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
-      case 'admin': return 'destructive'
-      case 'seller': return 'secondary'
-      case 'buyer': return 'default'
-      default: return 'outline'
+      case 'admin':
+        return 'destructive'
+      case 'seller':
+        return 'secondary'
+      case 'buyer':
+        return 'default'
+      default:
+        return 'outline'
     }
   }
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-      case 'active': return 'default'
-      case 'banned': return 'destructive'
-      case 'inactive': return 'secondary'
-      default: return 'outline'
+      case 'active':
+        return 'default'
+      case 'banned':
+        return 'destructive'
+      case 'inactive':
+        return 'secondary'
+      default:
+        return 'outline'
     }
   }
 
@@ -116,12 +131,23 @@ function Profile() {
           <div className="p-2 bg-primary/10 rounded-lg">
             <User className="h-5 w-5 text-primary" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Profile Settings</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Profile Settings
+          </h1>
         </div>
         <p className="text-muted-foreground">
           Manage your account information and preferences
         </p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Wallet Balance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-2xl font-bold">{balance}</p>
+        </CardContent>
+      </Card>
 
       {/* Profile Form */}
       <Card>
@@ -177,7 +203,9 @@ function Profile() {
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Status</Label>
                 <div className="flex items-center gap-2">
-                  <Badge variant={getStatusBadgeVariant(user.status || 'active')}>
+                  <Badge
+                    variant={getStatusBadgeVariant(user.status || 'active')}
+                  >
                     {user.status}
                   </Badge>
                 </div>
@@ -195,11 +223,7 @@ function Profile() {
             )}
 
             <div className="flex items-center gap-4 pt-4">
-              <Button 
-                type="submit" 
-                disabled={saving}
-                className="min-w-[120px]"
-              >
+              <Button type="submit" disabled={saving} className="min-w-[120px]">
                 {saving ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -212,7 +236,7 @@ function Profile() {
                   </>
                 )}
               </Button>
-              
+
               {saving && (
                 <p className="text-sm text-muted-foreground">
                   Updating profile...

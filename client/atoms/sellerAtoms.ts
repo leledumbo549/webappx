@@ -4,10 +4,7 @@ import { atom } from 'jotai'
 export const sellerProductsRefreshAtom = atom(0)
 
 // Function to trigger refresh
-export const refreshSellerProductsAtom = atom(
-  null,
-  (get, set) => {
-    const current = get(sellerProductsRefreshAtom)
-    set(sellerProductsRefreshAtom, current + 1)
-  }
-) 
+export const refreshSellerProductsAtom = atom(null, (get, set) => {
+  const current = get(sellerProductsRefreshAtom)
+  set(sellerProductsRefreshAtom, current + 1)
+})

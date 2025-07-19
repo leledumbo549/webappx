@@ -77,7 +77,7 @@ function CartItem({ product, quantity, onRemove, onChange }: Props) {
             >
               <Minus className="h-3 w-3" />
             </Button>
-            
+
             <Input
               type="number"
               min={1}
@@ -86,7 +86,7 @@ function CartItem({ product, quantity, onRemove, onChange }: Props) {
               onChange={(e) => handleQuantityChange(Number(e.target.value))}
               className="w-16 h-8 text-center text-sm"
             />
-            
+
             <Button
               variant="outline"
               size="sm"

@@ -1,5 +1,10 @@
 // Import Admin types from schema.ts as the single source of truth
-export type { AdminUser, AdminSeller, AdminProduct, AdminReport } from '@/server/schema';
+export type {
+  AdminUser,
+  AdminSeller,
+  AdminProduct,
+  AdminReport,
+} from '@/server/schema'
 
 // AdminSettings interface for site settings
 export interface AdminSettings {
@@ -8,4 +13,4 @@ export interface AdminSettings {
 }
 
 // UserRole type for role management
-export type UserRole = 'buyer' | 'seller' | 'admin'; 
+export type UserRole = 'buyer' | 'seller' | 'admin'

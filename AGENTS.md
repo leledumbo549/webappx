@@ -1,6 +1,6 @@
 # AGENTS Instructions
 
-This project is a demo web app built with **Vite**, **React**, and **TypeScript**.
+This project is a web app built with **Vite**, **React**, and **TypeScript**.
 
 ---
 
@@ -23,7 +23,7 @@ These instructions define how AI code agents and human contributors should modif
 - Format code: `npm run format`
 - Lint: `npm run lint`
 - OpenAPI lint: `npm run lint:openapi` (only if `openapi.yaml` was modified)
-- Ensure `npm run build` passes.
+- Ensure `npm run lint`, `npm run lint:openapi`, `npm run build` passes.
 
 ---
 
@@ -55,15 +55,8 @@ These instructions define how AI code agents and human contributors should modif
   - Define clear TypeScript interfaces for all data models.
 - **Special Comments**
   - Never modify any line with `ai: skip`.
-- **Scoped Changes**
-  - If ordered to work in `client` code, do not modify anything outside `/client`.
-  - If ordered to work in `server` code, do not modify anything outside `/server`.
-  - If ordered to modify the OpenAPI spec, only modify `openapi.yaml` — do not touch any other files.
 
 ### 🚫 Forbidden
 
 - Do not create new directories outside `client/` and `server/`.
-- Do not install new packages without approval.
-- Do not modify `README.md` or `openapi.yaml` without direct instruction.
-
 

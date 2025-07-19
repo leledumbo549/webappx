@@ -38,10 +38,10 @@ function SiteSettings() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!data) return
-    
+
     setSaving(true)
     setError(null)
-    
+
     try {
       const res = await axios.put<AdminSettings>('/api/admin/settings', data)
       setData(res.data)
@@ -129,7 +129,9 @@ function SiteSettings() {
                   max="100"
                   step="0.1"
                   value={data.fees || ''}
-                  onChange={(e) => setData({ ...data, fees: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setData({ ...data, fees: Number(e.target.value) })
+                  }
                   placeholder="Enter fee percentage"
                   disabled={saving}
                 />
@@ -161,8 +163,8 @@ function SiteSettings() {
             </div>
 
             <div className="flex items-center gap-4 pt-4">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={saving || loading}
                 className="min-w-[120px]"
               >
@@ -178,7 +180,7 @@ function SiteSettings() {
                   </>
                 )}
               </Button>
-              
+
               {saving && (
                 <p className="text-sm text-muted-foreground">
                   Updating settings...

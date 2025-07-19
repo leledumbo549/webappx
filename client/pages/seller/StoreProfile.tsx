@@ -38,7 +38,7 @@ function StoreProfile() {
 
     setSaving(true)
     setError(null)
-    
+
     try {
       const res = await axios.put<SellerProfile>('/api/seller/profile', profile)
       setProfile(res.data)
@@ -58,10 +58,14 @@ function StoreProfile() {
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-      case 'active': return 'default'
-      case 'inactive': return 'secondary'
-      case 'pending': return 'outline'
-      default: return 'outline'
+      case 'active':
+        return 'default'
+      case 'inactive':
+        return 'secondary'
+      case 'pending':
+        return 'outline'
+      default:
+        return 'outline'
     }
   }
 
@@ -137,11 +141,13 @@ function StoreProfile() {
                 <Label htmlFor="name" className="text-sm font-medium">
                   Store Name
                 </Label>
-                <Input 
-                  id="name" 
-                  name="name" 
+                <Input
+                  id="name"
+                  name="name"
                   value={profile.name || ''}
-                  onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                  onChange={(e) =>
+                    setProfile({ ...profile, name: e.target.value })
+                  }
                   placeholder="Enter your store name"
                   disabled={saving}
                   required
@@ -152,11 +158,13 @@ function StoreProfile() {
                 <Label htmlFor="contact" className="text-sm font-medium">
                   Contact Information
                 </Label>
-                <Input 
-                  id="contact" 
-                  name="contact" 
+                <Input
+                  id="contact"
+                  name="contact"
                   value={profile.contact || ''}
-                  onChange={(e) => setProfile({ ...profile, contact: e.target.value })}
+                  onChange={(e) =>
+                    setProfile({ ...profile, contact: e.target.value })
+                  }
                   placeholder="Email, phone, or website"
                   disabled={saving}
                 />
@@ -167,16 +175,19 @@ function StoreProfile() {
               <Label htmlFor="bio" className="text-sm font-medium">
                 Store Description
               </Label>
-              <Input 
-                id="bio" 
-                name="bio" 
+              <Input
+                id="bio"
+                name="bio"
                 value={profile.bio || ''}
-                onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                onChange={(e) =>
+                  setProfile({ ...profile, bio: e.target.value })
+                }
                 placeholder="Tell customers about your store"
                 disabled={saving}
               />
               <p className="text-xs text-muted-foreground">
-                This description will be visible to customers browsing your store
+                This description will be visible to customers browsing your
+                store
               </p>
             </div>
 
@@ -188,8 +199,8 @@ function StoreProfile() {
             )}
 
             <div className="flex items-center gap-4 pt-4">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={saving || loading}
                 className="min-w-[140px]"
               >
@@ -205,7 +216,7 @@ function StoreProfile() {
                   </>
                 )}
               </Button>
-              
+
               {saving && (
                 <p className="text-sm text-muted-foreground">
                   Saving store information...
