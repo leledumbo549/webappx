@@ -7,5 +7,5 @@
     "verbatimModuleSyntax": false,
     "esModuleInterop": true
   },
-  "include": ["tests/**/*.ts"]
+  "include": ["tests/**/*.ts", "tests/**/*.tsx"]
 }
