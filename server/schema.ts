@@ -19,9 +19,8 @@ export const users = sqliteTable(
     id: integer('id').primaryKey(),
     name: text('name'),
     username: text('username').notNull(),
-    password: text('password'),
-    ethereumAddress: text('ethereum_address').unique(),
-    authMethod: text('auth_method').default('password'),
+    ethereumAddress: text('ethereum_address').notNull().unique(),
+    authMethod: text('auth_method').default('siwe'),
     role: text('role'), // 'admin' | 'buyer' | 'seller'
     status: text('status'), // 'active' | 'banned' | 'inactive'
     createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
@@ -31,6 +30,7 @@ export const users = sqliteTable(
     usernameIndex: uniqueIndex('username_unique').on(table.username),
     nameIndex: uniqueIndex('name_unique').on(table.name),
     authMethodIndex: index('auth_method_idx').on(table.authMethod),
+    ethereumAddressIndex: index('ethereum_address_idx').on(table.ethereumAddress),
   })
 )
 
@@ -169,7 +169,7 @@ export interface DashboardStats {
 
 // Export all types from drizzle schemas
 export type User = InferSelectModel<typeof users>
-export type PublicUser = Omit<User, 'password'>
+export type PublicUser = User
 export type Product = InferSelectModel<typeof products>
 export type Seller = InferSelectModel<typeof sellers>
 export type Wallet = InferSelectModel<typeof wallets>
@@ -200,9 +200,8 @@ export const createTableStatements = [
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE,
     username TEXT NOT NULL UNIQUE,
-    password TEXT,
-    ethereum_address TEXT UNIQUE,
-    auth_method TEXT DEFAULT 'password',
+    ethereum_address TEXT NOT NULL UNIQUE,
+    auth_method TEXT DEFAULT 'siwe',
     role TEXT,
     status TEXT,
     createdAt TEXT,

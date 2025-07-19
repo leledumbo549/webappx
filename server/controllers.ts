@@ -106,46 +106,8 @@ export async function validateToken(token: string): Promise<PublicUser | null> {
 /**
  * Creates login response with token and user data
  */
-export async function loginByUsernamePassword(data: LoginRequest | unknown): Promise<LoginResponse | LoginError> {
-  // Validate request
-  const validation = validateLoginRequest(data);
-  if ('MESSAGE' in validation) return validation;
-
-
-  const { username, password } = validation;
-  const db = await drizzleDb();
-
-  // Find user in DB
-  const rows: User[] = await db
-    .select()
-    .from(users)
-    .where(and(eq(users.username, username), eq(users.password, password)))
-    .all();
-
-  if (rows.length === 0) {
-    return { MESSAGE: 'Invalid username or password' };
-  }
-
-  const user = rows[0];
-
-  // Prevent banned users from logging in
-  if (user.status === 'banned') {
-    return {
-      MESSAGE: 'Your account has been banned. Please contact an admin to be unbanned'
-    };
-  }
-  const token = generateToken(user.id);
-  const publicUser = createPublicUser(user);
-  // For demo, use current time for createdAt/updatedAt
-  const now = new Date().toISOString();
-  return {
-    token,
-    user: {
-      ...publicUser,
-      createdAt: now,
-      updatedAt: now,
-    },
-  };
+export async function loginByUsernamePassword(_data: LoginRequest | unknown): Promise<LoginResponse | LoginError> {
+  return { MESSAGE: 'Password login disabled' };
 }
 
 export interface SiweLoginRequest {
@@ -180,11 +142,17 @@ export async function loginWithSiwe(data: SiweLoginRequest | unknown): Promise<L
       .all();
 
     if (rows.length === 0) {
-      user = await db
-        .insert(users)
-        .values({ name: address, username: address, role: 'buyer', status: 'active' })
-        .returning()
-        .get();
+        user = await db
+          .insert(users)
+          .values({
+            name: address,
+            username: address,
+            ethereumAddress: address,
+            role: 'buyer',
+            status: 'active',
+          })
+          .returning()
+          .get();
     } else {
       user = rows[0];
     }
@@ -243,45 +211,8 @@ export function validateRegisterRequest(data: unknown): RegisterRequest | Regist
   return data as RegisterRequest;
 }
 
-export async function registerUser(data: RegisterRequest | unknown): Promise<RegisterResponse | RegisterError> {
-  const validation = validateRegisterRequest(data);
-  if ('MESSAGE' in validation) return validation;
-
-  const { name, username, password, role, storeName, contact, bio } = validation;
-  const db = await drizzleDb();
-
-  const existing = await db.select().from(users).where(eq(users.username, username)).all();
-  if (existing.length > 0) {
-    return { MESSAGE: 'Username already exists' };
-  }
-
-  const newUser = await db
-    .insert(users)
-    .values({ name, username, password, role, status: 'active' })
-    .returning()
-    .get();
-
-  if (role === 'seller') {
-    await db
-      .insert(sellers)
-      .values({
-        userId: newUser.id,
-        name: storeName!,
-        bio: bio || null,
-        contact: contact || null,
-        status: 'active',
-      })
-      .run();
-  }
-
-  const token = generateToken(newUser.id);
-  const publicUser = createPublicUser(newUser);
-  const now = new Date().toISOString();
-
-  return {
-    token,
-    user: { ...publicUser, createdAt: now, updatedAt: now },
-  };
+export async function registerUser(_data: RegisterRequest | unknown): Promise<RegisterResponse | RegisterError> {
+  return { MESSAGE: 'Registration disabled' };
 }
 
 // === SETTINGS CONTROLLERS ===
