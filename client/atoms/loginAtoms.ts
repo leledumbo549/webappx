@@ -51,7 +51,6 @@ export const userAtom = atom<User | null>(getStoredUser());
 export const loginAtom = atom(
   null,
   (_get, set, { token, user }: { token: string; user: User }) => {
-    console.log('Login atom called with:', { token, user });
     set(tokenAtom, token);
     set(userAtom, user);
     setStoredToken(token);
@@ -60,7 +59,6 @@ export const loginAtom = atom(
 );
 
 export const logoutAtom = atom(null, (_get, set) => {
-  console.log('Logout atom called');
   set(tokenAtom, null);
   set(userAtom, null);
   set(clearWalletAtom);
