@@ -143,14 +143,6 @@ async function addDelay(): Promise<void> {
 export const handlers = [
   // === AUTHENTICATION ===
   
-  // POST /api/login - Authenticate user (disabled)
-  rest.post('/api/login', async (_req, res, ctx) => {
-    await addDelay();
-    return res(
-      ctx.status(400),
-      ctx.json(createErrorResponse('Password login disabled')),
-    );
-  }),
 
   // POST /api/login/siwe - Authenticate via Sign-In with Ethereum
   rest.post('/api/login/siwe', async (req, res, ctx) => {

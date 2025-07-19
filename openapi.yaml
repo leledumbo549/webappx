@@ -12,101 +12,6 @@ servers:
 - url: https://api.webappx.com
   description: Production server
 paths:
-  /api/login:
-    post:
-      operationId: loginUser
-      summary: Authenticate user
-      description: Authenticate a user with username and password, returning a token
-        and user information. This endpoint is publicly accessible and does not require
-        authorization.
-      tags:
-      - Authentication
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginRequest'
-            examples:
-              admin_user:
-                summary: Admin user login
-                value:
-                  username: alice
-                  password: alice
-              buyer_user:
-                summary: Buyer user login
-                value:
-                  username: bob
-                  password: bob
-              seller_user:
-                summary: Seller user login
-                value:
-                  username: carol
-                  password: carol
-      responses:
-        '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LoginResponse'
-        '400':
-          description: Bad request - invalid input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                missing_credentials:
-                  summary: Missing credentials
-                  value:
-                    MESSAGE: Username and password are required
-                invalid_format:
-                  summary: Invalid format
-                  value:
-                    MESSAGE: Invalid username or password format
-        '401':
-          description: Unauthorized - invalid or missing authentication
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                invalid_credentials:
-                  summary: Invalid credentials
-                  value:
-                    MESSAGE: Invalid username or password
-                invalid_token:
-                  summary: Invalid token
-                  value:
-                    MESSAGE: Invalid authentication token
-        '403':
-          description: Forbidden - insufficient permissions
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                access_denied:
-                  summary: Access denied
-                  value:
-                    MESSAGE: Access denied
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                server_error:
-                  summary: Server error
-                  value:
-                    MESSAGE: Internal server error
-                database_error:
-                  summary: Database error
-                  value:
-                    MESSAGE: Database connection failed
   /api/login/siwe:
     post:
       operationId: loginWithSiwe
@@ -3009,24 +2914,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
-    LoginRequest:
-      type: object
-      required:
-      - username
-      - password
-      properties:
-        username:
-          type: string
-          description: User's username
-          example: alice
-          minLength: 1
-          maxLength: 50
-        password:
-          type: string
-          description: User's password
-          example: alice
-          minLength: 1
-      maxLength: 100
     RegisterRequest:
       type: object
       required:
