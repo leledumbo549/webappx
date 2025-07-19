@@ -1,4 +1,4 @@
-import type { InferSelectModel } from 'drizzle-orm';
+import type { InferSelectModel } from 'drizzle-orm'
 import {
   sqliteTable,
   integer,
@@ -6,8 +6,9 @@ import {
   real,
   primaryKey,
   uniqueIndex,
-} from 'drizzle-orm/sqlite-core';
-import { sql } from 'drizzle-orm';
+  index,
+} from 'drizzle-orm/sqlite-core'
+import { sql } from 'drizzle-orm'
 
 //
 // USERS TABLE
@@ -19,6 +20,8 @@ export const users = sqliteTable(
     name: text('name'),
     username: text('username').notNull(),
     password: text('password'),
+    ethereumAddress: text('ethereum_address').unique(),
+    authMethod: text('auth_method').default('password'),
     role: text('role'), // 'admin' | 'buyer' | 'seller'
     status: text('status'), // 'active' | 'banned' | 'inactive'
     createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
@@ -27,8 +30,9 @@ export const users = sqliteTable(
   (table) => ({
     usernameIndex: uniqueIndex('username_unique').on(table.username),
     nameIndex: uniqueIndex('name_unique').on(table.name),
+    authMethodIndex: index('auth_method_idx').on(table.authMethod),
   })
-);
+)
 
 //
 // STABLETOKEN BALANCES TABLE
@@ -36,7 +40,7 @@ export const users = sqliteTable(
 export const stabletokenBalances = sqliteTable('stabletokenBalances', {
   userId: integer('userId').primaryKey(),
   balance: real('balance').default(0).notNull(),
-});
+})
 
 //
 // STABLETOKEN TRANSACTIONS TABLE
@@ -48,7 +52,7 @@ export const stabletokenTransactions = sqliteTable('stabletokenTransactions', {
   type: text('type').notNull(), // 'payment' | 'mint' | 'burn'
   reference: text('reference'),
   createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
-});
+})
 
 //
 // SELLERS TABLE
@@ -65,7 +69,7 @@ export const sellers = sqliteTable('sellers', {
   status: text('status'), // 'active' | 'inactive' | 'pending'
   createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
-});
+})
 
 //
 // PRODUCTS TABLE
@@ -80,7 +84,7 @@ export const products = sqliteTable('products', {
   status: text('status'), // 'active' | 'inactive' | 'pending' | 'flagged'
   createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
-});
+})
 
 //
 // WALLETS TABLE
@@ -91,7 +95,7 @@ export const wallets = sqliteTable('wallets', {
   balance: text('balance').notNull().default('0'),
   createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
-});
+})
 
 //
 // ORDERS TABLE (Unified for both buyer and seller views)
@@ -111,7 +115,7 @@ export const orders = sqliteTable('orders', {
   sellerId: integer('sellerId'), // ID of the seller who owns the product
   createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
-});
+})
 
 //
 // SELLER PAYOUTS TABLE
@@ -125,7 +129,7 @@ export const sellerPayouts = sqliteTable('sellerPayouts', {
   status: text('status'), // 'pending' | 'completed' | 'failed'
   createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
-});
+})
 
 //
 // REPORTS TABLE
@@ -136,7 +140,7 @@ export const reports = sqliteTable('reports', {
   status: text('status'), // 'open' | 'closed' | 'resolved'
   createdAt: text('createdAt').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`),
-});
+})
 
 //
 // SETTINGS TABLE
@@ -150,40 +154,42 @@ export const settings = sqliteTable(
   (table) => ({
     pk: primaryKey({ columns: [table.key] }),
   })
-);
+)
 
 //
 // Type helpers
 //
 
 export interface DashboardStats {
-  totalUsers: number;
-  totalSellers: number;
-  totalSales: number;
-  openReports: number;
+  totalUsers: number
+  totalSellers: number
+  totalSales: number
+  openReports: number
 }
 
 // Export all types from drizzle schemas
-export type User = InferSelectModel<typeof users>;
-export type PublicUser = Omit<User, 'password'>;
-export type Product = InferSelectModel<typeof products>;
-export type Seller = InferSelectModel<typeof sellers>;
-export type Wallet = InferSelectModel<typeof wallets>;
-export type Order = InferSelectModel<typeof orders>;
-export type SellerPayout = InferSelectModel<typeof sellerPayouts>;
-export type Report = InferSelectModel<typeof reports>;
-export type Setting = InferSelectModel<typeof settings>;
-export type StabletokenBalance = InferSelectModel<typeof stabletokenBalances>;
-export type StabletokenTransaction = InferSelectModel<typeof stabletokenTransactions>;
+export type User = InferSelectModel<typeof users>
+export type PublicUser = Omit<User, 'password'>
+export type Product = InferSelectModel<typeof products>
+export type Seller = InferSelectModel<typeof sellers>
+export type Wallet = InferSelectModel<typeof wallets>
+export type Order = InferSelectModel<typeof orders>
+export type SellerPayout = InferSelectModel<typeof sellerPayouts>
+export type Report = InferSelectModel<typeof reports>
+export type Setting = InferSelectModel<typeof settings>
+export type StabletokenBalance = InferSelectModel<typeof stabletokenBalances>
+export type StabletokenTransaction = InferSelectModel<
+  typeof stabletokenTransactions
+>
 
 // Type aliases for backward compatibility
-export type SellerProduct = Product;
-export type SellerProfile = Seller;
-export type AdminUser = User;
-export type AdminSeller = Seller;
-export type AdminProduct = Product;
-export type AdminReport = Report;
-export type AdminSettings = Record<string, string>;
+export type SellerProduct = Product
+export type SellerProfile = Seller
+export type AdminUser = User
+export type AdminSeller = Seller
+export type AdminProduct = Product
+export type AdminReport = Report
+export type AdminSettings = Record<string, string>
 
 //
 // Raw SQL DDL — always keep in sync with your Drizzle schema!
@@ -195,6 +201,8 @@ export const createTableStatements = [
     name TEXT UNIQUE,
     username TEXT NOT NULL UNIQUE,
     password TEXT,
+    ethereum_address TEXT UNIQUE,
+    auth_method TEXT DEFAULT 'password',
     role TEXT,
     status TEXT,
     createdAt TEXT,
@@ -299,4 +307,4 @@ export const createTableStatements = [
     value TEXT
   );
   `,
-];
+]
