@@ -53,10 +53,16 @@ These instructions define how AI code agents and human contributors should modif
   - Keep server mocks inside `server/` only.
 - **Types**
   - Define clear TypeScript interfaces for all data models.
+- **Testing**
+  - Write unit tests using Jest in the `/tests` folder.
+  - Use descriptive test file names that match the component/function being tested.
+  - Follow the pattern: `ComponentName.test.tsx` for React components and `functionName.test.ts` for functions.
+  - Test both success and error scenarios.
+  - Mock external dependencies appropriately.
 - **Special Comments**
   - Never modify any line with `ai: skip`.
 
 ### 🚫 Forbidden
 
-- Do not create new directories outside `client/` and `server/`.
+- Do not create new directories outside `client/`, `tests/` and `server/`.
 
