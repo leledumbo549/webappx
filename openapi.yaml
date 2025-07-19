@@ -107,6 +107,57 @@ paths:
                   summary: Database error
                   value:
                     MESSAGE: Database connection failed
+  /api/login/siwe:
+    post:
+      operationId: loginWithSiwe
+      summary: Authenticate via Sign-In with Ethereum
+      description: Authenticate a user using Sign-In with Ethereum (SIWE) protocol
+      tags:
+      - Authentication
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - message
+              - signature
+              - address
+              properties:
+                message:
+                  type: string
+                  description: SIWE message to be signed
+                signature:
+                  type: string
+                  description: Signature of the message
+                address:
+                  type: string
+                  description: Ethereum address
+            example:
+              message: "webappx.com wants you to sign in with your Ethereum account:\n0x1234567890123456789012345678901234567890\n\nSign in with Ethereum to the app.\n\nURI: https://webappx.com\nVersion: 1\nChain ID: 1\nNonce: 1234567890\nIssued At: 2024-01-15T10:30:00Z"
+              signature: "0x1234567890123456789012345678901234567890"
+              address: "0x1234567890123456789012345678901234567890"
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/register:
     post:
       operationId: registerUser
@@ -401,6 +452,144 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/balance:
+    get:
+      operationId: getStabletokenBalance
+      summary: Get stabletoken balance
+      description: Retrieve the stabletoken balance for the authenticated user.
+      tags:
+      - Wallet
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Balance retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    type: number
+                    description: Current stabletoken balance
+                    example: 1000.50
+        '401':
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/payments/initiate:
+    post:
+      operationId: initiatePayment
+      summary: Initiate payment via Xendit
+      description: Initiate a payment transaction via Xendit payment gateway.
+      tags:
+      - Payments
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              properties:
+                amount:
+                  type: number
+                  description: Payment amount
+                  example: 100.00
+                  minimum: 0
+            example:
+              amount: 100.00
+      responses:
+        '200':
+          description: Payment initiated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  paymentId:
+                    type: string
+                    description: Unique payment identifier
+                    example: "pay_1705312200000"
+                  paymentUrl:
+                    type: string
+                    description: URL to complete payment
+                    example: "https://checkout.xendit.co/pay_1705312200000"
+        '400':
+          description: Bad request - invalid amount
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/payments/webhook:
+    post:
+      operationId: handlePaymentWebhook
+      summary: Handle payment status update
+      description: Webhook endpoint to handle payment status updates from Xendit.
+      tags:
+      - Payments
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentId:
+                  type: string
+                  description: Payment identifier
+                status:
+                  type: string
+                  description: Payment status
+                  enum: [pending, paid, failed, expired]
+                amount:
+                  type: number
+                  description: Payment amount
+            example:
+              paymentId: "pay_1705312200000"
+              status: "paid"
+              amount: 100.00
+      responses:
+        '200':
+          description: Webhook processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+                    example: true
         '500':
           description: Internal server error
           content:
@@ -2719,6 +2908,105 @@ paths:
                   summary: Database error
                   value:
                     MESSAGE: Database connection failed
+  /api/transactions:
+    get:
+      operationId: getTransactionsForUser
+      summary: Get user transaction history
+      description: Retrieve transaction history for the authenticated user.
+      tags:
+      - Transactions
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Transactions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/mint:
+    post:
+      operationId: mintStabletoken
+      summary: Mint stabletoken (admin only)
+      description: Mint stabletokens for a user (admin only).
+      tags:
+      - Admin
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              properties:
+                amount:
+                  type: number
+                  description: Amount to mint
+                  example: 1000.00
+                  minimum: 0
+                userId:
+                  type: integer
+                  description: User ID to mint for (optional, defaults to current user)
+                  example: 1
+            example:
+              amount: 1000.00
+              userId: 1
+      responses:
+        '200':
+          description: Tokens minted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    type: number
+                    description: New balance after minting
+                    example: 1500.00
+        '400':
+          description: Bad request - invalid amount
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     LoginRequest:
@@ -3202,6 +3490,46 @@ components:
           format: date-time
           description: Payout creation timestamp
           example: '2024-01-15T10:30:00Z'
+    Transaction:
+      type: object
+      required:
+      - id
+      - userId
+      - type
+      - amount
+      - createdAt
+      properties:
+        id:
+          type: integer
+          description: Transaction's unique identifier
+          example: 1
+        userId:
+          type: integer
+          description: ID of the user who made the transaction
+          example: 1
+        type:
+          type: string
+          description: Transaction type
+          enum:
+          - mint
+          - burn
+          - transfer
+          - payment
+          example: mint
+        amount:
+          type: number
+          format: float
+          description: Transaction amount
+          example: 100.00
+        description:
+          type: string
+          description: Transaction description
+          example: "Minted tokens for user"
+        createdAt:
+          type: string
+          format: date-time
+          description: Transaction creation timestamp
+          example: '2024-01-15T10:30:00Z'
     ErrorResponse:
       type: object
       required:
@@ -3224,9 +3552,13 @@ tags:
   description: User authentication operations
 - name: Buyer
   description: Buyer operations (buyer only)
+- name: Payments
+  description: Payment processing operations
 - name: Seller
   description: Seller operations (seller only)
 - name: Settings
   description: Application settings management
+- name: Transactions
+  description: Transaction history operations
 - name: Wallet
   description: Wallet operations
