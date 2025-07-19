@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useAppKitAccount } from '@reown/appkit/react';
 
 function Navbar() {
   const [user] = useAtom(userAtom);
@@ -42,6 +43,7 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isConnected } = useAppKitAccount();
 
   const handleLogout = () => {
     logout();
@@ -324,6 +326,10 @@ function Navbar() {
                 Login
               </Button>
             )}
+
+            <Badge variant={isConnected ? 'default' : 'secondary'}>
+              {isConnected ? 'Wallet Connected' : 'Wallet Disconnected'}
+            </Badge>
 
             {/* Mobile Menu Button */}
             <Button
