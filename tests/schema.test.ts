@@ -17,12 +17,12 @@ let db: Awaited<ReturnType<typeof drizzleDb>>;
 
 beforeAll(async () => {
   try {
-    await fs.access('/webappx/sql-wasm.wasm');
+    await fs.access('./public/sql-wasm.wasm');
   } catch {
-    await fs.mkdir('/webappx', { recursive: true });
+    await fs.mkdir('./public', { recursive: true });
     await fs.copyFile(
       path.join(process.cwd(), 'node_modules/sql.js/dist/sql-wasm.wasm'),
-      '/webappx/sql-wasm.wasm',
+      './public/sql-wasm.wasm',
     );
   }
   db = await drizzleDb();

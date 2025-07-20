@@ -15,7 +15,7 @@ export async function initDrizzle(): Promise<ReturnType<typeof drizzle>> {
   const SQL = await initSqlJs({
     locateFile: (file) => {
       void file
-      return `/webappx/sql-wasm.wasm`
+      return `./public/sql-wasm.wasm`
     },
   })
 

@@ -1,20 +1,21 @@
 /**
  * @jest-environment jsdom
  */
+import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
 (globalThis as unknown as { TextEncoder: typeof TextEncoder; TextDecoder: typeof TextDecoder }).TextEncoder = TextEncoder;
 (globalThis as unknown as { TextEncoder: typeof TextEncoder; TextDecoder: typeof TextDecoder }).TextDecoder = TextDecoder;
 import { HashRouter } from 'react-router-dom';
-import { setupServer } from 'msw/node';
-import { rest } from 'msw';
 import ManageUsers from '@/pages/admin/ManageUsers';
 
-const server = setupServer(
-  rest.get('/api/admin/users', (_req, res, ctx) =>
-    res(
-      ctx.json([
+// Mock axios for this test
+jest.mock('@/lib/axios', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(() => Promise.resolve({
+      data: [
         {
           id: 1,
           name: 'Alice',
@@ -26,14 +27,19 @@ const server = setupServer(
           createdAt: '',
           updatedAt: '',
         },
-      ])
-    )
-  )
-);
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+      ]
+    })),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() }
+    }
+  },
+  API_BASE_URL: 'http://localhost:3000',
+  isAxiosError: jest.fn()
+}));
 
 test('shows ethereum address column', async () => {
   render(

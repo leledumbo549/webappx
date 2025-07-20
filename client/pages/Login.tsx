@@ -44,12 +44,11 @@ import { BrowserProvider, JsonRpcSigner, type Eip1193Provider } from 'ethers';
 // })
 
 const metadata = {
-  name: "WebappX",
-  description: "WebappX",
-  url: "https://leledumbo549.github.io/webappx/",
-  icons: ["https://leledumbo549.github.io/webappx/vite.svg"]
+  name: 'WebappX',
+  description: 'WebappX',
+  url: 'https://leledumbo549.github.io/webappx/',
+  icons: ['https://leledumbo549.github.io/webappx/vite.svg'],
 };
-
 
 createAppKit({
   adapters: [new EthersAdapter()],
@@ -88,12 +87,13 @@ function Login() {
       await Promise.resolve(open());
     } catch (err) {
       let msg = err instanceof Error ? err.message : 'Wallet connection failed';
-      
+
       // Handle COOP-specific errors
       if (msg.includes('Cross-Origin-Opener-Policy') || msg.includes('COOP')) {
-        msg = 'Wallet popup blocked by browser security. Please allow popups for this site or try refreshing the page.';
+        msg =
+          'Wallet popup blocked by browser security. Please allow popups for this site or try refreshing the page.';
       }
-      
+
       setError(msg);
       console.error('Wallet connection error:', err);
     } finally {

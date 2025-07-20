@@ -7,9 +7,11 @@ export default {
     '^@/(.*)$': '<rootDir>/client/$1',
   },
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  globals: {
-    'ts-jest': {
+  transform: {
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
       tsconfig: 'tsconfig.tests.json',
-    },
+      useESM: true,
+    }],
   },
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 };

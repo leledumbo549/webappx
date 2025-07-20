@@ -244,7 +244,9 @@ function Navbar() {
               <div className="p-1 bg-primary/10 rounded-lg">
                 <Store className="h-5 w-5 text-primary" />
               </div>
-              <span className="font-bold text-xl hidden sm:inline">MarketPlace</span>
+              <span className="font-bold text-xl hidden sm:inline">
+                MarketPlace
+              </span>
               <span className="font-bold text-xl sm:hidden">MP</span>
             </Button>
           </div>
@@ -332,7 +334,11 @@ function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="ghost" onClick={() => navigate('/login')} className="hidden sm:flex">
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/login')}
+                className="hidden sm:flex"
+              >
                 Login
               </Button>
             )}
@@ -393,7 +399,7 @@ function Navbar() {
                   </Button>
                 );
               })}
-              
+
               {/* Mobile Login Button for guests */}
               {!user && (
                 <Button
