@@ -132,6 +132,10 @@ function ViewUser() {
                   {user.username}
                 </div>
                 <div>
+                  <span className="font-semibold">Ethereum Address:</span>{' '}
+                  {user.ethereumAddress}
+                </div>
+                <div>
                   <span className="font-semibold">Name:</span> {user.name}
                 </div>
                 <div>

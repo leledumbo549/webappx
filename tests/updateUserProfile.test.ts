@@ -53,3 +53,9 @@ test('updateUserProfile sets role seller and creates seller record', async () =>
   const newCount = (await db.select().from(sellers).all()).length;
   expect(newCount).toBeGreaterThan(count);
 });
+
+test('updateUserProfile updates name and username', async () => {
+  const user = await updateUserProfile(token, { name: 'New', username: 'newuser' });
+  expect(user?.name).toBe('New');
+  expect(user?.username).toBe('newuser');
+});

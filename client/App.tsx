@@ -33,6 +33,7 @@ import AdminViewProduct from './pages/admin/ViewProduct';
 import Reports from './pages/admin/Reports';
 import SiteSettings from './pages/admin/SiteSettings';
 import Checkout from './pages/buyer/Checkout';
+import AccountRecovery from './pages/AccountRecovery';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/account-recovery" element={<AccountRecovery />} />
 
               {/* Buyer Routes */}
               <Route path="/home" element={<Home />} />

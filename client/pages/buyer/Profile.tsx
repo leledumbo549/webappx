@@ -2,6 +2,8 @@ import { useAtom, useSetAtom } from 'jotai';
 import { userAtom } from '@/atoms/loginAtoms';
 import { balanceAtom, loadWalletAtom } from '@/atoms/walletAtoms';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAppKit, useAppKitAccount } from '@reown/appkit/react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -21,6 +23,10 @@ function Profile() {
   const [error, setError] = useState<string | null>(null);
   const [balance] = useAtom(balanceAtom);
   const loadWallet = useSetAtom(loadWalletAtom);
+  const { open } = useAppKit();
+  const { isConnected } = useAppKitAccount();
+  const navigate = useNavigate();
+  const [connecting, setConnecting] = useState(false);
 
   // Update form when user data changes
   useEffect(() => {
@@ -33,6 +39,20 @@ function Profile() {
   useEffect(() => {
     loadWallet();
   }, [loadWallet]);
+
+  const handleConnect = async () => {
+    setConnecting(true);
+    try {
+      await Promise.resolve(open());
+      await loadWallet();
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : 'Wallet connection failed';
+      toast.error(msg);
+    } finally {
+      setConnecting(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,10 +164,22 @@ function Profile() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Wallet Balance</CardTitle>
+          <CardTitle>Wallet</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          <p>
+            Status:{' '}
+            <Badge variant={isConnected ? 'default' : 'secondary'}>
+              {isConnected ? 'Connected' : 'Not Connected'}
+            </Badge>
+          </p>
           <p className="text-2xl font-bold">{balance}</p>
+          <Input readOnly value={user.ethereumAddress} />
+          {!isConnected && (
+            <Button onClick={handleConnect} disabled={connecting}>
+              {connecting ? 'Connecting...' : 'Connect Wallet'}
+            </Button>
+          )}
         </CardContent>
       </Card>
 
@@ -246,6 +278,15 @@ function Profile() {
               )}
             </div>
           </form>
+          <div className="text-sm">
+            <button
+              type="button"
+              className="underline"
+              onClick={() => navigate('/account-recovery')}
+            >
+              Account Recovery
+            </button>
+          </div>
         </CardContent>
       </Card>
     </div>
