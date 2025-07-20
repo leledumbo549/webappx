@@ -12,10 +12,24 @@ let db: ReturnType<typeof drizzle> | null = null
 export async function initDrizzle(): Promise<ReturnType<typeof drizzle>> {
   if (db) return db // Already initialized
 
+  // INSERT_YOUR_CODE
+  // Detect if running in a test environment (Jest, Vitest, etc.)
+  const isTestEnv =
+    typeof process !== 'undefined' &&
+    (process.env.NODE_ENV === 'test' ||
+      process.env.VITEST ||
+      process.env.JEST_WORKER_ID !== undefined ||
+      process.env.JEST !== undefined ||
+      process.env.TEST === 'true' ||
+      // fallback for browser-based test runners
+      (typeof window !== 'undefined' && (window as any).__TEST__));
+
+  const sqlWasmLocation = isTestEnv ? './public/sql-wasm.wasm' : '/webappx/sql-wasm.wasm'
+  
   const SQL = await initSqlJs({
     locateFile: (file) => {
       void file
-      return `./public/sql-wasm.wasm`
+      return sqlWasmLocation
     },
   })
 
