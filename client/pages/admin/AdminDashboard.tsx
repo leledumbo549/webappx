@@ -8,6 +8,7 @@ interface Stats {
   totalSellers: number;
   totalSales: number;
   openReports: number;
+  totalWallets: number;
 }
 
 function AdminDashboard() {
@@ -54,6 +55,10 @@ function AdminDashboard() {
       <div className="p-4 border rounded">
         <p className="text-sm text-muted-foreground">Open Reports</p>
         <p className="text-2xl font-bold">{stats.openReports}</p>
+      </div>
+      <div className="p-4 border rounded">
+        <p className="text-sm text-muted-foreground">Total Wallets</p>
+        <p className="text-2xl font-bold">{stats.totalWallets}</p>
       </div>
     </div>
   );

@@ -32,6 +32,7 @@ import ManageProducts from './pages/admin/ManageProducts';
 import AdminViewProduct from './pages/admin/ViewProduct';
 import Reports from './pages/admin/Reports';
 import SiteSettings from './pages/admin/SiteSettings';
+import WalletUserManager from './pages/admin/WalletUserManager';
 import Checkout from './pages/buyer/Checkout';
 import AccountRecovery from './pages/AccountRecovery';
 import { Toaster } from './components/ui/sonner';
@@ -103,6 +104,7 @@ function App() {
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<ManageUsers />} />
               <Route path="/admin/users/:id" element={<ViewUser />} />
+              <Route path="/admin/wallets" element={<WalletUserManager />} />
               <Route path="/admin/sellers" element={<ManageSellers />} />
               <Route path="/admin/sellers/:id" element={<ViewSeller />} />
               <Route path="/admin/products" element={<ManageProducts />} />

@@ -165,6 +165,7 @@ export interface DashboardStats {
   totalSellers: number
   totalSales: number
   openReports: number
+  totalWallets: number
 }
 
 // Export all types from drizzle schemas

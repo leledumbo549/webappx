@@ -3205,6 +3205,7 @@ components:
       - totalSellers
       - totalSales
       - openReports
+      - totalWallets
       properties:
         totalUsers:
           type: integer
@@ -3223,6 +3224,10 @@ components:
           type: integer
           description: Number of open reports
           example: 5
+        totalWallets:
+          type: integer
+          description: Number of registered wallets
+          example: 150
     CartItem:
       type: object
       required:
