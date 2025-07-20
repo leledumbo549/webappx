@@ -36,7 +36,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { useAppKitAccount } from '@reown/appkit/react';
+import { useAppKitAccount, useAppKit } from '@reown/appkit/react';
 import Container from './Container';
 
 function Navbar() {
@@ -46,6 +46,7 @@ function Navbar() {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isConnected } = useAppKitAccount();
+  const { open } = useAppKit();
 
   const handleLogout = () => {
     logout();
@@ -243,7 +244,8 @@ function Navbar() {
               <div className="p-1 bg-primary/10 rounded-lg">
                 <Store className="h-5 w-5 text-primary" />
               </div>
-              <span className="font-bold text-xl">MarketPlace</span>
+              <span className="font-bold text-xl hidden sm:inline">MarketPlace</span>
+              <span className="font-bold text-xl sm:hidden">MP</span>
             </Button>
           </div>
 
@@ -280,7 +282,7 @@ function Navbar() {
           </div>
 
           {/* User Menu */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -330,26 +332,36 @@ function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="ghost" onClick={() => navigate('/login')}>
+              <Button variant="ghost" onClick={() => navigate('/login')} className="hidden sm:flex">
                 Login
               </Button>
             )}
 
-            <Badge variant={isConnected ? 'default' : 'secondary'}>
-              {isConnected ? 'Wallet Connected' : 'Wallet Disconnected'}
-            </Badge>
+            <Button
+              variant={isConnected ? 'default' : 'secondary'}
+              onClick={() => open()}
+              className="flex items-center"
+              size="sm"
+            >
+              <span className="hidden sm:inline">
+                {isConnected ? 'Wallet Connected' : 'Connect Wallet'}
+              </span>
+              <span className="sm:hidden">
+                {isConnected ? 'Connected' : 'Connect'}
+              </span>
+            </Button>
 
             {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="sm"
-              className="lg:hidden"
+              className="lg:hidden ml-1"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? (
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               ) : (
-                <Menu className="h-5 w-5" />
+                <Menu className="h-4 w-4" />
               )}
             </Button>
           </div>
@@ -381,6 +393,26 @@ function Navbar() {
                   </Button>
                 );
               })}
+              
+              {/* Mobile Login Button for guests */}
+              {!user && (
+                <Button
+                  variant="default"
+                  onClick={() => {
+                    navigate('/login');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="justify-start h-auto py-3 mt-2"
+                >
+                  <User className="mr-3 h-4 w-4" />
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium">Login</span>
+                    <span className="text-xs text-muted-foreground">
+                      Sign in to your account
+                    </span>
+                  </div>
+                </Button>
+              )}
             </div>
           </div>
         )}

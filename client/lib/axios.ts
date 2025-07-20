@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getDefaultStore } from 'jotai';
 import { tokenAtom, userAtom } from '@/atoms/loginAtoms';
 
-export const API_BASE_URL = process.env.VITE_API_BASE_URL || '';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const instance = axios.create({
   baseURL: API_BASE_URL,
 });

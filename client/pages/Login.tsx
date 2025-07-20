@@ -43,10 +43,19 @@ import { BrowserProvider, JsonRpcSigner, type Eip1193Provider } from 'ethers';
 // },
 // })
 
+const metadata = {
+  name: "WebappX",
+  description: "WebappX",
+  url: "https://leledumbo549.github.io/webappx/",
+  icons: ["https://leledumbo549.github.io/webappx/vite.svg"]
+};
+
+
 createAppKit({
   adapters: [new EthersAdapter()],
   networks: [mainnet, arbitrum],
-  projectId: '3dc8fb97b90a536ce400e5d65a3f5ff8',
+  metadata,
+  projectId: '4c36910043a61e836e1f9fdeec53cba3',
   defaultAccountTypes: { eip155: 'eoa' },
   enableNetworkSwitch: false,
   features: {
@@ -78,9 +87,15 @@ function Login() {
     try {
       await Promise.resolve(open());
     } catch (err) {
-      const msg =
-        err instanceof Error ? err.message : 'Wallet connection failed';
+      let msg = err instanceof Error ? err.message : 'Wallet connection failed';
+      
+      // Handle COOP-specific errors
+      if (msg.includes('Cross-Origin-Opener-Policy') || msg.includes('COOP')) {
+        msg = 'Wallet popup blocked by browser security. Please allow popups for this site or try refreshing the page.';
+      }
+      
       setError(msg);
+      console.error('Wallet connection error:', err);
     } finally {
       setIsConnecting(false);
     }
@@ -180,20 +195,25 @@ function Login() {
               </Button>
             </div>
           ) : (
-            <Button
-              className="w-full"
-              onClick={handleConnect}
-              disabled={isConnecting || isLoading}
-            >
-              {isConnecting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
-                  Connecting...
-                </>
-              ) : (
-                'Connect Wallet'
-              )}
-            </Button>
+            <div className="space-y-2">
+              <Button
+                className="w-full"
+                onClick={handleConnect}
+                disabled={isConnecting || isLoading}
+              >
+                {isConnecting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+                    Connecting...
+                  </>
+                ) : (
+                  'Connect Wallet'
+                )}
+              </Button>
+              <p className="text-xs text-muted-foreground text-center">
+                If connection fails, try allowing popups or refresh the page
+              </p>
+            </div>
           )}
           <div className="text-center">
             <WalletTutorial />
