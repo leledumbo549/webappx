@@ -21,6 +21,8 @@ function AdminDashboard() {
       try {
         const res = await axios.get<Stats>('/api/admin/dashboard');
         setStats(res.data);
+      } catch (error) {
+        console.error('AdminDashboard: Error fetching stats:', error);
       } finally {
         setLoading(false);
       }

@@ -22,7 +22,7 @@ export async function initDrizzle(): Promise<ReturnType<typeof drizzle>> {
       process.env.JEST !== undefined ||
       process.env.TEST === 'true' ||
       // fallback for browser-based test runners
-      (typeof window !== 'undefined' && (window as any).__TEST__));
+      (typeof window !== 'undefined' && (window as { __TEST__?: boolean }).__TEST__));
 
   const sqlWasmLocation = isTestEnv ? './public/sql-wasm.wasm' : '/webappx/sql-wasm.wasm'
   
