@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { cartAtom, clearCartAtom } from '@/atoms/cartAtoms';
+import { isAuthenticatedAtom } from '@/atoms/loginAtoms';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import axios from '@/lib/axios';
@@ -17,6 +18,7 @@ import {
 
 function Checkout() {
   const cart = useAtomValue(cartAtom);
+  const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const clearCart = useSetAtom(clearCartAtom);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -29,6 +31,10 @@ function Checkout() {
   );
 
   const handleCheckout = async () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -87,7 +93,13 @@ function Checkout() {
             </div>
             {error && <div className="text-red-600">{error}</div>}
             <Button
-              onClick={() => setConfirmCheckout(true)}
+              onClick={() => {
+                if (!isAuthenticated) {
+                  navigate('/login');
+                } else {
+                  setConfirmCheckout(true);
+                }
+              }}
               disabled={loading}
               className="w-full"
             >
