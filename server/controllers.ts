@@ -266,11 +266,17 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     .where(eq(reports.status, 'open'))
     .all();
 
+  const [{ count: totalWallets }] = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(wallets)
+    .all();
+
   return {
     totalUsers,
     totalSellers,
     totalSales,
     openReports,
+    totalWallets,
   };
 }
 

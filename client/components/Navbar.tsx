@@ -30,6 +30,7 @@ import {
   BarChart3,
   Users,
   FileText,
+  CreditCard,
   Menu,
   X,
 } from 'lucide-react';
@@ -169,6 +170,12 @@ function Navbar() {
       path: '/admin/products',
       icon: Package,
       description: 'Review and moderate products',
+    },
+    {
+      label: 'Wallets',
+      path: '/admin/wallets',
+      icon: CreditCard,
+      description: 'Manage user wallets',
     },
     {
       label: 'Reports',

@@ -72,6 +72,11 @@ function ManageUsers() {
       meta: { widthClass: 'w-40', cellClass: 'truncate' },
     },
     {
+      accessorKey: 'ethereumAddress',
+      header: 'Address',
+      meta: { widthClass: 'hidden md:table-cell w-64', cellClass: 'truncate' },
+    },
+    {
       accessorKey: 'role',
       header: 'Role',
       cell: ({ row }) => (
