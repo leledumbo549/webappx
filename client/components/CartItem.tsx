@@ -31,7 +31,7 @@ function CartItem({ product, quantity, onRemove, onChange }: Props) {
   return (
     <Card>
       <CardContent className="p-4">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           {/* Product Image */}
           <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
             {product.imageUrl ? (
