@@ -7,6 +7,7 @@ import Loading from './pages/Loading';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Navbar from './components/Navbar';
+import Container from './components/Container';
 import Home from './pages/buyer/Home';
 import Catalog from './pages/buyer/Catalog';
 import Cart from './pages/buyer/Cart';
@@ -64,8 +65,8 @@ function App() {
     <HashRouter>
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main className="flex justify-center px-4 py-6">
-          <div className="w-full max-w-7xl">
+        <main className="py-6">
+          <Container>
             <Routes>
               <Route path="/" element={<Loading />} />
               <Route path="/login" element={<Login />} />
@@ -115,7 +116,7 @@ function App() {
               <Route path="/admin/reports" element={<Reports />} />
               <Route path="/admin/settings" element={<SiteSettings />} />
             </Routes>
-          </div>
+          </Container>
         </main>
       </div>
       <Toaster />
