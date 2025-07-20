@@ -40,7 +40,7 @@ function BuyerHome() {
         <p className="text-lg text-muted-foreground">
           Discover a new way to buy and sell online with MarketPlace
         </p>
-        <div className="flex justify-center gap-4 pt-4">
+        <div className="flex flex-col items-center justify-center gap-4 pt-4 md:flex-row">
           <Button size="lg" onClick={() => (window.location.hash = '/catalog')}>
             Explore Catalog
           </Button>
