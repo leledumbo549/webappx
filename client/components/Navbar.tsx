@@ -399,26 +399,6 @@ function Navbar() {
                   </Button>
                 );
               })}
-
-              {/* Mobile Login Button for guests */}
-              {!user && (
-                <Button
-                  variant="default"
-                  onClick={() => {
-                    navigate('/login');
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="justify-start h-auto py-3 mt-2"
-                >
-                  <User className="mr-3 h-4 w-4" />
-                  <div className="flex flex-col items-start">
-                    <span className="font-medium">Login</span>
-                    <span className="text-xs text-muted-foreground">
-                      Sign in to your account
-                    </span>
-                  </div>
-                </Button>
-              )}
             </div>
           </div>
         )}
